@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang tài khoản - SpaceRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-hover": "#0f6bd0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#334155",
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Tài khoản của tôi</h1>
+            <div class="flex gap-3">
+                <a href="Trangchu.html" class="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">home</span>
+                    <span>Về trang chủ</span>
+                </a>
+                <button id="logout-btn" class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                    <span>Đăng xuất</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Error/Success Message -->
+        <div id="message-container" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
+        
+        <!-- Main Content -->
+        <div id="main-content" class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg overflow-hidden">
+            <!-- Tabs Navigation -->
+            <div class="border-b border-border-light dark:border-border-dark">
+                <div class="flex overflow-x-auto">
+                    <button class="tab-btn active px-6 py-4 font-semibold text-sm border-b-2 border-primary text-primary dark:text-primary transition-colors whitespace-nowrap" data-tab="profile">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-2">person</span>
+                        Thông tin cá nhân
+                    </button>
+                    <button class="tab-btn px-6 py-4 font-semibold text-sm border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap" data-tab="edit">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-2">edit</span>
+                        Chỉnh sửa thông tin
+                    </button>
+                    <button class="tab-btn px-6 py-4 font-semibold text-sm border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors whitespace-nowrap" data-tab="password">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-2">lock</span>
+                        Đổi mật khẩu
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="p-6 md:p-8">
+                <!-- Tab 1: Thông tin cá nhân -->
+                <div id="tab-profile" class="tab-content">
+                    <h2 class="text-xl font-bold mb-6 text-slate-900 dark:text-white">Thông tin tài khoản</h2>
+                    <div id="user-info" class="space-y-4"></div>
+                </div>
+                
+                <!-- Tab 2: Chỉnh sửa thông tin -->
+                <div id="tab-edit" class="tab-content hidden">
+                    <h2 class="text-xl font-bold mb-6 text-slate-900 dark:text-white">Chỉnh sửa thông tin cá nhân</h2>
+                    <form id="edit-profile-form" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và tên</label>
+                                <input type="text" id="edit-fullName" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập họ và tên">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số điện thoại</label>
+                                <input type="tel" id="edit-phone" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập số điện thoại">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
+                            <input type="email" id="edit-email" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed" value="" disabled>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Email không thể thay đổi</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Địa chỉ</label>
+                            <input type="text" id="edit-address" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập địa chỉ">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Vai trò</label>
+                            <input type="text" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed" value="" id="edit-role" disabled>
+                        </div>
+                        <div class="flex gap-3 pt-4">
+                            <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">save</span>
+                                <span>Lưu thay đổi</span>
+                            </button>
+                            <button type="button" id="cancel-edit-btn" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab 3: Đổi mật khẩu -->
+                <div id="tab-password" class="tab-content hidden">
+                    <h2 class="text-xl font-bold mb-6 text-slate-900 dark:text-white">Đổi mật khẩu</h2>
+                    <form id="change-password-form" class="space-y-5 max-w-md">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mật khẩu hiện tại</label>
+                            <input type="password" id="old-password" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập mật khẩu hiện tại" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mật khẩu mới</label>
+                            <input type="password" id="new-password" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="confirm-password" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập lại mật khẩu mới" required>
+                        </div>
+                        <div class="flex gap-3 pt-4">
+                            <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                                <span>Đổi mật khẩu</span>
+                            </button>
+                            <button type="button" id="cancel-password-btn" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- PayOS SDK - Phải load trước các script khác -->
+    <script src="https://cdn.payos.vn/payos-checkout/v1/stable/payos-initialize.js" 
+            onerror="console.error('Không thể load PayOS SDK từ CDN. Có thể do mạng hoặc CDN lỗi.'); window.PayOSLoadError = true;"
+            onload="console.log('✅ PayOS SDK đã load thành công'); window.PayOSLoaded = true;"></script>
+    <script type="module" src="asset/js/auth/auth.js"></script>
+    <script src="asset/js/vip.js"></script>
+    <script>
+        // Đợi PayOS SDK load xong trước khi load payos-demo.js
+        function waitForPayOS(callback, maxAttempts = 60) {
+            // Kiểm tra nhiều cách PayOS có thể được expose
+            const isPayOSAvailable = typeof PayOS !== 'undefined' || 
+                                     typeof window.PayOS !== 'undefined';
+            
+            if (isPayOSAvailable || window.PayOSLoaded) {
+                if (!isPayOSAvailable && window.PayOSLoaded) {
+                    console.warn('⚠️ PayOS SDK script đã load nhưng PayOS object chưa sẵn sàng. Sẽ dùng demo mode.');
+                    console.log('💡 Tip: PayOS có thể cần thêm thời gian để khởi tạo. Hãy chờ thêm vài giây.');
+                } else {
+                    console.log('✅ PayOS SDK đã sẵn sàng');
+                }
+                callback();
+            } else if (window.PayOSLoadError) {
+                console.error('❌ PayOS SDK không load được từ CDN. Sẽ dùng demo mode.');
+                callback(); // Vẫn tiếp tục để dùng demo mode
+            } else if (maxAttempts > 0) {
+                setTimeout(() => waitForPayOS(callback, maxAttempts - 1), 200);
+            } else {
+                console.warn('⚠️ PayOS SDK không load được sau 12 giây. Có thể do mạng hoặc CDN lỗi. Sẽ dùng demo mode.');
+                console.log('💡 Không sao, hệ thống vẫn hoạt động với chế độ demo.');
+                callback(); // Vẫn tiếp tục để dùng demo mode
+            }
+        }
+        
+        // Đợi DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                waitForPayOS(loadPayOSScripts);
+            });
+        } else {
+            waitForPayOS(loadPayOSScripts);
+        }
+        
+        function loadPayOSScripts() {
+            // Load payos-demo.js sau khi PayOS SDK đã sẵn sàng (hoặc timeout)
+            const script = document.createElement('script');
+            script.src = 'asset/js/payos-demo.js';
+            script.onload = () => {
+                // Load payos-check.js sau payos-demo.js
+                const checkScript = document.createElement('script');
+                checkScript.src = 'asset/js/payos-check.js';
+                document.body.appendChild(checkScript);
+            };
+            document.body.appendChild(script);
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Đợi auth module load xong
+            if (typeof getCurrentUser === 'function') {
+                initAccountPage();
+            } else {
+                // Retry sau khi module load
+                setTimeout(() => {
+                    if (typeof getCurrentUser === 'function') {
+                        initAccountPage();
+                    } else {
+                        console.error('getCurrentUser function not found');
+                    }
+                }, 500);
+            }
+        });
+        
+        function initAccountPage() {
+            const user = getCurrentUser();
+            const messageContainer = document.getElementById("message-container");
+            const logoutBtn = document.getElementById("logout-btn");
+        
+        // ================== SHOW MESSAGE ==================
+        function showMessage(message, type = "error") {
+            messageContainer.textContent = message;
+            messageContainer.className = `mb-4 p-4 rounded-lg text-sm font-medium ${
+                type === "success" 
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" 
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+            }`;
+            messageContainer.classList.remove("hidden");
+            setTimeout(() => {
+                messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+        
+        function hideMessage() {
+            messageContainer.classList.add("hidden");
+        }
+        
+        // ================== CHECK AUTH ==================
+        if (!user) {
+            document.getElementById("main-content").innerHTML = '<div class="p-8 text-center"><p class="text-red-600 dark:text-red-400 mb-4">Chưa đăng nhập. Đang chuyển hướng...</p></div>';
+            logoutBtn.style.display = 'none';
+            setTimeout(() => {
+                window.location.href = 'dangnhap.html';
+            }, 1500);
+        } else {
+            // ================== RENDER USER INFO ==================
+            function renderUserInfo() {
+                const userInfoDiv = document.getElementById("user-info");
+                const roleText = user.role === 'chumattbang' ? 'Chủ mặt bằng' : 'Người thuê';
+                const vipStatusInfo = checkVipStatus();
+                let vipStatusBadge = '';
+                if (vipStatusInfo.isVip) {
+                    vipStatusBadge = `<span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-xs font-semibold">VIP (Còn ${vipStatusInfo.daysLeft} ngày)</span>`;
+                } else {
+                    vipStatusBadge = `<span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-semibold">Thường</span>`;
+                }
+                
+                userInfoDiv.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Họ và tên</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${user.fullName || 'Chưa cập nhật'}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Email</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${user.email}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Số điện thoại</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${user.phone || 'Chưa cập nhật'}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Địa chỉ</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${user.address || 'Chưa cập nhật'}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Vai trò</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${roleText}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Trạng thái VIP</p>
+                            <p class="text-base">${vipStatusBadge}</p>
+                        </div>
+                        ${vipStatusInfo.isVip ? `
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">VIP hết hạn</p>
+                            <p class="text-base font-semibold text-slate-900 dark:text-white">${formatDate(vipStatusInfo.expiryDate.toISOString())}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // ================== LOAD EDIT FORM ==================
+            function loadEditForm() {
+                document.getElementById("edit-fullName").value = user.fullName || '';
+                document.getElementById("edit-phone").value = user.phone || '';
+                document.getElementById("edit-email").value = user.email;
+                document.getElementById("edit-address").value = user.address || '';
+                document.getElementById("edit-role").value = user.role === 'chumattbang' ? 'Chủ mặt bằng' : 'Người thuê';
+            }
+            
+            // ================== TAB SWITCHING ==================
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    
+                    // Update buttons
+                    tabButtons.forEach(b => {
+                        b.classList.remove('active', 'border-primary', 'text-primary');
+                        b.classList.add('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+                    });
+                    btn.classList.add('active', 'border-primary', 'text-primary');
+                    btn.classList.remove('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+                    
+                    // Update content
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+                    
+                    // Load form data when switching to edit tab
+                    if (targetTab === 'edit') {
+                        loadEditForm();
+                    }
+                    
+                    hideMessage();
+                });
+            });
+            // ================== EDIT PROFILE FORM ==================
+            document.getElementById("edit-profile-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                hideMessage();
+                
+                const fullName = document.getElementById("edit-fullName").value.trim();
+                const phone = document.getElementById("edit-phone").value.trim();
+                const address = document.getElementById("edit-address").value.trim();
+                
+                // Validate phone
+                if (phone && !validatePhone(phone)) {
+                    showMessage("Số điện thoại không hợp lệ. Vui lòng nhập 10-11 số.", "error");
+                    return;
+                }
+                
+                const result = updateCurrentUser({
+                    fullName: fullName,
+                    phone: phone,
+                    address: address
+                });
+                
+                if (result.success) {
+                    // Update user object
+                    Object.assign(user, result.user);
+                    showMessage(result.message, "success");
+                    renderUserInfo();
+                    // Switch to profile tab after 1 second
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="profile"]').click();
+                    }, 1000);
+                } else {
+                    showMessage(result.message, "error");
+                }
+            });
+            
+            // Cancel edit button
+            document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+                document.querySelector('[data-tab="profile"]').click();
+            });
+            
+            // ================== CHANGE PASSWORD FORM ==================
+            document.getElementById("change-password-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                hideMessage();
+                
+                const oldPassword = document.getElementById("old-password").value;
+                const newPassword = document.getElementById("new-password").value;
+                const confirmPassword = document.getElementById("confirm-password").value;
+                
+                // Validate
+                if (newPassword !== confirmPassword) {
+                    showMessage("Mật khẩu mới và xác nhận mật khẩu không khớp.", "error");
+                    return;
+                }
+                
+                if (!validatePassword(newPassword)) {
+                    showMessage("Mật khẩu mới phải có ít nhất 6 ký tự.", "error");
+                    return;
+                }
+                
+                const result = changePassword(oldPassword, newPassword);
+                
+                if (result.success) {
+                    showMessage(result.message, "success");
+                    // Clear form
+                    document.getElementById("change-password-form").reset();
+                    // Switch to profile tab after 1 second
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="profile"]').click();
+                    }, 1000);
+                } else {
+                    showMessage(result.message, "error");
+                }
+            });
+            
+            // Cancel password button
+            document.getElementById("cancel-password-btn").addEventListener("click", () => {
+                document.getElementById("change-password-form").reset();
+                document.querySelector('[data-tab="profile"]').click();
+            });
+            
+            // ================== LOGOUT ==================
+            logoutBtn.addEventListener("click", () => {
+                const result = logout();
+                if (result.success) {
+                    showMessage("Đăng xuất thành công! Đang chuyển hướng...", "success");
+                    logoutBtn.disabled = true;
+                    logoutBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">hourglass_empty</span><span>Đang đăng xuất...</span>';
+                    setTimeout(() => {
+                        window.location.href = "dangnhap.html";
+                    }, 800);
+                } else {
+                    showMessage("Có lỗi xảy ra: " + result.message, "error");
+                }
+            });
+            
+            // ================== UPDATE USER OBJECT ==================
+            function updateUserObject() {
+                const updatedUser = getCurrentUser();
+                if (updatedUser) {
+                    Object.assign(user, updatedUser);
+                }
+            }
+            
+            // Initial render
+            renderUserInfo();
+            
+            // Update user object periodically (for VIP status changes)
+            setInterval(() => {
+                updateUserObject();
+                renderUserInfo();
+            }, 5000);
+        }
+        }
+    </script>
+
+    <!-- ================== CHATBOT AI WIDGET ================== -->
+    <link rel="stylesheet" href="asset/css/chatbot.css">
+    <button id="chatbot-toggle" aria-label="Mở chatbot hỗ trợ">
+        <span class="material-symbols-outlined">support_agent</span>
+    </button>
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            <h3>
+                <span class="material-symbols-outlined">smart_toy</span>
+                Trợ lý AI SpaceRent
+            </h3>
+            <button id="chatbot-close" aria-label="Đóng chatbot">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input-container">
+            <textarea id="chatbot-input" placeholder="Nhập câu hỏi của bạn..." rows="1"></textarea>
+            <button id="chatbot-send" aria-label="Gửi tin nhắn">
+                <span class="material-symbols-outlined">send</span>
+            </button>
+        </div>
+    </div>
+    <script src="asset/js/chat/chatbot.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initChatbot === 'function') {
+                initChatbot();
+            }
+        });
+    </script>
+</body>
+</html>

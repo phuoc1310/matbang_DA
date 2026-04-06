@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản - Admin - SpaceRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-hover": "#0f6bd0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#334155",
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Responsive */
+        @media (max-width: 1023px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.show {
+                transform: translateX(0);
+            }
+            main {
+                margin-left: 0 !important;
+            }
+        }
+        
+        /* Smooth transitions */
+        .admin-section {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark transition-transform duration-300 z-50 flex flex-col">
+            <!-- Logo & Title -->
+            <div class="p-6 border-b border-border-light dark:border-border-dark">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-primary rounded-lg">
+                        <span class="material-symbols-outlined text-white text-2xl">admin_panel_settings</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-900 dark:text-white">Admin Panel</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">SpaceRent</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 overflow-y-auto">
+                <div class="space-y-1">
+                    <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-primary/10 text-primary border-l-4 border-primary">
+                        <span class="material-symbols-outlined text-xl">dashboard</span>
+                        <span class="font-semibold">Dashboard</span>
+                    </button>
+                    
+                    <button onclick="navigateTo('users')" data-nav="users" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-xl">people</span>
+                        <span class="font-semibold">Người dùng</span>
+                    </button>
+                    
+                    <button onclick="navigateTo('contacts')" data-nav="contacts" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-xl">mail</span>
+                        <span class="font-semibold">Liên hệ</span>
+                    </button>
+                    
+                    <button onclick="navigateTo('feedbacks')" data-nav="feedbacks" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-xl">feedback</span>
+                        <span class="font-semibold">Phản hồi</span>
+                    </button>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-border-light dark:border-border-dark space-y-1">
+                    <a href="Trangchu.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-xl">home</span>
+                        <span class="font-semibold">Trang chủ</span>
+                    </a>
+                    
+                    <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <span class="material-symbols-outlined text-xl">logout</span>
+                        <span class="font-semibold">Đăng xuất</span>
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- User Info -->
+            <div class="p-4 border-t border-border-light dark:border-border-dark">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                        <span id="user-avatar">A</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white" id="user-name">Admin</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" id="user-email">admin@spacerent.vn</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64">
+            <!-- Header -->
+            <header class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">Dashboard</h2>
+                        <p class="text-sm text-slate-600 dark:text-slate-400" id="page-subtitle">Tổng quan hệ thống</p>
+                    </div>
+                    <button id="toggle-sidebar" class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <div class="p-6">
+        
+        <!-- Error/Success Message -->
+        <div id="message-container" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
+
+        <!-- Dashboard Section -->
+        <section id="section-dashboard" class="admin-section">
+            <!-- Analytics Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng liên hệ</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-contacts">0</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả thời gian</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">mail</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng phản hồi</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-feedbacks">0</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả thời gian</p>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">feedback</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Đánh giá TB</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-avg-rating">0.0</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">⭐ Rating trung bình</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">star</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tỷ lệ giải quyết</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-resolution-rate">0%</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Liên hệ đã xử lý</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">task_alt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Rating Distribution Chart -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Phân bố đánh giá</h3>
+                        <span class="material-symbols-outlined text-slate-400">pie_chart</span>
+                    </div>
+                    <div class="h-[300px] flex items-center justify-center">
+                        <canvas id="ratingChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Contact Subjects Chart -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Chủ đề liên hệ</h3>
+                        <span class="material-symbols-outlined text-slate-400">bar_chart</span>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Feedback Trend Chart -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Xu hướng liên hệ & phản hồi</h3>
+                        <span class="material-symbols-outlined text-slate-400">trending_up</span>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Sentiment Distribution Chart (AI) -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-purple-600">psychology</span>
+                            Phân bố cảm xúc (AI)
+                        </h3>
+                        <button onclick="analyzeBatchSentiment()" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">refresh</span>
+                            Phân tích
+                        </button>
+                    </div>
+                    <div class="h-[300px] flex items-center justify-center">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Insights -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Top Issues -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                        <span class="material-symbols-outlined align-middle mr-2">priority_high</span>
+                        Chủ đề hàng đầu
+                    </h3>
+                    <div id="top-issues-list" class="space-y-3">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                        <span class="material-symbols-outlined align-middle mr-2">schedule</span>
+                        Hoạt động gần đây
+                    </h3>
+                    <div id="recent-activity-list" class="space-y-3">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Response Time -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                        <span class="material-symbols-outlined align-middle mr-2">timer</span>
+                        Thời gian phản hồi
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Trung bình</p>
+                            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="avg-response-time">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Nhanh nhất</p>
+                            <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="min-response-time">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Chậm nhất</p>
+                            <p class="text-lg font-semibold text-orange-600 dark:text-orange-400" id="max-response-time">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="section-users" class="admin-section hidden">
+        <!-- Search and Filter -->
+        <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tìm kiếm</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl">search</span>
+                        <input type="text" id="search-input" class="w-full pl-10 pr-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Tìm theo tên, email, SĐT...">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc theo vai trò</label>
+                    <select id="filter-role" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        <option value="all">Tất cả</option>
+                        <option value="admin">Admin</option>
+                        <option value="nguoithue">Người thuê</option>
+                        <option value="chumattbang">Chủ mặt bằng</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc theo VIP</label>
+                    <select id="filter-vip" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        <option value="all">Tất cả</option>
+                        <option value="true">Có VIP</option>
+                        <option value="false">Không VIP</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Users Table -->
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+            <div class="p-5 border-b border-border-light dark:border-border-dark">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách người dùng</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-50 dark:bg-slate-800/50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Họ tên</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">SĐT</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Vai trò</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">VIP</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Ngày tạo</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body" class="divide-y divide-border-light dark:divide-border-dark">
+                        <tr>
+                            <td colspan="8" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                Đang tải dữ liệu...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-results" class="hidden p-8 text-center text-slate-500 dark:text-slate-400">
+                <span class="material-symbols-outlined text-4xl mb-2 block">search_off</span>
+                Không tìm thấy người dùng nào
+            </div>
+        </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section id="section-contacts" class="admin-section hidden">
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách liên hệ</h2>
+                    <div class="flex gap-2">
+                        <select id="filter-contact-status" class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
+                            <option value="all">Tất cả</option>
+                            <option value="pending">Chưa xử lý</option>
+                            <option value="processed">Đã xử lý</option>
+                            <option value="resolved">Đã giải quyết</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Họ tên</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">SĐT</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Chủ đề</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Trạng thái</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Ngày gửi</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contacts-table-body" class="divide-y divide-border-light dark:divide-border-dark">
+                            <tr>
+                                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                    Đang tải dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feedbacks Section -->
+        <section id="section-feedbacks" class="admin-section hidden">
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách phản hồi</h2>
+                    <div class="flex gap-2">
+                        <select id="filter-feedback-status" class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
+                            <option value="all">Tất cả</option>
+                            <option value="pending">Chưa xem</option>
+                            <option value="reviewed">Đã xem</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Đánh giá</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Nhận xét</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Gợi ý</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Trạng thái</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Ngày gửi</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feedbacks-table-body" class="divide-y divide-border-light dark:divide-border-dark">
+                            <tr>
+                                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                    Đang tải dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+            </div> <!-- End Content Area p-6 -->
+        </main> <!-- End Main -->
+    </div> <!-- End Flex Container -->
+    
+    <!-- User Detail Modal -->
+    <div id="user-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết người dùng</h3>
+                <button id="close-modal" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
+                </button>
+            </div>
+            <div id="user-modal-content" class="p-5">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chỉnh sửa thông tin người dùng</h3>
+                <button id="close-edit-modal" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
+                </button>
+            </div>
+            <form id="edit-user-form" class="p-5 space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và tên</label>
+                        <input type="text" id="edit-user-fullName" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập họ và tên">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số điện thoại</label>
+                        <input type="tel" id="edit-user-phone" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập số điện thoại">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
+                    <input type="email" id="edit-user-email" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed" disabled>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Email không thể thay đổi</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Địa chỉ</label>
+                    <input type="text" id="edit-user-address" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập địa chỉ">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Vai trò</label>
+                    <select id="edit-user-role" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        <option value="nguoithue">Người thuê</option>
+                        <option value="chumattbang">Chủ mặt bằng</option>
+                    </select>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lưu ý: Không thể chuyển thành admin từ đây. Vui lòng dùng nút "Cấp quyền admin"</p>
+                </div>
+                <div class="flex gap-3 pt-4 border-t border-border-light dark:border-border-dark">
+                    <button type="submit" class="flex-1 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
+                        <span>Lưu thay đổi</span>
+                    </button>
+                    <button type="button" id="cancel-edit-user" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                        Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin Action Confirmation Modal -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-3xl" id="admin-confirm-icon">shield</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="admin-confirm-title">Cấp quyền admin</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Thay đổi quyền người dùng</p>
+                </div>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300 mb-6" id="admin-confirm-text">Bạn có chắc chắn muốn cấp quyền admin?</p>
+            <div class="flex gap-3">
+                <button id="admin-confirm-btn" class="flex-1 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-semibold transition-colors">
+                    Cấp quyền
+                </button>
+                <button id="cancel-admin-action" class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                    <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">warning</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Xác nhận xóa</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Hành động này không thể hoàn tác</p>
+                </div>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300 mb-6" id="delete-confirm-text">Bạn có chắc chắn muốn xóa tài khoản này?</p>
+            <div class="flex gap-3">
+                <button id="confirm-delete" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">
+                    Xóa
+                </button>
+                <button id="cancel-delete" class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Detail Modal -->
+    <div id="contact-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết liên hệ</h3>
+                <button class="close-contact-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
+                </button>
+            </div>
+            <div id="contact-modal-content" class="p-5">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Detail Modal -->
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết phản hồi</h3>
+                <button class="close-feedback-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
+                </button>
+            </div>
+            <div id="feedback-modal-content" class="p-5">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="asset/js/auth/auth.js"></script>
+    <script src="asset/js/contact.js"></script>
+    <script src="asset/js/feedback.js"></script>
+    <script src="asset/js/sentiment-analysis.js"></script>
+    <script src="asset/js/dashboard.js"></script>
+    <script type="module" src="asset/js/admin.js"></script>
+</body>
+</html>
