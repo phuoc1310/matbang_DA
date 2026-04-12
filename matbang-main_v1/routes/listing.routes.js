@@ -1,10 +1,16 @@
-import express from "express";
-import { getListingsController } from "../controllers/listing.controller.js";
 import { verifyToken } from "../middleware/auth.js";
-import { createReviewController } from "../controllers/review.controller.js";
+import express from "express";
+import {
+  getListingsController,
+  compareListingsController
+} from "../controllers/listing.controller.js";
 
 const router = express.Router();
-router.post("/", verifyToken, createReviewController);
+
+// GET listings
 router.get("/", getListingsController);
+
+// COMPARE listings
+router.get("/compare", compareListingsController);
 
 export default router;

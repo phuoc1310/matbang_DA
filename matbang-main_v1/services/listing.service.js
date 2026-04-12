@@ -1,5 +1,25 @@
 import db from "../config/db.js";
 
+// 🔥 COMPARE LISTINGS
+export async function compareListings(ids) {
+  const idArray = ids
+    .split(",")
+    .map(Number)
+    .filter(id => !isNaN(id));
+
+  if (idArray.length < 2) {
+    throw new Error("Need at least 2 valid IDs");
+  }
+
+  const result = await db.query(
+    `SELECT id, title, price, area, address, image
+     FROM listings
+     WHERE id = ANY($1)`,
+    [idArray]
+  );
+
+  return result.rows;
+}
 export async function getListings(filters) {
   let query = "SELECT * FROM listings WHERE 1=1";
   const values = [];
