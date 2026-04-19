@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Quản lý tin đăng - SpaceRent</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-hover": "#0f6bd0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col">
+    <header
+        class="sticky top-0 z-50 flex items-center justify-between border-b border-border-light dark:border-border-dark bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md px-6 py-4 lg:px-10">
+        <div class="flex items-center gap-4">
+            <a href="Trangchu.html" class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+                    <span class="material-symbols-outlined text-xl">apartment</span>
+                </div>
+                <h2 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">SpaceRent</h2>
+            </a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="Trangchu.html" class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+                Trang chủ
+            </a>
+            <span id="user-name" class="font-semibold text-sm"></span>
+            <button id="btn-logout" class="h-9 px-4 rounded-lg border border-border-light dark:border-border-dark text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                Đăng xuất
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Quản lý tin đăng</h1>
+                <p class="text-slate-600 dark:text-slate-400">Xem, chỉnh sửa và quản lý các tin đăng của bạn</p>
+            </div>
+            <button id="btnCreateListing" 
+                class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg shadow-lg transition-colors">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>Đăng tin mới</span>
+            </button>
+        </div>
+
+        <div class="flex gap-2 mb-6 border-b border-border-light dark:border-border-dark">
+            <button class="filter-tab px-4 py-2 text-sm font-semibold border-b-2 border-primary text-primary" data-status="all">
+                Tất cả
+            </button>
+            <button class="filter-tab px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" data-status="pending">
+                Chờ duyệt
+            </button>
+            <button class="filter-tab px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" data-status="approved">
+                Đã duyệt
+            </button>
+            <button class="filter-tab px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" data-status="rejected">
+                Từ chối
+            </button>
+        </div>
+
+        <div id="loadingState" class="text-center py-20">
+            <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+            <p class="mt-4 text-slate-600 dark:text-slate-400">Đang tải dữ liệu...</p>
+        </div>
+
+        <div id="emptyState" class="hidden text-center py-20">
+            <span class="material-symbols-outlined text-5xl text-gray-400 mb-4">description</span>
+            <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Chưa có tin đăng nào</p>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Hãy tạo tin đăng đầu tiên của bạn</p>
+            <button id="btnCreateListingEmpty" 
+                class="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg transition-colors">
+                Đăng tin mới
+            </button>
+        </div>
+
+        <div id="listingsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+    </main>
+
+    <script type="module" src="./asset/js/quanly.js"></script>
+    <script type="module" src="./asset/js/listingForm.js"></script>
+</body>
+
+</html>

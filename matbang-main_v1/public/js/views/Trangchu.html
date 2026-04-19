@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SpaceRent - Tìm kiếm mặt bằng kinh doanh</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../asset/css/chat-widget.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0f66bd",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2936",
+                        "text-main-light": "#0d141b",
+                        "text-main-dark": "#e2e8f0",
+                        "text-sub-light": "#4c739a",
+                        "text-sub-dark": "#94a3b8",
+                        "border-light": "#e7edf3",
+                        "border-dark": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark font-display antialiased min-h-screen flex flex-col">
+    <header
+        class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-border-light dark:border-border-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <div class="size-8 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-3xl">domain</span>
+                    </div>
+                    <h2 class="text-text-main-light dark:text-text-main-dark text-xl font-bold tracking-tight">SpaceRent
+                    </h2>
+                </div>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Thuê mặt bằng</a>
+                    <!-- <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Cho thuê</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Dự án</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Tin tức</a> -->
+                    <a href="baocao.html" class="hover:text-primary flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px]">monitoring</span>
+                        Báo cáo thống kê
+                    </a>
+                    <a id="admin-link" href="admin.html"
+                        class="hidden h-9 items-center justify-center gap-2 px-4 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold transition-colors shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                        <span class="hidden sm:inline">Admin Panel</span>
+                    </a>
+                    <a id="vip-link" href="nangcapvip.html"
+                        class="hidden h-9 items-center justify-center gap-2 px-4 rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 text-sm font-bold transition-colors shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+                        <span class="hidden sm:inline">Nâng cấp VIP</span>
+                    </a>
+                </nav>
+                <div id="guest-actions" class="flex items-center gap-3">
+                    <a id="auth-link" href="dangnhap.html"
+                        class="hidden sm:flex h-9 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold transition-colors text-text-main-light dark:text-text-main-dark">
+                        Đăng nhập
+                    </a>
+                </div>
+                <div id="user-actions" class="hidden flex items-center gap-3">
+                    <a href="quanly.html"
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">description</span>
+                        <span class="hidden sm:inline">Quản lý tin đăng</span>
+                    </a>
+                    <span id="user-name" class="hidden md:inline font-semibold text-sm"></span>
+                    <a id="account-link" href="taikhoan.html"
+                        class="hidden md:flex h-9 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">person</span>
+                    </a>
+                    <button id="btn-logout" class="h-9 w-9 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" title="Đăng xuất">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <section class="relative bg-slate-900 pb-24 pt-16 lg:pt-24">
+            <div class="absolute inset-0 overflow-hidden">
+                <img alt="Modern office building glass facade reflecting city sky"
+                    class="h-full w-full object-cover opacity-40 dark:opacity-20"
+                    data-alt="Modern office building glass facade reflecting city sky"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgSmccNUQBu1DO2YjBYdgD3WOWF2WBhVU_84q-ylHeyFeYCyB8yGJwVf-fMVFeu4VjwE_KSBU0rHOwF0FrJDyudUAzAOB2JvL1UfsW64tCTS_owGHrH4bn0Y-6KlJryH5XbMclEg0W7nmeLW9DoU2jSWT4iohoXxdVzwyc6cnwAmP7wTYEakLL43025dDUGR1e3E2XGiLYqBtB5cwF-caFjPli0AjoM88GrhXBCqIZ6C2-2UtGrDx7sQTonjfUDyGfwYTpsWGHBbut" />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent">
+                </div>
+            </div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1
+                    class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
+                    Tìm không gian kinh doanh<br class="hidden md:block" />
+                    <span class="text-primary">lý tưởng của bạn</span>
+                </h1>
+                <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10">
+                    Hàng ngàn văn phòng, cửa hàng và kho xưởng đang chờ bạn. Khám phá ngay với thông tin minh bạch và
+                    đánh giá thực tế.
+                </p>
+            </div>
+        </section>
+        <section class="relative -mt-16 px-4 sm:px-6 lg:px-8 z-20">
+            <div
+                class="max-w-[1200px] mx-auto bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-border-light dark:border-border-dark p-4 md:p-3">
+
+                <form id="searchForm" class="flex flex-col xl:flex-row gap-3">
+
+                    <!-- ===== KHU VỰC (CITY) ===== -->
+                    <div class="w-full xl:w-56 relative">
+                        <select id="citySelect"
+                            class="w-full px-4 py-3 bg-primary text-white font-bold rounded-full focus:ring-2 focus:ring-blue-400 focus:outline-none">>
+                            <option value="">Toàn quốc</option>
+                            <option value="hcm">TP Hồ Chí Minh</option>
+                            <option value="hn">Hà Nội</option>
+                            <option value="dn">Đà Nẵng</option>
+                        </select>
+
+                    </div>
+
+                    <!-- ===== KEYWORD ===== -->
+                    <div class="flex-1 relative min-w-0">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-text-sub-light">search</span>
+                        </div>
+                        <input id="search" type="text" placeholder="Nhập quận, tên tòa nhà, hoặc địa chỉ..."
+                            class="block w-full pl-10 pr-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary" />
+                    </div>
+
+                    <!-- ===== LOẠI HÌNH ===== -->
+                    <div class="w-full xl:w-40">
+                        <select id="type"
+                            class="block w-full px-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800">
+                            <option value="">Loại hình</option>
+                            <option value="Đất">Đất</option>
+                            <option value="Văn phòng">Văn phòng</option>
+                            <option value="Cửa hàng">Cửa hàng</option>
+                        </select>
+                    </div>
+
+                    <!-- ===== GIÁ ===== -->
+                    <div class="w-full xl:w-36">
+                        <select id="price"
+                            class="block w-full px-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800">
+                            <option value="">Mức giá</option>
+                            <option value="0-1000000000">&lt; 1 tỷ</option>
+                            <option value="1000000000-5000000000">1 – 5 tỷ</option>
+                            <option value="5000000000-10000000000">5 – 10 tỷ</option>
+                            <option value="10000000000-99999999999">&gt; 10 tỷ</option>
+                        </select>
+                    </div>
+
+                    <!-- ===== DIỆN TÍCH ===== -->
+                    <div class="w-full xl:w-36">
+                        <select id="area"
+                            class="block w-full px-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800">
+                            <option value="">Diện tích</option>
+                            <option value="0-30">&lt; 30m²</option>
+                            <option value="30-100">30 – 100m²</option>
+                            <option value="100-500">100 – 500m²</option>
+                            <option value="500-99999">&gt; 500m²</option>
+                        </select>
+                    </div>
+
+                    <!-- ===== NÚT TÌM ===== -->
+                    <button id="btnSearch" type="button"
+                        class="w-full xl:w-auto px-6 py-3 bg-primary text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">search</span>
+                        Tìm kiếm
+                    </button>
+
+                </form>
+            </div>
+        </section>
+
+        <section class="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-bold mb-8 text-text-main-light dark:text-text-main-dark">Khám phá theo loại hình
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
+                    href="timkiem.html?type=Văn phòng">
+                    <img alt="Bright modern open plan office space"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Bright modern open plan office space"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQuNsTMuYJtR--EbLzwDs7vHO8SCQn4Op-FhkQlGpgXhSeVxUP54VoYTijGxSwTynir0N-HSM3EumplCuo-Xz7TiS2zGg1IQSvT9eNkQzpkrfgPEFkQZRZrDPyPToNrCBJCDVx0V7PLAwlsXQVBLBvUmyOk2_MDxObn-KlVzu5wMVO7txQdBUylgI8TYDgubK5u2isuMHfinGLWyh8BNvrnjJVL4YgOMVDNVXGDvFosnsOGBiQ9of0TsyLmzR36tMJ3Unzf9GNumr7" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-bold text-lg">Văn phòng</h3>
+                        <p class="text-sm opacity-90">1,240+ địa điểm</p>
+                    </div>
+                </a>
+                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
+                    href="timkiem.html?type=Cửa hàng">
+                    <img alt="Busy retail store front with customers"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Busy retail store front with customers"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiEj_Kd6-PopWUa4pK3lWrUaNXB0QwjKd9swGMS4slM4rDpMeCoQ3cyjOPzm40HMJEDpHZYLeU_mX4-tgMPYsPie3M7NQFGGoE9zULydIIF_YBiqirmDvTV9ApT_P81TmDYQEImjytpQxVaHqdqOxPwzZTCxUtmnBYLlAhrqF1hTQ0-tvA9BBc__2hXUNYsK0g1Tmc6oyUV9Jw3snLsz9kjW9W20srismdC_zJH7IwzgDIzszltRMCIty1SeTzgdihqFYkGcpEykKR" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-bold text-lg">Cửa hàng</h3>
+                        <p class="text-sm opacity-90">850+ địa điểm</p>
+                    </div>
+                </a>
+                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
+                    href="timkiem.html?type=Kho xưởng">
+                    <img alt="Spacious industrial warehouse interior"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Spacious industrial warehouse interior"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC_I2Ef42L03YPjxbBpjyQ8tfs7RGBGLnxrMcl03hCRyNrysTunKlhOY5Iza1N_lzyoA09H6A7qGaAe_jzdneMg70yLX0frv_pfY5alzxC48hAJgL6xY5LwnrPmVrCFvuP0uPN5cmhAKS8eaaIb7csgPMhUiiEHVT6Df4SF8CBtyp5nYWSIUe5yhjDsnCd9ypwtUyz0KCRZjGVG-hDHzX-rONkgCW26wdrYnV9-Vyw0XY2BadEq46mp46atkaYhjQ-OHaYdMzyA0Ax" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-bold text-lg">Kho xưởng</h3>
+                        <p class="text-sm opacity-90">420+ địa điểm</p>
+                    </div>
+                </a>
+                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer" href="timkiem.html">
+                    <img alt="Creative coworking space with people working"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Creative coworking space with people working"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUkxxN_5J-4WmWCBMXDR9j6Kfg-ndcksf_KmT4JnU2PbujIaoAtkNNb-kZQQsR2XUDgyLYTTSszBaJZbxaxuYxyHBkquJ0ENEEcHCT8981yMgC3kNo4enL6L76b_Qo69hOsIXTQDtS3NPIEPpCGEKiy6TLgkwTPvY0DPYbYucRX3-TeevRQVUleYLJuD5sKl2uWh3XjS0EwBXYxI-wjka700M66ca3Cgie_Zk3xeVNZC52RmPETd3cTycERX1tIg3B7cv-PZRSfmph" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-bold text-lg">Co-working</h3>
+                        <p class="text-sm opacity-90">310+ địa điểm</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+        <section class="py-4 md:pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-text-main-light dark:text-text-main-dark">Mặt bằng nổi bật</h2>
+                    <p class="text-text-sub-light dark:text-text-sub-dark mt-1">Được đánh giá cao bởi cộng đồng người
+                        thuê</p>
+                </div>
+                <a class="text-primary hover:text-primary-dark font-bold text-sm flex items-center gap-1"
+                    href="timkiem.html">
+                    Xem tất cả <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+            <div id="listing" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Data will be loaded here -->
+                <div class="col-span-3 text-center py-10">
+                    <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+                </div>
+            </div>
+            </div>
+            <div class="flex justify-center mt-10">
+                <div class="pagination flex gap-2"></div>
+            </div>
+        </section>
+        <section class="py-16 bg-slate-100 dark:bg-slate-900 mt-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary mb-4">
+                            <span class="material-symbols-outlined text-3xl">verified_user</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Thông tin xác thực</h3>
+                        <p class="text-text-sub-light dark:text-text-sub-dark max-w-xs">Mọi mặt bằng đều được đội ngũ
+                            chúng tôi kiểm duyệt kỹ lưỡng trước khi đăng tải.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary mb-4">
+                            <span class="material-symbols-outlined text-3xl">reviews</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Đánh giá minh bạch</h3>
+                        <p class="text-text-sub-light dark:text-text-sub-dark max-w-xs">Xem đánh giá chân thực từ những
+                            người thuê trước để ra quyết định đúng đắn.</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary mb-4">
+                            <span class="material-symbols-outlined text-3xl">support_agent</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Hỗ trợ 24/7</h3>
+                        <p class="text-text-sub-light dark:text-text-sub-dark max-w-xs">Đội ngũ tư vấn sẵn sàng hỗ trợ
+                            bạn tìm được không gian ưng ý nhất.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer
+        class="bg-surface-light dark:bg-surface-dark border-t border-border-light dark:border-border-dark pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-2 md:col-span-1">
+                    <a href="Trangchu.html" class="flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
+                        <div class="size-6 text-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined">domain</span>
+                        </div>
+                        <span class="text-lg font-bold">SpaceRent</span>
+                    </a>
+                    <p class="text-sm text-text-sub-light dark:text-text-sub-dark mb-4">
+                        Nền tảng kết nối không gian kinh doanh hàng đầu Việt Nam.
+                    </p>
+                    <div class="flex gap-4">
+                        <a class="text-text-sub-light hover:text-primary transition-colors" href="#"><span
+                                class="material-symbols-outlined">social_leaderboard</span></a>
+                        <a class="text-text-sub-light hover:text-primary transition-colors" href="#"><span
+                                class="material-symbols-outlined">mail</span></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Về chúng tôi</h4>
+                    <ul class="space-y-2 text-sm text-text-sub-light dark:text-text-sub-dark">
+                        <li><a class="hover:text-primary transition-colors" href="Trangchu.html">Trang chủ</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="lienhe.html">Liên hệ</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="baocao.html">Báo cáo thống kê</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Dành cho khách hàng</h4>
+                    <ul class="space-y-2 text-sm text-text-sub-light dark:text-text-sub-dark">
+                        <li><a class="hover:text-primary transition-colors" href="timkiem.html">Tìm kiếm mặt bằng</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="nangcapvip.html">Nâng cấp VIP</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="taikhoan.html">Tài khoản</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Hỗ trợ</h4>
+                    <ul class="space-y-2 text-sm text-text-sub-light dark:text-text-sub-dark">
+                        <li><a class="hover:text-primary transition-colors" href="lienhe.html">Liên hệ</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="phanhoi.html">Gửi phản hồi</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="dangnhap.html">Đăng nhập</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="dangky.html">Đăng ký</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="border-t border-border-light dark:border-border-dark pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-text-sub-light dark:text-text-sub-dark">© 2024 SpaceRent Inc. All rights
+                    reserved.</p>
+                <div
+                    class="flex flex-wrap gap-6 text-sm text-text-sub-light dark:text-text-sub-dark justify-center md:justify-end">
+                    <a class="hover:text-primary transition-colors" href="Trangchu.html">Trang chủ</a>
+                    <a class="hover:text-primary transition-colors" href="lienhe.html">Liên hệ</a>
+                    <a class="hover:text-primary transition-colors" href="phanhoi.html">Phản hồi</a>
+                    <a class="hover:text-primary transition-colors" href="timkiem.html">Tìm kiếm</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script type="module" src="./asset/js/main.js"></script>
+    <script type="module" src="./asset/js/trangchu.js"></script>
+
+    <!-- ================== CHATBOT AI WIDGET ================== -->
+    <link rel="stylesheet" href="./asset/css/chatbot.css">
+    <button id="chatbot-toggle" aria-label="Mo chatbot ho tro">
+        <span class="material-symbols-outlined">support_agent</span>
+    </button>
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            <h3>
+                <span class="material-symbols-outlined">smart_toy</span>
+                Tro ly AI SpaceRent
+            </h3>
+            <button id="chatbot-close" aria-label="Dong chatbot">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input-container">
+            <textarea id="chatbot-input" placeholder="Nhap cau hoi cua ban..." rows="1"></textarea>
+            <button id="chatbot-send" aria-label="Gui tin nhan">
+                <span class="material-symbols-outlined">send</span>
+            </button>
+        </div>
+    </div>
+    <script src="./asset/js/chat/chatbot.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initChatbot === 'function') {
+                initChatbot();
+            }
+        });
+    </script>
+    <script type="module">
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { auth, firestore } from "./asset/js/auth/firebase.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const adminLink = document.getElementById("admin-link");
+            const vipLink = document.getElementById("vip-link");
+            const guestUI = document.getElementById("guest-actions");
+            const userUI = document.getElementById("user-actions");
+            const accountLink = document.getElementById("account-link");
+            const userNameEl = document.getElementById("user-name");
+
+            // reset
+            adminLink?.classList.add("hidden");
+            vipLink?.classList.add("hidden");
+            guestUI?.classList.remove("hidden");
+            userUI?.classList.add("hidden");
+            accountLink?.classList.add("hidden");
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    sessionStorage.removeItem("currentUser");
+                    return;
+                }
+
+                const snap = await getDoc(doc(firestore, "users", user.uid));
+                if (!snap.exists()) return;
+
+                const userData = { id: user.uid, ...snap.data() };
+                sessionStorage.setItem("currentUser", JSON.stringify(userData));
+
+                // show user UI
+                guestUI?.classList.add("hidden");
+                userUI?.classList.remove("hidden");
+                accountLink?.classList.remove("hidden");
+
+                userNameEl && (userNameEl.textContent = userData.fullName || "User");
+
+                // admin
+                if (userData.role === "admin") {
+                    adminLink?.classList.remove("hidden");
+                    adminLink?.classList.add("flex");
+                }
+
+                // VIP
+                if (!userData.vipStatus) {
+                    vipLink?.classList.remove("hidden");
+                    vipLink?.classList.add("flex");
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
