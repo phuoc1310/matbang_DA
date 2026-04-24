@@ -2,8 +2,8 @@
   "name": "matbang",
   "type": "module",
   "scripts": {
-    "start": "node service.js",
-    "dev": "node service.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "@payos/node": "^1.0.10",

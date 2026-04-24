@@ -20,7 +20,7 @@ export async function getFavoritesByUser(user_id) {
      FROM favorites f
      JOIN listings l ON f.listing_id = l.id
      WHERE f.user_id = $1
-     ORDER BY f.created_at DESC`,
+     ORDER BY f.id DESC`,
     [user_id]
   );
 

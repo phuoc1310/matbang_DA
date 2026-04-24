@@ -1,5 +1,45 @@
 import db from "../config/db.js";
 
+export async function createListing(data, user_id) {
+  const {
+    title,
+    price,
+    area,
+    address,
+    city,
+    district,
+    ward,
+    latitude,
+    longitude,
+    type,
+    description,
+    image
+  } = data;
+
+  const result = await db.query(
+    `INSERT INTO listings 
+    (title, price, area, address, city, district, ward, latitude, longitude, type, description, image, user_id)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+    RETURNING *`,
+    [
+      title,
+      price,
+      area,
+      address,
+      city,
+      district,
+      ward,
+      latitude,
+      longitude,
+      type,
+      description,
+      image,
+      user_id
+    ]
+  );
+
+  return result.rows[0];
+}
 // 🔥 COMPARE LISTINGS
 export async function compareListings(ids) {
   const idArray = ids

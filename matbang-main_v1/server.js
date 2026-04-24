@@ -1,9 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import admin from "firebase-admin";
-import fs from "fs";
 
+import testRoutes from "./routes/test.js";
 import userRoutes from "./routes/user.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
@@ -11,21 +10,13 @@ import favoriteRoutes from "./routes/favorite.routes.js";
 const app = express();
 const PORT = 3033;
 
-// ===== Firebase =====
-const serviceAccount = JSON.parse(
-  fs.readFileSync("./key_firebase/serviceAccountKey.json", "utf8")
-);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
 // ===== Middleware =====
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
 // ===== Routes =====
+app.use("/api", testRoutes); // test
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
