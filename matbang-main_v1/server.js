@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import testRoutes from "./routes/test.js";
 import userRoutes from "./routes/user.routes.js";
@@ -9,6 +11,12 @@ import listingRoutes from "./routes/listing.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 const app = express();
 const PORT = 3033;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/js/views/Trangchu.html"));
+});
 
 // ===== Middleware =====
 app.use(cors());
