@@ -1,4 +1,4 @@
-import { auth, firestore } from "./firebase.js";
+import { auth, firestore } from "../../config/firebase.js";
 
 import {
   createUserWithEmailAndPassword,
@@ -92,7 +92,11 @@ async function register(userData) {
       createdAt: serverTimestamp()
     };
 
-    await setDoc(doc(firestore, "users", uid), newUser);
+    try {
+      await setDoc(doc(firestore, "users", uid), newUser);
+    } catch (e) {
+      console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
+    }
 
     setCurrentUser({ id: uid, ...newUser });
 
@@ -118,13 +122,16 @@ async function login(email, password) {
     );
 
     const uid = cred.user.uid;
-    const snap = await getDoc(doc(firestore, "users", uid));
-
-    if (!snap.exists()) {
-      return { success: false, message: "Không tìm thấy user." };
+    let user = { id: uid, email: email, role: "user" }; // Mock mặc định
+    try {
+      const snap = await getDoc(doc(firestore, "users", uid));
+      if (snap.exists()) {
+        user = { id: uid, ...snap.data() };
+      }
+    } catch (e) {
+      console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
     }
 
-    const user = { id: uid, ...snap.data() };
     setCurrentUser(user);
 
     return { success: true, message: "Đăng nhập thành công!", user };

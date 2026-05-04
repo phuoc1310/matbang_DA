@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Trang Đăng Ký - Tối ưu - RentalPlatform</title>
+    <title>Trang Đăng Ký</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
@@ -253,19 +253,50 @@
     </footer>
 
     <script type="module">
-        import { register } from "/asset/js/auth/auth.js";
+        import { register, logout } from "/js/modules/auth/auth.js";
 
         document.getElementById("register-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const result = await register({
-                fullName: document.getElementById("fullname").value,
-                email: document.getElementById("email").value,
-                password: document.getElementById("password").value,
-                role: "user"
-            });
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
 
-            alert(result.message);
+            const fullName = document.getElementById("fullname")?.value.trim() || "Người dùng mới";
+            const email = document.getElementById("email")?.value.trim() || "";
+            const password = document.getElementById("password")?.value || "";
+            const confirmPassword = document.getElementById("confirm-password")?.value || "";
+
+            if (password !== confirmPassword) {
+                alert("Mật khẩu xác nhận không khớp!");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Đang đăng ký...</span>';
+
+            try {
+                const result = await register({
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    role: "user"
+                });
+
+                if (result.success) {
+                    alert("Đăng ký thành công! Vui lòng đăng nhập.");
+                    await logout();
+                    window.location.href = "/js/views/dangnhap.html";
+                } else {
+                    alert(result.message || "Đã xảy ra lỗi khi đăng ký.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (err) {
+                console.error("Lỗi đăng ký:", err);
+                alert("Lỗi hệ thống: " + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         });
     </script>
 
