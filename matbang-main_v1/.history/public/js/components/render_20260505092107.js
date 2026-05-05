@@ -8,57 +8,25 @@ function renderPagination() {
   const totalCount = window.totalCount || (window.filteredData?.length || 0);
   const totalPages = Math.max(1, Math.ceil(totalCount / (window.PAGE_SIZE || 1)));
 
-  // condensed pagination: show first 3, last 3, and pages around current with ellipses
-  const pagElInner = [];
-
-  function pushPage(n) { pagElInner.push({ type: 'page', value: n }); }
-  function pushEllipsis() { const last = pagElInner[pagElInner.length - 1]; if (!last || last.type !== 'ellipsis') pagElInner.push({ type: 'ellipsis' }); }
-
-  const firstCount = 3;
-  const lastCount = 3;
-  const around = 1; // pages around current
-
-  // build set of pages to show
-  const pagesSet = new Set();
-  for (let i = 1; i <= Math.min(firstCount, totalPages); i++) pagesSet.add(i);
-  for (let i = Math.max(1, window.currentPage - around); i <= Math.min(totalPages, window.currentPage + around); i++) pagesSet.add(i);
-  for (let i = Math.max(1, totalPages - lastCount + 1); i <= totalPages; i++) pagesSet.add(i);
-
-  // convert to sorted array
-  const pagesArr = Array.from(pagesSet).sort((a, b) => a - b);
-
-  // compose pagElInner with ellipses
-  let prev = 0;
-  for (const p of pagesArr) {
-    if (prev && p - prev > 1) {
-      pushEllipsis();
-    }
-    pushPage(p);
-    prev = p;
-  }
+  // bạn muốn hiện 1..10
+  const maxShow = 20;
+  const showPages = Math.min(totalPages, maxShow);
 
   pagEl.innerHTML = "";
 
-  for (const node of pagElInner) {
-    if (node.type === 'ellipsis') {
-      const span = document.createElement('span');
-      span.textContent = '...';
-      span.className = 'px-3 py-2 text-sm text-slate-500 mx-1';
-      pagEl.appendChild(span);
-      continue;
-    }
+  for (let p = 1; p <= showPages; p++) {
+    const active = p === window.currentPage;
 
-    const p = node.value;
-    const activeBtn = p === window.currentPage;
-    const btn = document.createElement('button');
+    const btn = document.createElement("button");
     btn.textContent = p;
-    btn.className =
-      'px-3 py-2 rounded-lg border text-sm font-bold transition mx-1 ' +
-      (activeBtn
-        ? 'bg-primary text-white border-primary'
-        : 'bg-white hover:bg-slate-100 border-slate-200');
 
-    btn.addEventListener('click', async () => {
+    btn.className =
+      "px-3 py-2 rounded-lg border text-sm font-bold transition mx-1 " +
+      (active
+        ? "bg-primary text-white border-primary"
+        : "bg-white hover:bg-slate-100 border-slate-200");
+
+    btn.addEventListener("click", async () => {
       window.currentPage = p;
       // Fetch page from backend if available
       try {
@@ -74,7 +42,7 @@ function renderPagination() {
       // Re-render page
       renderPage();
       // Scroll lên đầu danh sách
-      document.getElementById('listing')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById("listing")?.scrollIntoView({ behavior: 'smooth' });
     });
 
     pagEl.appendChild(btn);
@@ -100,15 +68,10 @@ function renderPage() {
 
   listEl.innerHTML = "";
 
-  let itemsToRender = [];
-  // If filteredData is a single-page payload (paged mode), render it directly
-  if (window._renderIsPaged) {
-    itemsToRender = window.filteredData || [];
-  } else {
-    const start = (window.currentPage - 1) * window.PAGE_SIZE;
-    const end = start + window.PAGE_SIZE;
-    itemsToRender = (window.filteredData || []).slice(start, end);
-  }
+  const start = (window.currentPage - 1) * window.PAGE_SIZE;
+  const end = start + window.PAGE_SIZE;
+
+  const itemsToRender = window.filteredData.slice(start, end);
   
   console.log("📊 Rendering items:", itemsToRender.length);
 

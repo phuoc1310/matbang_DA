@@ -403,7 +403,7 @@
 
 <!-- Dán đè vào phần Script cuối file timkiem.html -->
 <script type="module">
-  import { fetchListings, fetchAllListings } from "/js/services/api.js";
+  import { fetchListings } from "/js/services/api.js";
   import { applyFilter } from "/js/components/filter.js";
   import { renderPage } from "/js/components/render.js";
 
@@ -523,8 +523,7 @@
       // Only send city when a short code was provided (avoid sending 'Toàn quốc')
       if (city) paramsForFetch.city = regionName;
 
-      // Fetch all pages and then filter client-side for faster interactions
-      const data = await fetchAllListings(paramsForFetch);
+      const data = await fetchListings(paramsForFetch);
 
       console.log("✅ Raw data loaded:", data?.length, "items");
 

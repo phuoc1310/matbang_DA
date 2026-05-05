@@ -40,6 +40,7 @@ function renderPagination() {
   pagEl.innerHTML = "";
 
   for (const node of pagElInner) {
+    const active = p === window.currentPage;
     if (node.type === 'ellipsis') {
       const span = document.createElement('span');
       span.textContent = '...';
@@ -100,15 +101,10 @@ function renderPage() {
 
   listEl.innerHTML = "";
 
-  let itemsToRender = [];
-  // If filteredData is a single-page payload (paged mode), render it directly
-  if (window._renderIsPaged) {
-    itemsToRender = window.filteredData || [];
-  } else {
-    const start = (window.currentPage - 1) * window.PAGE_SIZE;
-    const end = start + window.PAGE_SIZE;
-    itemsToRender = (window.filteredData || []).slice(start, end);
-  }
+  const start = (window.currentPage - 1) * window.PAGE_SIZE;
+  const end = start + window.PAGE_SIZE;
+
+  const itemsToRender = window.filteredData.slice(start, end);
   
   console.log("📊 Rendering items:", itemsToRender.length);
 

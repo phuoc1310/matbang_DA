@@ -146,7 +146,6 @@ export async function applyFilter() {
 if (filtered.length > 50) {
   filtered = filtered.slice(0, 50);
 }
-window.totalCount = filtered.length;
   /* ===== 2. BI SCORING ===== */
   const isUserSearching =
     document.activeElement?.id === "search" ||

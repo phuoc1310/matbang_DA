@@ -44,27 +44,6 @@
     }
   </script>
   <!-- Module imports are done at the end of this file to ensure DOM is ready -->
-  <script>
-    // Global handlers to avoid third-party scripts throwing uncaught exceptions
-    window.addEventListener('unhandledrejection', function (ev) {
-      // convert fatal unhandled rejections into warnings so our UI code keeps running
-      console.warn('Unhandled promise rejection (suppressed):', ev.reason);
-      ev.preventDefault?.();
-    });
-
-    window.addEventListener('error', function (ev) {
-      // If error originates from third-party (like ads or extensions), warn instead of breaking
-      try {
-        const src = (ev?.filename || '').toLowerCase();
-        if (src.includes('gads-scrapper') || src.includes('onboarding')) {
-          console.warn('Third-party script error suppressed:', ev.message, ev.filename);
-          ev.preventDefault?.();
-        }
-      } catch (e) {
-        // ignore
-      }
-    });
-  </script>
   <style>
     #search {
       border: none !important;
@@ -403,7 +382,7 @@
 
 <!-- Dán đè vào phần Script cuối file timkiem.html -->
 <script type="module">
-  import { fetchListings, fetchAllListings } from "/js/services/api.js";
+  import { fetchListings } from "/js/services/api.js";
   import { applyFilter } from "/js/components/filter.js";
   import { renderPage } from "/js/components/render.js";
 
@@ -523,8 +502,7 @@
       // Only send city when a short code was provided (avoid sending 'Toàn quốc')
       if (city) paramsForFetch.city = regionName;
 
-      // Fetch all pages and then filter client-side for faster interactions
-      const data = await fetchAllListings(paramsForFetch);
+      const data = await fetchListings(paramsForFetch);
 
       console.log("✅ Raw data loaded:", data?.length, "items");
 

@@ -5,7 +5,12 @@ function renderPagination() {
   const pagEl = document.querySelector(".pagination");
   if (!pagEl) return;
 
-  const totalCount = window.totalCount || (window.filteredData?.length || 0);
+const MAX_ITEMS = 50;
+
+const totalCount = Math.min(
+  window.totalCount || (window.filteredData?.length || 0),
+  MAX_ITEMS
+);
   const totalPages = Math.max(1, Math.ceil(totalCount / (window.PAGE_SIZE || 1)));
 
   // condensed pagination: show first 3, last 3, and pages around current with ellipses

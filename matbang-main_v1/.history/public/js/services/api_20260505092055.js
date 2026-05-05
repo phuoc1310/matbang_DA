@@ -158,20 +158,10 @@ export async function fetchListings(opts = {}) {
     });
 
     // store globally for existing render/filter logic
-    // If this call requested a specific page, treat as paged fetch (don't overwrite full dataset)
-    window.pageCache = window.pageCache || {};
-    if (opts.page) {
-      window.pageCache[String(opts.page)] = normalized;
-      window.filteredData = normalized;
-      // when fetching a single page, mark paged rendering mode
-      window._renderIsPaged = true;
-    } else {
-      window.rawData = normalized;
-      window.filteredData = [...normalized];
-      window._renderIsPaged = false;
-    }
+    window.rawData = normalized;
+    window.filteredData = [...normalized];
     // if backend provided total count, expose it for pagination UI
-    window.totalCount = json.total || (Array.isArray(json.data) ? json.data.length : normalized.length);
+    window.totalCount = json.total || normalized.length;
     // expose fetch helper globally so pagination can request pages
     window.apiFetchListings = fetchListings;
 
@@ -184,53 +174,3 @@ export async function fetchListings(opts = {}) {
 
 // expose for other scripts that don't import the module directly
 window.apiFetchListings = window.apiFetchListings || fetchListings;
-
-// Fetch all pages from backend and return combined normalized results
-export async function fetchAllListings(opts = {}) {
-  const pageSize = Number(opts.limit) || 50;
-  const maxPagesCap = Number(opts.maxPages) || 100; // default cap increased to 100
-  // fetch first page
-  const first = await fetchListings({ ...opts, page: 1, limit: pageSize });
-  const backendTotal = window.totalCount || first.length;
-  const total = backendTotal;
-  console.log(`fetchAllListings: first page loaded (${first.length} items), reported total: ${total}`);
-  let totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-  if (totalPages > maxPagesCap) {
-    console.warn(`fetchAllListings: totalPages (${totalPages}) exceeds maxPages (${maxPagesCap}), capping to ${maxPagesCap}`);
-    totalPages = maxPagesCap;
-  }
-
-  if (totalPages <= 1) {
-    // already have all
-    window.rawData = first;
-    window.filteredData = [...first];
-    window.totalCount = first.length;
-    return first;
-  }
-
-  const remaining = [];
-  const requests = [];
-  for (let p = 2; p <= totalPages; p++) {
-    // attach then-log per page
-    requests.push(
-      fetchListings({ ...opts, page: p, limit: pageSize }).then(res => {
-        console.log(`fetchAllListings: page ${p} loaded (${(res||[]).length} items)`);
-        return res;
-      })
-    );
-  }
-
-  const results = await Promise.all(requests);
-  results.forEach(r => remaining.push(...(r || [])));
-
-  const all = [...first, ...remaining];
-  window.rawData = all;
-  window.filteredData = [...all];
-  // preserve backend reported total when available; otherwise use fetched length
-  window.totalCount = backendTotal || all.length;
-  window._renderIsPaged = false;
-  return all;
-}
-
-window.apiFetchAllListings = window.apiFetchAllListings || fetchAllListings;

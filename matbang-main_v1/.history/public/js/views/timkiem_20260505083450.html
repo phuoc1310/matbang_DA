@@ -43,28 +43,10 @@
       },
     }
   </script>
-  <!-- Module imports are done at the end of this file to ensure DOM is ready -->
-  <script>
-    // Global handlers to avoid third-party scripts throwing uncaught exceptions
-    window.addEventListener('unhandledrejection', function (ev) {
-      // convert fatal unhandled rejections into warnings so our UI code keeps running
-      console.warn('Unhandled promise rejection (suppressed):', ev.reason);
-      ev.preventDefault?.();
-    });
-
-    window.addEventListener('error', function (ev) {
-      // If error originates from third-party (like ads or extensions), warn instead of breaking
-      try {
-        const src = (ev?.filename || '').toLowerCase();
-        if (src.includes('gads-scrapper') || src.includes('onboarding')) {
-          console.warn('Third-party script error suppressed:', ev.message, ev.filename);
-          ev.preventDefault?.();
-        }
-      } catch (e) {
-        // ignore
-      }
-    });
-  </script>
+  <script type="module" src="./asset/js/state.js"></script>
+  <script type="module" src="./asset/js/api.js"></script>
+  <script type="module" src="./asset/js/filter.js"></script>
+  <script type="module" src="./asset/js/render.js"></script>
   <style>
     #search {
       border: none !important;
@@ -403,7 +385,7 @@
 
 <!-- Dán đè vào phần Script cuối file timkiem.html -->
 <script type="module">
-  import { fetchListings, fetchAllListings } from "/js/services/api.js";
+  import { fetchListings } from "/js/services/api.js";
   import { applyFilter } from "/js/components/filter.js";
   import { renderPage } from "/js/components/render.js";
 
@@ -416,20 +398,14 @@
       const city = params.get("city") || "";
       const keyword = params.get("keyword") || "";
       const typeParam = params.get("type") || "";
-      // support new params: minPrice/maxPrice and minArea/maxArea
-      const minPriceParam = params.get("minPrice") || null;
-      const maxPriceParam = params.get("maxPrice") || null;
-      const minAreaParam = params.get("minArea") || null;
-      const maxAreaParam = params.get("maxArea") || null;
-      // legacy fallback
-      const priceParam = params.get("price") || null;
-      const areaParam = params.get("area") || null;
+      const priceParam = params.get("price") || "";
+      const areaParam = params.get("area") || "";
 
-      console.log("📍 Params:", { city, keyword, typeParam, minPriceParam, maxPriceParam, minAreaParam, maxAreaParam, priceParam, areaParam });
+      console.log("📍 Params:", { city, keyword, typeParam, priceParam, areaParam });
 
       // 2. Map mã khu vực để hiển thị
       let regionName = "Toàn quốc";
-      if (city === "hcm") { regionName = "Tp Hồ Chí Minh"; }
+      if (city === "hcm") { regionName = "TP.HCM"; }
       else if (city === "hn") { regionName = "Hà Nội"; }
       else if (city === "dn") { regionName = "Đà Nẵng"; }
       else if (city === "bd") { regionName = "Bình Dương"; }
@@ -454,32 +430,14 @@
 
       // 4. Setup State - bao gồm tất cả params từ URL
       let minPrice = 0, maxPrice = 20000000000;
-      if (minPriceParam !== null || maxPriceParam !== null) {
-        if (minPriceParam) {
-          const v = Number(minPriceParam.toString().replace(/,/g, ""));
-          if (!isNaN(v)) minPrice = v;
-        }
-        if (maxPriceParam) {
-          const v = Number(maxPriceParam.toString().replace(/,/g, ""));
-          if (!isNaN(v)) maxPrice = v;
-        }
-      } else if (priceParam) {
-        const [pMin, pMax] = priceParam.split("-").map(s => Number(s.replace(/,/g, '')));
+      if (priceParam) {
+        const [pMin, pMax] = priceParam.split("-").map(Number);
         if (!isNaN(pMin)) minPrice = pMin;
         if (!isNaN(pMax)) maxPrice = pMax;
       }
 
       let minArea = 0, maxArea = 99999;
-      if (minAreaParam !== null || maxAreaParam !== null) {
-        if (minAreaParam) {
-          const v = Number(minAreaParam.toString().replace(/,/g, ''));
-          if (!isNaN(v)) minArea = v;
-        }
-        if (maxAreaParam) {
-          const v = Number(maxAreaParam.toString().replace(/,/g, ''));
-          if (!isNaN(v)) maxArea = v;
-        }
-      } else if (areaParam) {
+      if (areaParam) {
         const [aMin, aMax] = areaParam.split("-").map(Number);
         if (!isNaN(aMin)) minArea = aMin;
         if (!isNaN(aMax)) maxArea = aMax;
@@ -510,8 +468,9 @@
       // 5. Gọi API & Render
       console.log(`📥 Fetching data for keyword: "${keyword}", type: "${typeParam}"`);
 
-      const paramsForFetch = {
+      const data = await fetchListings({
         keyword,
+        city,
         type: typeParam,
         minPrice,
         maxPrice,
@@ -519,12 +478,7 @@
         maxArea,
         page: window.currentPage,
         limit: window.PAGE_SIZE,
-      };
-      // Only send city when a short code was provided (avoid sending 'Toàn quốc')
-      if (city) paramsForFetch.city = regionName;
-
-      // Fetch all pages and then filter client-side for faster interactions
-      const data = await fetchAllListings(paramsForFetch);
+      });
 
       console.log("✅ Raw data loaded:", data?.length, "items");
 

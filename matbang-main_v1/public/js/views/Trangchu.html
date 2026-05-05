@@ -75,7 +75,7 @@
                         <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
                         <span class="hidden sm:inline">Admin Panel</span>
                     </a>
-            
+
                 </nav>
                 <div id="guest-actions" class="flex items-center gap-3">
                     <a id="auth-link" href="/js/views/dangnhap.html"
@@ -94,7 +94,9 @@
                         class="hidden md:flex h-9 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold transition-colors">
                         <span class="material-symbols-outlined text-[18px]">person</span>
                     </a>
-                    <button id="btn-logout" class="h-9 w-9 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" title="Đăng xuất">
+                    <button id="btn-logout"
+                        class="h-9 w-9 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        title="Đăng xuất">
                         <span class="material-symbols-outlined text-[18px]">logout</span>
                     </button>
                 </div>
@@ -203,7 +205,7 @@
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
-                    href="timkiem.html?type=Văn phòng">
+                    href="/js/views/timkiem.html?type=V%C4%83n+ph%C3%B2ng">
                     <img alt="Bright modern open plan office space"
                         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         data-alt="Bright modern open plan office space"
@@ -215,7 +217,7 @@
                     </div>
                 </a>
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
-                    href="timkiem.html?type=Cửa hàng">
+                    href="/js/views/timkiem.html?type=C%E1%BB%ADa+h%C3%A0ng">
                     <img alt="Busy retail store front with customers"
                         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         data-alt="Busy retail store front with customers"
@@ -227,7 +229,7 @@
                     </div>
                 </a>
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
-                    href="timkiem.html?type=Kho xưởng">
+                    href="/js/views/timkiem.html?type=Kho+x%C6%B0%E1%BB%9Fng">
                     <img alt="Spacious industrial warehouse interior"
                         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         data-alt="Spacious industrial warehouse interior"
@@ -238,7 +240,8 @@
                         <p class="text-sm opacity-90">420+ địa điểm</p>
                     </div>
                 </a>
-                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer" href="timkiem.html">
+                <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
+                    href="/js/views/timkiem.html">
                     <img alt="Creative coworking space with people working"
                         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         data-alt="Creative coworking space with people working"
@@ -259,7 +262,7 @@
                         thuê</p>
                 </div>
                 <a class="text-primary hover:text-primary-dark font-bold text-sm flex items-center gap-1"
-                    href="timkiem.html">
+                    href="/js/views/timkiem.html">
                     Xem tất cả <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
@@ -340,7 +343,9 @@
                 <div>
                     <h4 class="font-bold mb-4">Dành cho khách hàng</h4>
                     <ul class="space-y-2 text-sm text-text-sub-light dark:text-text-sub-dark">
-                        <li><a class="hover:text-primary transition-colors" href="timkiem.html">Tìm kiếm mặt bằng</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="/js/views/timkiem.html">Tìm kiếm mặt
+                                bằng</a>
+                        </li>
                         <li><a class="hover:text-primary transition-colors" href="nangcapvip.html">Nâng cấp VIP</a></li>
                         <li><a class="hover:text-primary transition-colors" href="taikhoan.html">Tài khoản</a></li>
                     </ul>
@@ -364,13 +369,13 @@
                     <a class="hover:text-primary transition-colors" href="Trangchu.html">Trang chủ</a>
                     <a class="hover:text-primary transition-colors" href="lienhe.html">Liên hệ</a>
                     <a class="hover:text-primary transition-colors" href="phanhoi.html">Phản hồi</a>
-                    <a class="hover:text-primary transition-colors" href="timkiem.html">Tìm kiếm</a>
+                    <a class="hover:text-primary transition-colors" href="/js/views/timkiem.html">Tìm kiếm</a>
                 </div>
             </div>
         </div>
     </footer>
-    <script type="module" src="./asset/js/main.js"></script>
-    <script type="module" src="./asset/js/trangchu.js"></script>
+    <script type="module" src="/js/pages/main.js"></script>
+    <script type="module" src="/js/pages/trangchu.js"></script>
 
     <!-- ================== CHATBOT AI WIDGET ================== -->
     <link rel="stylesheet" href="./asset/css/chatbot.css">
@@ -449,7 +454,7 @@
                 } catch (e) {
                     console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
                 }
-                
+
                 sessionStorage.setItem("currentUser", JSON.stringify(userData));
 
                 // show user UI

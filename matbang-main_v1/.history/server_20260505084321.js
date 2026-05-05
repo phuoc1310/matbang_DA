@@ -10,8 +10,7 @@ import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 const app = express();
-// allow overriding port via environment (useful to run multiple instances)
-let PORT = process.env.PORT ? Number(process.env.PORT) : 3033;
+let PORT = 3033;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
