@@ -232,6 +232,17 @@ function renderImages(item) {
     />
   `;
 }
+el.innerHTML = `
+    <img
+      src="${item.images[0]}"
+      class="w-full h-full object-cover"
+      alt="${item.title}"
+      onerror="this.src='https://placehold.co/1200x600?text=No+Image'"
+    />
+  `;
+}
+
+
 window.renderPage = renderPage;
 window.renderPagination = renderPagination;
 

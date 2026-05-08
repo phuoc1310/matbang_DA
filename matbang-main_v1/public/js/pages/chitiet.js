@@ -1,7 +1,7 @@
-import { fetchDetail } from "./api.js";
-import { renderImages } from "./render.js";
-import { addInterest } from "./auth/firebaseService.js";
-import { auth } from "./auth/firebase.js";
+import { fetchDetail } from "../services/api.js";
+import { renderImages } from "../components/render.js";
+import { addInterest } from "../services/firebaseService.js";
+import { auth } from "../config/firebase.js";
 let map;
 let currentItem = null;
 

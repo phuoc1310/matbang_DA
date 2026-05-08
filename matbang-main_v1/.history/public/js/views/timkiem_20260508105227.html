@@ -582,12 +582,11 @@
       // =====================================
       try {
 
-        // send the short city code (e.g. 'hcm', 'hn') or empty string for "Toàn quốc"
         const data =
           await fetchAllListings({
             keyword,
             type: typeParam,
-            city: city || "",
+            city: regionName,
             limit: 100,
             maxPages: 5,
           });

@@ -142,42 +142,19 @@ export async function getListings(rawFilters) {
     if (hasToan && hasQuoc) {
       // ignore city filter
     } else {
-    // Normalize input and map known aliases to canonical DB city names
-    const normalizeKey = (s = "") =>
-      String(s)
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-    const aliasMap = {
-      // Hồ Chí Minh variants
-      "hcm": "Hồ Chí Minh",
-      "tphcm": "Hồ Chí Minh",
-      "tp hcm": "Hồ Chí Minh",
-      "tp ho chi minh": "Hồ Chí Minh",
-      "ho chi minh": "Hồ Chí Minh",
-      "ho chi minh city": "Hồ Chí Minh",
-      "thanh pho ho chi minh": "Hồ Chí Minh",
-
-      // Hà Nội variants
-      "hn": "Hà Nội",
-      "ha noi": "Hà Nội",
-      "ha noi city": "Hà Nội",
-      "hanoi": "Hà Nội",
-      "thanh pho ha noi": "Hà Nội"
+    const cityMap = {
+      hcm: "Tp Hồ Chí Minh",
+      hn: "Hà Nội",
+      dn: "Đà Nẵng",
+      bd: "Bình Dương"
     };
 
     let cityVal = filters.city.trim();
-    const key = normalizeKey(cityVal);
 
-    for (const [k, v] of Object.entries(aliasMap)) {
-      if (key === k || key.includes(k) || k.includes(key)) {
-        cityVal = v;
-        break;
-      }
+    const key = cityVal.toLowerCase();
+
+    if (cityMap[key]) {
+      cityVal = cityMap[key];
     }
 
     clauses.push(`
@@ -319,24 +296,5 @@ export async function getListings(rawFilters) {
     page,
     limit,
     totalPages: Math.ceil(total / limit)
-  };
-}
-
-export async function getListingById(id) {
-  if (!id) return null;
-
-  const result = await db.query(
-    `SELECT * FROM listings WHERE id = $1 LIMIT 1`,
-    [Number(id)]
-  );
-
-  const r = result.rows?.[0];
-  if (!r) return null;
-
-  return {
-    ...r,
-    image: r.image || 'https://placehold.co/600x400/cccccc/666666?text=No+Image',
-    latitude: r.lat ?? r.latitude ?? null,
-    longitude: r.lng ?? r.longitude ?? null
   };
 }

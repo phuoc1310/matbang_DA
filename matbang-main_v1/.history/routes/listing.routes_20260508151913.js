@@ -4,7 +4,6 @@ import {
   getListingsController,
   compareListingsController,
   createListingController
-  ,getListingController
 } from "../controllers/listing.controller.js";
 
 const router = express.Router();

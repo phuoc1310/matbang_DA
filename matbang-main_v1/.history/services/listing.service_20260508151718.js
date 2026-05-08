@@ -321,22 +321,3 @@ export async function getListings(rawFilters) {
     totalPages: Math.ceil(total / limit)
   };
 }
-
-export async function getListingById(id) {
-  if (!id) return null;
-
-  const result = await db.query(
-    `SELECT * FROM listings WHERE id = $1 LIMIT 1`,
-    [Number(id)]
-  );
-
-  const r = result.rows?.[0];
-  if (!r) return null;
-
-  return {
-    ...r,
-    image: r.image || 'https://placehold.co/600x400/cccccc/666666?text=No+Image',
-    latitude: r.lat ?? r.latitude ?? null,
-    longitude: r.lng ?? r.longitude ?? null
-  };
-}

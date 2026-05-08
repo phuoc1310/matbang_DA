@@ -1,8 +1,7 @@
 import {
   getListings,
   compareListings,
-  createListing,
-  getListingById
+  createListing
 } from "../services/listing.service.js";
 
 export async function createListingController(req, res) {

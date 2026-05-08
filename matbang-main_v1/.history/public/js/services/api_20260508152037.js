@@ -101,12 +101,9 @@ export async function fetchAllData(pages = 10, keyword = "") {
 // ================== FETCH DETAIL ==================
 export async function fetchDetail(id) {
   try {
-    // Determine backend base (if frontend served on different port during dev)
-    const API_BASE = (location.port && String(location.port) !== '3033') ? `http://${location.hostname}:3033` : '';
-
     // Try our backend listing endpoint first
     try {
-      const res = await fetch(`${API_BASE}/api/listings/${id}`);
+      const res = await fetch(`/api/listings/${id}`);
       if (res.ok) {
         const item = await res.json();
         return {
@@ -135,7 +132,7 @@ export async function fetchDetail(id) {
     }
 
     // Fallback to external ads endpoint
-    const res2 = await fetch(`${API_BASE}/api/ads/${id}`);
+    const res2 = await fetch(`/api/ads/${id}`);
     if (!res2.ok) return null;
     const item2 = await res2.json();
     return normalizeChoTotItem(item2);
