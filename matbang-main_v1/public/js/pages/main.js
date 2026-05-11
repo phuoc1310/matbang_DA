@@ -2,18 +2,32 @@
 window.PAGE_SIZE = 12;
 window.currentPage = 1;
 
-// --- FEATURE 1: Lịch sử tìm kiếm ---
-function saveSearchHistory(paramsObj) {
-  if (!paramsObj.keyword && !paramsObj.city) return;
-  let history = JSON.parse(localStorage.getItem("search_history") || "[]");
-  // Xóa trùng lặp
-  history = history.filter(h => h.keyword !== paramsObj.keyword || h.city !== paramsObj.city);
-  history.unshift(paramsObj);
-  if (history.length > 5) history = history.slice(0, 5); // Lưu tối đa 5
-  localStorage.setItem("search_history", JSON.stringify(history));
+// Helper function to get or generate client user ID
+function getClientUserId() {
+  let uid = localStorage.getItem("client_user_id");
+  if (!uid) {
+    uid = "guest_" + Math.random().toString(36).substr(2, 9) + Date.now();
+    localStorage.setItem("client_user_id", uid);
+  }
+  return uid;
 }
 
-function showSearchHistory() {
+// --- FEATURE 1: Lịch sử tìm kiếm ---
+async function saveSearchHistory(paramsObj) {
+  if (!paramsObj.keyword && !paramsObj.city) return;
+  const userId = getClientUserId();
+  try {
+    await fetch("/api/interactions/history", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, ...paramsObj })
+    });
+  } catch(err) {
+    console.error("Lỗi save history:", err);
+  }
+}
+
+async function showSearchHistory() {
   const searchInput = document.querySelector("#search");
   if (!searchInput) return;
   
@@ -28,7 +42,13 @@ function showSearchHistory() {
     container.appendChild(dropdown);
   }
 
-  const history = JSON.parse(localStorage.getItem("search_history") || "[]");
+  const userId = getClientUserId();
+  let history = [];
+  try {
+    const res = await fetch(`/api/interactions/history?userId=${userId}`);
+    if (res.ok) history = await res.json();
+  } catch(err) {}
+
   if (history.length === 0) {
     dropdown.classList.add("hidden");
     return;
@@ -37,7 +57,7 @@ function showSearchHistory() {
   dropdown.innerHTML = `
     <div class="px-4 py-2 text-xs text-gray-500 font-semibold bg-gray-50 border-b flex justify-between">
       <span>Tìm kiếm gần đây</span>
-      <button class="text-red-500 hover:text-red-700" onclick="localStorage.removeItem('search_history'); document.getElementById('searchHistoryDropdown').classList.add('hidden')">Xóa</button>
+      <button type="button" class="text-red-500 hover:text-red-700" onclick="window.clearHistory()">Xóa</button>
     </div>
   `;
   
@@ -58,10 +78,16 @@ function showSearchHistory() {
   dropdown.classList.remove("hidden");
 }
 
+window.clearHistory = async function() {
+  const userId = getClientUserId();
+  try {
+    await fetch(`/api/interactions/history?userId=${userId}`, { method: "DELETE" });
+    document.getElementById('searchHistoryDropdown')?.classList.add('hidden');
+  } catch(err){}
+};
+
 // --- FEATURE 2: So sánh mặt bằng ---
-function initCompare() {
-  const compareList = JSON.parse(localStorage.getItem("compare_list") || "[]");
-  
+async function initCompare() {
   // Render floating bar
   let bar = document.getElementById("compareFloatingBar");
   if (!bar) {
@@ -80,7 +106,7 @@ function initCompare() {
           </div>
         </div>
         <div class="flex gap-2">
-          <button onclick="window.clearCompare()" class="px-4 py-2 text-sm border rounded hover:bg-gray-50 text-gray-600">Xóa hết</button>
+          <button type="button" onclick="window.clearCompare()" class="px-4 py-2 text-sm border rounded hover:bg-gray-50 text-gray-600">Xóa hết</button>
           <a href="/js/views/sosanh.html" class="px-6 py-2 text-sm font-bold bg-primary text-white rounded hover:bg-primary/90 shadow">So sánh ngay</a>
         </div>
       </div>
@@ -88,7 +114,14 @@ function initCompare() {
     document.body.appendChild(bar);
   }
 
-  updateCompareUI(compareList);
+  const userId = getClientUserId();
+  try {
+    const res = await fetch(`/api/interactions/compare?userId=${userId}`);
+    if (res.ok) {
+      const list = await res.json();
+      updateCompareUI(list);
+    }
+  } catch(err){}
 }
 
 function updateCompareUI(list) {
@@ -116,25 +149,30 @@ function updateCompareUI(list) {
   });
 }
 
-window.toggleCompare = function(id) {
-  let list = JSON.parse(localStorage.getItem("compare_list") || "[]");
-  const idx = list.indexOf(id);
-  if (idx !== -1) {
-    list.splice(idx, 1);
-  } else {
-    if (list.length >= 4) {
-      alert("Bạn chỉ có thể so sánh tối đa 4 mặt bằng!");
+window.toggleCompare = async function(id) {
+  const userId = getClientUserId();
+  try {
+    const res = await fetch("/api/interactions/compare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, propertyId: id })
+    });
+    const data = await res.json();
+    if (data.error) {
+      alert(data.error);
       return;
     }
-    list.push(id);
-  }
-  localStorage.setItem("compare_list", JSON.stringify(list));
-  updateCompareUI(list);
+    // Lấy lại danh sách sau khi toggle
+    initCompare();
+  } catch(err){}
 };
 
-window.clearCompare = function() {
-  localStorage.setItem("compare_list", JSON.stringify([]));
-  updateCompareUI([]);
+window.clearCompare = async function() {
+  const userId = getClientUserId();
+  try {
+    await fetch(`/api/interactions/compare?userId=${userId}`, { method: "DELETE" });
+    updateCompareUI([]);
+  } catch(err){}
 };
 
 // --- DOM READY ---
@@ -152,14 +190,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const handleSearchRedirect = () => {
+  const handleSearchRedirect = async () => {
     const keyword = (document.querySelector("#search")?.value || "").trim();
     const city = document.getElementById("citySelect")?.value || "";
     const type = document.getElementById("type")?.value || "";
     const price = document.getElementById("price")?.value || ""; // format min-max in VND
     const area = document.getElementById("area")?.value || ""; // format min-max in m2
 
-    saveSearchHistory({ keyword, city });
+    await saveSearchHistory({ keyword, city });
 
     let minPrice = "";
     let maxPrice = "";

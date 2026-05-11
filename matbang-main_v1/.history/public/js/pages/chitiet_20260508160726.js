@@ -102,22 +102,17 @@ function drawRoute(geometry) {
 document.addEventListener("DOMContentLoaded", async () => {
   // Try to dynamically import dependencies to avoid blocking if one fails
   try {
-    console.log('chitiet: importing modules...');
     const modApi = await import("../services/api.js");
     fetchDetail = modApi.fetchDetail;
-    console.log('chitiet: imported api');
 
     const modRender = await import("../components/render.js");
     renderImages = modRender.renderImages;
-    console.log('chitiet: imported render');
 
     const modFBService = await import("../services/firebaseService.js");
     addInterest = modFBService.addInterest;
-    console.log('chitiet: imported firebaseService');
 
     const modCfg = await import("../config/firebase.js");
     auth = modCfg.auth;
-    console.log('chitiet: imported firebase config');
   } catch (e) {
     console.error("Dynamic import failed:", e);
     // Fallback: try to fetch raw listing directly and render minimal UI
@@ -195,9 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const id = new URLSearchParams(location.search).get("id");
   if (!id) return;
 
-  console.log('chitiet: fetching detail for id', id);
   const item = await fetchDetail(id);
-  console.log('chitiet: fetchDetail returned', item);
 
   if (!item) {
     document.getElementById("title").textContent = "Tin không còn khả dụng";
@@ -224,9 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentItem = item;
   window.currentListing = item;
 
-  console.log('chitiet: rendering images');
   renderImages(item); // ✅ CHỈ GỌI 1 LẦN
-  console.log('chitiet: images rendered');
 
   document.getElementById("title").textContent = item.title;
   document.getElementById("location").textContent = item.address;

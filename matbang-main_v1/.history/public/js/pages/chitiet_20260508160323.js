@@ -3,23 +3,6 @@ let fetchDetail, renderImages, addInterest, auth;
 
 // DEBUG: temporary marker to confirm module loaded in the browser
 console.log('chitiet.js loaded (module entry)');
-// Global error handlers: show a friendly fallback when unexpected errors occur
-window.addEventListener('error', (ev) => {
-  console.error('Global error captured:', ev.error || ev.message || ev);
-  try {
-    const titleEl = document.getElementById('title');
-    const descEl = document.getElementById('description');
-    if (titleEl) titleEl.textContent = 'Đã xảy ra lỗi trên trang';
-    if (descEl) descEl.innerHTML = `
-      <p class="text-red-500 font-semibold">Có lỗi xảy ra trong trình duyệt. Nội dung có thể không hiển thị đầy đủ.</p>
-    `;
-  } catch (e) {
-    // ignore
-  }
-});
-window.addEventListener('unhandledrejection', (ev) => {
-  console.error('Unhandled promise rejection:', ev.reason);
-});
 let map;
 let currentItem = null;
 
@@ -102,102 +85,30 @@ function drawRoute(geometry) {
 document.addEventListener("DOMContentLoaded", async () => {
   // Try to dynamically import dependencies to avoid blocking if one fails
   try {
-    console.log('chitiet: importing modules...');
     const modApi = await import("../services/api.js");
     fetchDetail = modApi.fetchDetail;
-    console.log('chitiet: imported api');
 
     const modRender = await import("../components/render.js");
     renderImages = modRender.renderImages;
-    console.log('chitiet: imported render');
 
     const modFBService = await import("../services/firebaseService.js");
     addInterest = modFBService.addInterest;
-    console.log('chitiet: imported firebaseService');
 
     const modCfg = await import("../config/firebase.js");
     auth = modCfg.auth;
-    console.log('chitiet: imported firebase config');
   } catch (e) {
     console.error("Dynamic import failed:", e);
-    // Fallback: try to fetch raw listing directly and render minimal UI
-    const fid = new URLSearchParams(location.search).get("id");
-    if (!fid) {
-      document.getElementById("title").textContent = "Lỗi tải trang";
-      document.getElementById("description").innerHTML = `
-        <p class="text-red-500 font-semibold">Không thể tải thành phần cần thiết. Vui lòng kiểm tra Console.</p>
-      `;
-      return;
-    }
-
-    try {
-      const r = await fetch(`/api/listings/${fid}`);
-      if (!r.ok) throw new Error('Fetch failed');
-      const raw = await r.json();
-
-      const item = {
-        id: String(raw.id || raw.ad_id || fid),
-        title: raw.title || raw.name || raw.subject || 'Đang cập nhật',
-        images: raw.images || (raw.image ? [raw.image] : []),
-        image: raw.image || (raw.images || [])[0] || 'https://placehold.co/1200x600?text=No+Image',
-        address: raw.address || [raw.street_name, raw.ward_name, raw.area_name, raw.region_name].filter(Boolean).join(', ') || '',
-        price_string: raw.price ? `${Number(raw.price).toLocaleString('vi-VN')} VNĐ` : (raw.price_string || 'Thỏa thuận'),
-        area_m2: Number(raw.area) || Number(raw.size) || raw.area_m2 || 0,
-        seller: raw.seller || raw.user_id || 'Chính chủ',
-        rating: raw.rating || 0,
-        lat: raw.latitude ?? raw.lat,
-        lng: raw.longitude ?? raw.lng,
-        description: raw.description || raw.desc || ''
-      };
-
-      // Render minimal UI
-      window.currentListing = item;
-      currentItem = item;
-
-      const mainImageEl = document.getElementById('mainImage');
-      if (mainImageEl) {
-        mainImageEl.innerHTML = `<img src="${item.image}" class="w-full h-full object-cover" alt="${item.title}">`;
-      }
-
-      document.getElementById("title").textContent = item.title;
-      document.getElementById("location").textContent = item.address || 'Đang cập nhật vị trí';
-      document.getElementById("price").textContent = item.price_string || '—';
-      document.getElementById("area").textContent = item.area_m2 ? `${item.area_m2} m²` : '—';
-      document.getElementById("detail-seller").textContent = item.seller;
-      document.getElementById("detail-rating").textContent = item.rating ? `⭐ ${item.rating}` : 'Chưa có đánh giá';
-      document.getElementById("description").innerHTML = `<p class="font-bold">Địa chỉ:</p> <p>${item.address}</p>`;
-
-      // Map placeholder when coords available
-      if (item.lat && item.lng && window.maplibregl) {
-        map = new maplibregl.Map({
-          container: "vietmap",
-          style: "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-          center: [item.lng, item.lat],
-          zoom: 15
-        });
-        new maplibregl.Marker({ color: "#ea4335" })
-          .setLngLat([item.lng, item.lat])
-          .setPopup(new maplibregl.Popup().setHTML(`<b>${item.title}</b>`))
-          .addTo(map);
-      }
-
-    } catch (err2) {
-      console.error('Fallback fetch failed', err2);
-      document.getElementById("title").textContent = "Lỗi tải trang";
-      document.getElementById("description").innerHTML = `
-        <p class="text-red-500 font-semibold">Không thể tải dữ liệu mặt bằng. Vui lòng thử lại sau.</p>
-      `;
-    }
-
+    document.getElementById("title").textContent = "Lỗi tải trang";
+    document.getElementById("description").innerHTML = `
+      <p class="text-red-500 font-semibold">Không thể tải thành phần cần thiết. Vui lòng kiểm tra Console.</p>
+    `;
     return;
   }
 
   const id = new URLSearchParams(location.search).get("id");
   if (!id) return;
 
-  console.log('chitiet: fetching detail for id', id);
   const item = await fetchDetail(id);
-  console.log('chitiet: fetchDetail returned', item);
 
   if (!item) {
     document.getElementById("title").textContent = "Tin không còn khả dụng";
@@ -224,9 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   currentItem = item;
   window.currentListing = item;
 
-  console.log('chitiet: rendering images');
   renderImages(item); // ✅ CHỈ GỌI 1 LẦN
-  console.log('chitiet: images rendered');
 
   document.getElementById("title").textContent = item.title;
   document.getElementById("location").textContent = item.address;

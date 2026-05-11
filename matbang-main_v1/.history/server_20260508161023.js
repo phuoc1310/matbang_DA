@@ -10,7 +10,6 @@ import userRoutes from "./routes/user.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
-import interactionRoutes from "./routes/interaction.routes.js";
 const app = express();
 // allow overriding port via environment (useful to run multiple instances)
 let PORT = process.env.PORT ? Number(process.env.PORT) : 3033;
@@ -48,7 +47,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
 app.use("/api/favorites", favoriteRoutes);
-app.use("/api/interactions", interactionRoutes);
 // ===== Chotot API =====
 app.get("/api/ads", async (req, res) => {
   try {

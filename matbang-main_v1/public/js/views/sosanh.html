@@ -104,11 +104,28 @@
     <script type="module">
         import { fetchAllData } from "../services/api.js";
 
+        function getClientUserId() {
+            let uid = localStorage.getItem("client_user_id");
+            if (!uid) {
+                uid = "guest_" + Math.random().toString(36).substr(2, 9) + Date.now();
+                localStorage.setItem("client_user_id", uid);
+            }
+            return uid;
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
-            const listIds = JSON.parse(localStorage.getItem("compare_list") || "[]");
             const loadingEl = document.getElementById("loading");
-            const noDataEl = document.getElementById("noData");
+            const noDataEl = document.getElementById("no-data");
             const containerEl = document.getElementById("compare-container");
+            
+            const userId = getClientUserId();
+            let listIds = [];
+            try {
+                const res = await fetch(`/api/interactions/compare?userId=${userId}`);
+                if (res.ok) listIds = await res.json();
+            } catch(err) {
+                console.error("Lỗi fetch compare_list:", err);
+            }
 
             if (listIds.length === 0) {
                 loadingEl.classList.add("hidden");
@@ -181,11 +198,18 @@
             }
         });
 
-        window.removeItem = function(id) {
-            let list = JSON.parse(localStorage.getItem("compare_list") || "[]");
-            list = list.filter(item => item !== id && item !== id.toString());
-            localStorage.setItem("compare_list", JSON.stringify(list));
-            location.reload();
+        window.removeItem = async function(id) {
+            const userId = getClientUserId();
+            try {
+                await fetch("/api/interactions/compare", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, propertyId: id })
+                });
+                location.reload();
+            } catch(err){
+                console.error(err);
+            }
         };
     </script>
 </body>

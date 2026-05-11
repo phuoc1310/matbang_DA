@@ -34,7 +34,6 @@
             } catch(e){}
           }
           return el;
- 
         };
 
         const protectInsert = (proto, method) => {
