@@ -4,24 +4,31 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Trang Đăng Ký</title>
+
+    <title>Đăng Ký - RentHub</title>
+
     <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
+        rel="stylesheet"
+    />
+
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#137fec",
+                        primary: "#137fec",
                         "primary-hover": "#0f6bd0",
                         "background-light": "#f6f7f8",
                         "background-dark": "#101922",
@@ -31,273 +38,485 @@
                         "border-dark": "#334155",
                     },
                     fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
+                        display: ["Manrope", "sans-serif"],
                     },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
                 },
             },
-        }
+        };
     </script>
+
     <style>
+        body {
+            font-family: "Manrope", sans-serif;
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
         ::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
+            background: #94a3b8;
+            border-radius: 999px;
         }
 
-        .dark ::-webkit-scrollbar-thumb {
-            background-color: #475569;
+        .auth-input {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid #d1d5db;
+            padding: 14px 16px;
+            background: white;
+            transition: .2s;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #137fec;
+            box-shadow: 0 0 0 4px rgba(19, 127, 236, .15);
+        }
+
+        .dark .auth-input {
+            background: #1f2937;
+            border-color: #374151;
+            color: white;
+        }
+
+        .auth-submit {
+            width: 100%;
+            border-radius: 14px;
+            background: #137fec;
+            color: white;
+            padding: 14px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .auth-submit:hover {
+            background: #0f6bd0;
         }
     </style>
 </head>
 
-<body
-    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col">
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-white">
+
+    <!-- HEADER -->
     <header
         class="sticky top-0 z-50 flex items-center justify-between border-b border-border-light dark:border-border-dark bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md px-6 py-4 lg:px-10">
+
         <div class="flex items-center gap-4">
             <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
-                <span class="material-symbols-outlined text-xl">apartment</span>
+                <span class="material-symbols-outlined">apartment</span>
             </div>
-            <h2 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">RentHub</h2>
+
+            <h2 class="text-xl font-bold">
+                RentHub
+            </h2>
         </div>
-        <div class="hidden md:flex flex-1 justify-end gap-8 items-center">
-            <nav class="flex items-center gap-6 lg:gap-8">
-                <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors"
-                    href="Trangchu.html">Trang chủ</a>
-                <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors"
-                    href="#">Danh sách phòng</a>
-                <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors"
-                    href="#">Về chúng tôi</a>
-                <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors"
-                    href="#">Liên hệ</a>
-            </nav>
-            <button
-                class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-primary-hover hover:shadow-primary/40 focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark">
-                <span class="material-symbols-outlined text-[18px]">add_circle</span>
-                <span>Đăng tin cho thuê</span>
-            </button>
-        </div>
-        <button class="md:hidden text-slate-900 dark:text-white">
-            <span class="material-symbols-outlined">menu</span>
-        </button>
+
+        <nav class="hidden md:flex items-center gap-8">
+            <a href="Trangchu.html" class="font-semibold hover:text-primary transition">
+                Trang chủ
+            </a>
+
+            <a href="#" class="font-semibold hover:text-primary transition">
+                Danh sách phòng
+            </a>
+
+            <a href="#" class="font-semibold hover:text-primary transition">
+                Liên hệ
+            </a>
+        </nav>
+
     </header>
-    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+
+    <!-- MAIN -->
+    <main class="flex items-center justify-center p-4 md:p-8 min-h-[calc(100vh-80px)]">
+
         <div
-            class="w-full max-w-[1100px] h-auto md:min-h-[600px] bg-surface-light dark:bg-surface-dark rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-border-light dark:border-border-dark">
-            <div class="relative w-full md:w-1/2 bg-slate-100 dark:bg-slate-800 min-h-[250px] md:min-h-full group">
-                <img alt="Modern apartment interior with natural light"
-                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    data-alt="Modern minimalist apartment interior with sunlight streaming through window"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQh6vvugidS8Nad_U8HSfjYqajgMNsDXsSey1rCm11o01r0G73LA5p8yzYd3NNOCKDeXKDhxrLxppb6HdFgyxUKpQgikZH06rsHwU7efgwGdg60tDvey7DaPLgXBV03Eka-b6qjG-uJgpFgos-pe3OcWn-vqmnoVvQOENuwGqMJQGS55b9pXyzAuMUywd0X2vN5npyAWYTTLgbaZZ51yFcm-KYBgF4D9tzhTMipQORpMMkmSI8mp2DnY332AzbjrU6Yup02elp7nFz" />
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-8 md:p-12">
-                    <div class="mb-4">
-                        <span
-                            class="inline-block rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm mb-3">Mới
-                            nhất</span>
-                        <h3 class="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">Tìm không gian sống lý
-                            tưởng của bạn</h3>
-                        <p class="text-slate-200 text-sm md:text-base font-medium opacity-90">Kết nối với hàng ngàn chủ
-                            nhà và người thuê uy tín trên khắp cả nước.</p>
+            class="w-full max-w-6xl overflow-hidden rounded-3xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-2xl flex flex-col md:flex-row">
+
+            <!-- LEFT -->
+            <div class="relative md:w-1/2 min-h-[300px]">
+
+                <img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQh6vvugidS8Nad_U8HSfjYqajgMNsDXsSey1rCm11o01r0G73LA5p8yzYd3NNOCKDeXKDhxrLxppb6HdFgyxUKpQgikZH06rsHwU7efgwGdg60tDvey7DaPLgXBV03Eka-b6qjG-uJgpFgos-pe3OcWn-vqmnoVvQOENuwGqMJQGS55b9pXyzAuMUywd0X2vN5npyAWYTTLgbaZZ51yFcm-KYBgF4D9tzhTMipQORpMMkmSI8mp2DnY332AzbjrU6Yup02elp7nFz"
+                    class="absolute inset-0 h-full w-full object-cover"
+                    alt="Apartment"
+                />
+
+                <div class="absolute inset-0 bg-black/60 flex items-end p-8">
+
+                    <div>
+                        <span class="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold">
+                            RentHub
+                        </span>
+
+                        <h2 class="mt-4 text-3xl font-bold text-white leading-tight">
+                            Bắt đầu hành trình tìm phòng của bạn
+                        </h2>
+
+                        <p class="mt-3 text-slate-200">
+                            Kết nối với hàng nghìn phòng trọ và chủ nhà uy tín.
+                        </p>
                     </div>
-                    <div class="flex gap-2">
-                        <div class="h-1 w-8 rounded-full bg-white"></div>
-                        <div class="h-1 w-2 rounded-full bg-white/40"></div>
-                        <div class="h-1 w-2 rounded-full bg-white/40"></div>
-                    </div>
+
                 </div>
+
             </div>
-            <div class="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col justify-center">
-                <div class="text-center mb-6">
-                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Tạo tài khoản mới
+
+            <!-- RIGHT -->
+            <div class="md:w-1/2 p-6 md:p-10 lg:p-14 flex flex-col justify-center">
+
+                <div class="text-center mb-8">
+
+                    <h1 class="text-3xl font-bold mb-2">
+                        Tạo tài khoản
                     </h1>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base">Bắt đầu hành trình tìm kiếm không
-                        gian hoàn hảo của bạn.</p>
+
+                    <p class="text-slate-500 dark:text-slate-400">
+                        Đăng ký để sử dụng RentHub
+                    </p>
+
                 </div>
-                <div class="flex mb-6 border-b border-border-light dark:border-border-dark relative">
-                    <button onclick="window.location.href='dangnhap.html'"
-                        class="flex-1 pb-3 text-sm font-bold text-slate-500 dark:text-slate-400 border-b-2 border-transparent hover:text-slate-700 dark:hover:text-slate-200 transition-all">
+
+                <!-- TAB -->
+                <div class="flex mb-8 border-b border-border-light dark:border-border-dark">
+
+                    <button
+                        onclick="window.location.href='dangnhap.html'"
+                        class="flex-1 pb-3 text-sm font-bold text-slate-500 hover:text-slate-800 transition"
+                    >
                         Đăng nhập
                     </button>
-                    <button class="flex-1 pb-3 text-sm font-bold text-primary border-b-2 border-primary transition-all">
+
+                    <button
+                        class="flex-1 pb-3 text-sm font-bold text-primary border-b-2 border-primary"
+                    >
                         Đăng ký
                     </button>
-                </div>
-                <form id="register-form" class="space-y-4">
-                    <div class="space-y-1.5">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
-                            for="fullname">Tên</label>
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <span class="material-symbols-outlined text-[20px]">person</span>
-                            </div>
-                            <input
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
-                                id="fullname" placeholder="Nhập tên của bạn" type="text" />
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
-                            for="email">Email</label>
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <span class="material-symbols-outlined text-[20px]">mail</span>
-                            </div>
-                            <input
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
-                                id="email" placeholder="name@example.com" type="email" />
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300" for="password">Mật
-                            khẩu</label>
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <span class="material-symbols-outlined text-[20px]">lock</span>
-                            </div>
-                            <input
-                                class="w-full pl-10 pr-10 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
-                                id="password" placeholder="Tạo mật khẩu của bạn" type="password" />
-                            <button
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                type="button">
-                                <span class="material-symbols-outlined text-[20px]">visibility_off</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
-                            for="confirm-password">Xác nhận mật khẩu</label>
-                        <div class="relative">
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                                <span class="material-symbols-outlined text-[20px]">lock</span>
-                            </div>
-                            <input
-                                class="w-full pl-10 pr-10 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
-                                id="confirm-password" placeholder="Nhập lại mật khẩu của bạn" type="password" />
-                            <button
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                type="button">
-                                <span class="material-symbols-outlined text-[20px]">visibility_off</span>
-                            </button>
-                        </div>
-                    </div>
-                    <button
-                        class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98] mt-2"
-                        type="submit">
-                        <span>Đăng ký</span>
-                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    </button>
-                </form>
-                <div class="relative my-6">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-border-light dark:border-border-dark"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span
-                            class="bg-surface-light dark:bg-surface-dark px-4 text-slate-500 dark:text-slate-400 font-medium">Hoặc
-                            đăng ký bằng</span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button
-                        class="flex items-center justify-center gap-3 px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                fill="#4285F4"></path>
-                            <path
-                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                fill="#34A853"></path>
-                            <path
-                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                fill="#FBBC05"></path>
-                            <path
-                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                fill="#EA4335"></path>
-                        </svg>
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
-                    </button>
-                    <button
-                        class="flex items-center justify-center gap-3 px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                        <svg class="h-5 w-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z">
-                            </path>
-                        </svg>
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Facebook</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-    <footer class="py-6 text-center text-slate-500 dark:text-slate-400 text-sm">
-        <p>© 2024 RentHub. Bảo lưu mọi quyền.</p>
-        <div class="mt-2 space-x-4">
-            <a class="hover:text-primary transition-colors" href="#">Chính sách bảo mật</a>
-            <span>•</span>
-            <a class="hover:text-primary transition-colors" href="#">Điều khoản sử dụng</a>
-        </div>
-    </footer>
 
+                </div>
+
+                <!-- MESSAGE -->
+                <div
+                    id="message-container"
+                    class="hidden mb-5 rounded-xl p-4 text-sm font-medium"
+                ></div>
+
+                <!-- FORM -->
+                <form id="register-form" class="space-y-5">
+
+                    <!-- NAME -->
+                    <div>
+
+                        <label class="block mb-2 text-sm font-semibold">
+                            Họ và tên
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullname"
+                            class="auth-input"
+                            placeholder="Nhập họ tên"
+                            autocomplete="name"
+                            required
+                        />
+
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div>
+
+                        <label class="block mb-2 text-sm font-semibold">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            class="auth-input"
+                            placeholder="Nhập email"
+                            autocomplete="email"
+                            required
+                        />
+
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div>
+
+                        <label class="block mb-2 text-sm font-semibold">
+                            Mật khẩu
+                        </label>
+
+                        <div class="relative">
+
+                            <input
+                                type="password"
+                                id="password"
+                                class="auth-input pr-12"
+                                placeholder="Nhập mật khẩu"
+                                autocomplete="new-password"
+                                required
+                            />
+
+                            <button
+                                type="button"
+                                data-target="password"
+                                class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                            >
+                                <span class="material-symbols-outlined">
+                                    visibility
+                                </span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CONFIRM -->
+                    <div>
+
+                        <label class="block mb-2 text-sm font-semibold">
+                            Xác nhận mật khẩu
+                        </label>
+
+                        <div class="relative">
+
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                class="auth-input pr-12"
+                                placeholder="Nhập lại mật khẩu"
+                                autocomplete="new-password"
+                                required
+                            />
+
+                            <button
+                                type="button"
+                                data-target="confirm-password"
+                                class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                            >
+                                <span class="material-symbols-outlined">
+                                    visibility
+                                </span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CHECKBOX -->
+                    <div class="flex items-center gap-3">
+
+                        <input
+                            type="checkbox"
+                            id="agree-policy"
+                            class="rounded"
+                            required
+                        />
+
+                        <label
+                            for="agree-policy"
+                            class="text-sm text-slate-600 dark:text-slate-300"
+                        >
+                            Tôi đồng ý với điều khoản sử dụng
+                        </label>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <button
+                        type="submit"
+                        id="register-btn"
+                        class="auth-submit flex items-center justify-center gap-2"
+                    >
+
+                        <span>Đăng ký</span>
+
+                        <span class="material-symbols-outlined text-[18px]">
+                            person_add
+                        </span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- SCRIPT -->
     <script type="module">
+
         import { register, logout } from "/js/modules/auth/auth.js";
 
-        document.getElementById("register-form").addEventListener("submit", async (e) => {
+        const form = document.getElementById("register-form");
+
+        const messageContainer = document.getElementById("message-container");
+
+        const registerBtn = document.getElementById("register-btn");
+
+        function showMessage(message, type = "error") {
+
+            messageContainer.textContent = message;
+
+            messageContainer.className = `
+                mb-5
+                rounded-xl
+                p-4
+                text-sm
+                font-medium
+                ${type === "success"
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                }
+            `;
+        }
+
+        // Toggle Password
+        document.querySelectorAll(".toggle-password").forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                const target = document.getElementById(
+                    btn.dataset.target
+                );
+
+                const icon = btn.querySelector("span");
+
+                if (target.type === "password") {
+
+                    target.type = "text";
+
+                    icon.textContent = "visibility_off";
+
+                } else {
+
+                    target.type = "password";
+
+                    icon.textContent = "visibility";
+                }
+
+            });
+
+        });
+
+        // Submit
+        form.addEventListener("submit", async (e) => {
+
             e.preventDefault();
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+            const fullName = document.getElementById("fullname").value.trim();
 
-            const fullName = document.getElementById("fullname")?.value.trim() || "Người dùng mới";
-            const email = document.getElementById("email")?.value.trim() || "";
-            const password = document.getElementById("password")?.value || "";
-            const confirmPassword = document.getElementById("confirm-password")?.value || "";
+            const email = document.getElementById("email").value.trim();
 
-            if (password !== confirmPassword) {
-                alert("Mật khẩu xác nhận không khớp!");
+            const password = document.getElementById("password").value;
+
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+            if (fullName.length < 3) {
+                showMessage("Họ tên tối thiểu 3 ký tự");
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span>Đang đăng ký...</span>';
+            if (password.length < 6) {
+                showMessage("Mật khẩu tối thiểu 6 ký tự");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage("Mật khẩu xác nhận không khớp");
+                return;
+            }
+
+            registerBtn.disabled = true;
+
+            registerBtn.innerHTML = `
+                <svg
+                    class="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                    ></circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                </svg>
+
+                <span>Đang đăng ký...</span>
+            `;
 
             try {
+
                 const result = await register({
-                    fullName: fullName,
-                    email: email,
-                    password: password,
+                    fullName,
+                    email,
+                    password,
                     role: "user"
                 });
 
                 if (result.success) {
-                    alert("Đăng ký thành công! Vui lòng đăng nhập.");
+
+                    showMessage(
+                        "Đăng ký thành công! Đang chuyển hướng...",
+                        "success"
+                    );
+
                     await logout();
-                    window.location.href = "/js/views/dangnhap.html";
+
+                    setTimeout(() => {
+                        window.location.href = "./dangnhap.html";
+                    }, 1200);
+
                 } else {
-                    alert(result.message || "Đã xảy ra lỗi khi đăng ký.");
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
+
+                    showMessage(
+                        result.message || "Đăng ký thất bại"
+                    );
+
+                    registerBtn.disabled = false;
+
+                    registerBtn.innerHTML = `
+                        <span>Đăng ký</span>
+
+                        <span class="material-symbols-outlined text-[18px]">
+                            person_add
+                        </span>
+                    `;
                 }
-            } catch (err) {
-                console.error("Lỗi đăng ký:", err);
-                alert("Lỗi hệ thống: " + err.message);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage("Lỗi hệ thống. Vui lòng thử lại.");
+
+                registerBtn.disabled = false;
+
+                registerBtn.innerHTML = `
+                    <span>Đăng ký</span>
+
+                    <span class="material-symbols-outlined text-[18px]">
+                        person_add
+                    </span>
+                `;
             }
+
         });
+
     </script>
 
 </body>

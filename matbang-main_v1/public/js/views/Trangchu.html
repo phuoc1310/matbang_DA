@@ -377,7 +377,7 @@
     <script type="module" src="/js/pages/main.js"></script>
     <script type="module" src="/js/pages/trangchu.js"></script>
 
-    <!-- ================== CHATBOT AI WIDGET (TẠM THỜI TẮT) ==================
+    <!-- ================== CHATBOT AI WIDGET ================== -->
     <link rel="stylesheet" href="/js/modules/chat/chatbot.css">
     <button id="chatbot-toggle" aria-label="Mo chatbot ho tro">
         <span class="material-symbols-outlined">support_agent</span>
@@ -402,14 +402,13 @@
     </div>
     <script src="/js/modules/chat/chatbot.js"></script>
     <script>
-
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof initChatbot === 'function') {
                 initChatbot();
             }
         });
     </script>
-    ================== END CHATBOT ================== -->
+    <!-- ================== END CHATBOT ================== -->
     <script type="module">
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";

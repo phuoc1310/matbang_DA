@@ -1,23 +1,10 @@
-import { auth, firestore } from "../../config/firebase.js";
+import { auth } from "../../config/firebase.js";
 
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-  collection,
-  getDocs,
-  getDoc,
-  setDoc,
-  updateDoc,
-  doc,
-  serverTimestamp,
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 
 /* ================== INTERNAL CACHE ================== */
 // giữ API cũ nhưng cache bằng sessionStorage
@@ -69,41 +56,42 @@ async function register(userData) {
     );
 
     const uid = cred.user.uid;
+    const token = await cred.user.getIdToken(); // 🔥 Lấy token JWT
 
-    // Firestore schema (KHỚP admin.js)
-    const newUser = {
-      email: userData.email.trim().toLowerCase(),
-      fullName: userData.fullName || "",
-      phone: userData.phone || "",
-      address: userData.address || "",
-      role: "user", 
-      avatar: "",
-      verified: false,
-      vipStatus: false,
-      vipExpiry: null,
-      savedListings: [],
-      viewedListings: [],
-      myListings: [],
-      notifications: {
-        email: true,
-        sms: false,
-        push: true
-      },
-      createdAt: serverTimestamp()
-    };
+    // Xóa logic lưu vào Firestore vì chỉ dùng PostgreSQL
 
+
+    // 🔥 SYNC WITH POSTGRESQL BACKEND
+    let postgresUser = null;
     try {
-      await setDoc(doc(firestore, "users", uid), newUser);
+      const syncRes = await fetch("/api/users/auth/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fullName: userData.fullName,
+          phone: userData.phone
+        })
+      });
+      if (syncRes.ok) {
+        postgresUser = await syncRes.json();
+      } else {
+        console.warn("Backend sync failed", await syncRes.text());
+      }
     } catch (e) {
-      console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
+      console.warn("Could not reach backend sync", e);
     }
 
-    setCurrentUser({ id: uid, ...newUser });
+    // Merge PostgreSQL ID (nếu có)
+    const finalUser = { id: postgresUser?.id || uid, postgres_id: postgresUser?.id, email: userData.email.trim().toLowerCase(), role: "user", ...postgresUser };
+    setCurrentUser(finalUser);
 
     return {
       success: true,
       message: "Đăng ký thành công!",
-      user: { id: uid, ...newUser }
+      user: finalUser
     };
   } catch (err) {
     console.error(err);
@@ -122,14 +110,31 @@ async function login(email, password) {
     );
 
     const uid = cred.user.uid;
+    const token = await cred.user.getIdToken(); // 🔥 Lấy token JWT
+
     let user = { id: uid, email: email, role: "user" }; // Mock mặc định
+    // Đã xóa Firestore getDoc
+
+
+    // 🔥 SYNC WITH POSTGRESQL BACKEND
     try {
-      const snap = await getDoc(doc(firestore, "users", uid));
-      if (snap.exists()) {
-        user = { id: uid, ...snap.data() };
+      const syncRes = await fetch("/api/users/auth/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({}) // Login update token
+      });
+      if (syncRes.ok) {
+        const postgresUser = await syncRes.json();
+        // Override id với PostgreSQL id để map với search_history/compare
+        user = { ...user, postgres_id: postgresUser.id, id: postgresUser.id || uid };
+      } else {
+        console.warn("Backend sync failed", await syncRes.text());
       }
     } catch (e) {
-      console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
+      console.warn("Could not reach backend sync", e);
     }
 
     setCurrentUser(user);
@@ -170,12 +175,12 @@ async function updateCurrentUser(updatedData) {
     return { success: false, message: "Bạn chưa đăng nhập." };
   }
 
-  await updateDoc(doc(firestore, "users", currentUser.id), updatedData);
-
+  // Chú ý: Bạn đã bỏ Firestore, để cập nhật user bạn cần gọi API Backend (PostgreSQL) ở đây
+  // Tạm thời chỉ cập nhật localStorage
   const updatedUser = { ...currentUser, ...updatedData };
   setCurrentUser(updatedUser);
 
-  return { success: true, message: "Cập nhật thành công!", user: updatedUser };
+  return { success: true, message: "Cập nhật thành công (Local)!", user: updatedUser };
 }
 
 /* ================== CHANGE PASSWORD ================== */
@@ -193,36 +198,12 @@ async function changePassword(oldPassword, newPassword) {
 
 /* ================== SET USER AS ADMIN ================== */
 async function setUserAsAdmin(userId) {
-  if (!isAdmin()) {
-    return { success: false, message: "Không có quyền." };
-  }
-
-  const currentUser = getCurrentUser();
-  if (currentUser.id === userId) {
-    return { success: false, message: "Không thể set chính mình." };
-  }
-
-  await updateDoc(doc(firestore, "users", userId), { role: "admin" });
-  return { success: true, message: "Đã cấp quyền admin!" };
+  return { success: false, message: "Tính năng này yêu cầu Backend PostgreSQL." };
 }
 
 /* ================== REMOVE ADMIN ROLE ================== */
 async function removeAdminRole(userId) {
-  if (!isAdmin()) {
-    return { success: false, message: "Không có quyền." };
-  }
-
-  const snap = await getDocs(
-    collection(firestore, "users")
-  );
-  const adminCount = snap.docs.filter(d => d.data().role === "admin").length;
-
-  if (adminCount <= 1) {
-    return { success: false, message: "Cần ít nhất 1 admin." };
-  }
-
-  await updateDoc(doc(firestore, "users", userId), { role: "user" });
-  return { success: true, message: "Đã gỡ quyền admin!" };
+  return { success: false, message: "Tính năng này yêu cầu Backend PostgreSQL." };
 }
 
 export { register, login, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole };

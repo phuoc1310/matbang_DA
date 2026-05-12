@@ -10,15 +10,14 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDCHRIOffuKJMD2fUn7L4jD4gZBi-WcmZk",
-  authDomain: "damb-d6ead.firebaseapp.com",
-  // Realtime Database URL (fixes: FIREBASE WARNING: Firebase error...)
-  databaseURL: "https://damb-d6ead-default-rtdb.firebaseio.com",
-  projectId: "damb-d6ead",
-  storageBucket: "damb-d6ead.firebasestorage.app",
-  messagingSenderId: "168988939636",
-  appId: "1:168988939636:web:4c88004bc46cd3fa83c821",
-  measurementId: "G-KP8B846FNK"
+  apiKey: "AIzaSyAdQs6A3-4LZUUnz-A727PZLPwNDQOE3ZE",
+  authDomain: "damb-7c12d.firebaseapp.com",
+  databaseURL: "https://damb-7c12d-default-rtdb.firebaseio.com",
+  projectId: "damb-7c12d",
+  storageBucket: "damb-7c12d.firebasestorage.app",
+  messagingSenderId: "985606043217",
+  appId: "1:985606043217:web:e9f7ad05ee83dc49076a70",
+  measurementId: "G-1GC6WG1BVX"
 };
 
 // Initialize Firebase

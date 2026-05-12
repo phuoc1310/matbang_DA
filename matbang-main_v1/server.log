@@ -2,3 +2,18 @@
 2026-05-08T09:10:46.883Z ✅ PostgreSQL connected
 2026-05-08T09:20:43.183Z 🚀 Server running http://localhost:3033
 2026-05-08T09:20:43.223Z ✅ PostgreSQL connected
+2026-05-11T16:30:40.457Z 🚀 Server running http://localhost:3033
+2026-05-11T16:30:40.507Z ✅ PostgreSQL connected
+2026-05-11T16:44:02.207Z 🚀 Server running http://localhost:3033
+2026-05-11T16:44:02.249Z ✅ PostgreSQL connected
+2026-05-11T16:54:39.732Z 🚀 Server running http://localhost:3033
+2026-05-11T16:54:39.781Z ✅ PostgreSQL connected
+2026-05-11T16:54:46.810Z ERROR Token verification error: {"code":"auth/argument-error","message":"Firebase ID token has incorrect \"aud\" (audience) claim. Expected \"midtest4-e87d2\" but got \"damb-d6ead\". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-05-11T17:09:19.844Z 🚀 Server running http://localhost:3033
+2026-05-11T17:09:19.887Z ✅ PostgreSQL connected
+2026-05-11T17:12:27.984Z 🚀 Server running http://localhost:3033
+2026-05-11T17:12:28.132Z ✅ PostgreSQL connected
+2026-05-12T00:11:10.127Z 🚀 Server running http://localhost:3033
+2026-05-12T00:11:10.212Z ✅ PostgreSQL connected
+2026-05-12T01:15:56.650Z 🚀 Server running http://localhost:3033
+2026-05-12T01:15:56.689Z ✅ PostgreSQL connected

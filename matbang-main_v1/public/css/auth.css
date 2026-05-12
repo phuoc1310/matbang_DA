@@ -1,0 +1,52 @@
+/* Shared auth styles for login/register pages */
+:root{
+  --primary:#137fec;
+  --primary-hover:#0f6bd0;
+  --surface:#ffffff;
+  --surface-dark:#1e293b;
+}
+
+/* card container adjustments (keeps Tailwind utilities but centralizes common sizing) */
+.auth-card{
+  max-width:1100px;
+}
+
+/* Inputs used in auth forms */
+.auth-input{
+  padding:0.75rem 0.9rem; /* aligns with py-3 + custom left padding from icon */
+  border-radius:0.5rem;
+  box-shadow:0 1px 0 rgba(15,23,42,0.02);
+  font-size:0.95rem;
+}
+
+.auth-input:focus{
+  box-shadow:0 6px 20px rgba(19,127,236,0.08);
+  outline: none;
+}
+
+.auth-submit{
+  padding:0.75rem 1rem;
+  border-radius:0.6rem;
+  font-weight:700;
+}
+
+.auth-submit.gradient{
+  background:linear-gradient(90deg,var(--primary),var(--primary-hover));
+  color:#fff;
+}
+
+.auth-social-grid{gap:1rem}
+.auth-social-btn{padding:0.6rem 0.9rem;border-radius:0.6rem}
+
+/* small screen refinements */
+@media (max-width:640px){
+  .auth-card{padding:0 1rem}
+  .auth-form-title{font-size:20px}
+  .auth-form-sub{font-size:13px}
+  .auth-input{font-size:0.95rem;padding:0.6rem 0.8rem}
+  .auth-submit{padding:0.7rem}
+  .auth-social-grid{grid-template-columns:1fr!important}
+}
+
+/* accessibility helpers */
+.visually-hidden{position:absolute!important;height:1px;width:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

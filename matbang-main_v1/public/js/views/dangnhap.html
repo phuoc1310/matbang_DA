@@ -57,6 +57,7 @@
             background-color: #475569;
         }
     </style>
+    <link rel="stylesheet" href="/css/auth.css" />
 </head>
 
 <body
@@ -96,7 +97,7 @@
     <!-- Main Content Area -->
     <main class="flex-grow flex items-center justify-center p-4 md:p-8">
         <div
-            class="w-full max-w-[1100px] h-auto md:min-h-[600px] bg-surface-light dark:bg-surface-dark rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-border-light dark:border-border-dark">
+            class="w-full auth-card h-auto md:min-h-[600px] bg-surface-light dark:bg-surface-dark rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-border-light dark:border-border-dark">
             <!-- Left Column: Visual/Hero -->
             <div class="relative w-full md:w-1/2 bg-slate-100 dark:bg-slate-800 min-h-[250px] md:min-h-full group">
                 <img alt="Modern apartment interior with natural light"
@@ -125,9 +126,9 @@
             <div class="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col justify-center">
                 <!-- Header Text -->
                 <div class="text-center mb-8">
-                    <h1 id="form-title" class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Chào
+                    <h1 id="form-title" class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 auth-form-title">Chào
                         mừng trở lại!</h1>
-                    <p id="form-subtitle" class="text-slate-500 dark:text-slate-400 text-sm md:text-base">Vui lòng đăng
+                    <p id="form-subtitle" class="text-slate-500 dark:text-slate-400 text-sm md:text-base auth-form-sub">Vui lòng đăng
                         nhập để quản lý tài khoản của bạn.</p>
                 </div>
                 <!-- Tabs -->
@@ -159,7 +160,7 @@
                                 <span class="material-symbols-outlined text-[20px]">mail</span>
                             </div>
                             <input id="login-email" required
-                                class="w-full pl-10 pr-4 py-3 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                                class="auth-input w-full pl-10 pr-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                 placeholder="name@example.com" type="email" />
                         </div>
                     </div>
@@ -177,7 +178,7 @@
                                 <span class="material-symbols-outlined text-[20px]">lock</span>
                             </div>
                             <input id="login-password" required
-                                class="w-full pl-10 pr-10 py-3 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                                class="auth-input w-full pl-10 pr-10 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                 placeholder="Nhập mật khẩu của bạn" type="password" />
                             <button id="toggle-login-password"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
@@ -196,7 +197,7 @@
                     </div>
                     <!-- Submit Button -->
                     <button id="login-btn"
-                        class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full flex items-center justify-center gap-2 auth-submit gradient disabled:opacity-50 disabled:cursor-not-allowed"
                         type="submit">
                         <span>Đăng nhập</span>
                         <span class="material-symbols-outlined text-[18px]">login</span>
@@ -216,9 +217,9 @@
                     </div>
                 </div>
                 <!-- Social Buttons -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 auth-social-grid gap-4">
                     <button
-                        class="flex items-center justify-center gap-3 px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        class="auth-social-btn flex items-center justify-center gap-3 px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         <svg class="h-5 w-5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

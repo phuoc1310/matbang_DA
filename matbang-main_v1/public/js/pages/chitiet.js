@@ -99,7 +99,7 @@ function drawRoute(geometry) {
 // }
 
 // ===== MAIN LOGIC =====
-document.addEventListener("DOMContentLoaded", async () => {
+async function init() {
   // Try to dynamically import dependencies to avoid blocking if one fails
   try {
     console.log('chitiet: importing modules...');
@@ -212,14 +212,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  /* 🔥 GHI NHẬN VIEW – CHỈ 1 LẦN */
-  try {
-    const uid = auth.currentUser?.uid || "guest";
-    await addInterest(item.id, uid, "view");
-  } catch (e) {
-    console.warn("Không thể ghi nhận lượt xem", e);
-  }
-
   /* ===== RENDER ===== */
   currentItem = item;
   window.currentListing = item;
@@ -240,6 +232,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("description").innerHTML = `
     <p class="font-bold">Địa chỉ:</p> <p>${item.address}</p>
   `;
+
+  /* 🔥 GHI NHẬN VIEW – CHỈ 1 LẦN (Chạy ngầm không block UI) */
+  try {
+    const uid = auth.currentUser?.uid || "guest";
+    addInterest(item.id, uid, "view").catch(e => console.warn("Lỗi ghi nhận view:", e));
+  } catch (e) {
+    console.warn("Không thể gọi hàm ghi nhận lượt xem", e);
+  }
 
   /* ===== MAP ===== */
   if (item.lat && item.lng && window.maplibregl) {
@@ -265,8 +265,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         Không xác định được toạ độ của địa chỉ này
       </div>`;
   }
-});
+}
 
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 
 // ===== GLOBAL FUNCTIONS =====
 window.routeToListing = async function () {
