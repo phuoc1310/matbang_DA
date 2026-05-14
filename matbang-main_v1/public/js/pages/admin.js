@@ -1,7 +1,7 @@
 // ================== ADMIN MODULE ==================
 // Quản lý tài khoản người dùng cho admin
 
-import { setUserAsAdmin, removeAdminRole, logout } from "./auth/auth.js";
+import { setUserAsAdmin, removeAdminRole, logout } from "/js/modules/auth/auth.js";
 
 // Helper function for phone validation
 function validatePhone(phone) {
@@ -126,7 +126,7 @@ function renderUsers() {
             : '<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded text-xs font-semibold">Thường</span>';
         
         const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : 'N/A';
-        const shortId = user.id.length > 20 ? user.id.substring(0, 20) + '...' : user.id;
+        const displayId = String(user.id);
         
         // Admin action buttons (chỉ hiển thị nếu không phải chính mình)
         const isCurrentUser = currentUser && currentUser.id === user.id;
@@ -146,7 +146,7 @@ function renderUsers() {
         return `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-sm text-slate-900 dark:text-white font-mono" title="${user.id}">${shortId}</span>
+                    <span class="text-sm text-slate-900 dark:text-white font-mono">${displayId}</span>
                 </td>
                 <td class="px-6 py-4">
                     <div class="text-sm font-medium text-slate-900 dark:text-white">${user.fullName || 'Chưa cập nhật'}</div>
@@ -672,7 +672,8 @@ async function navigateTo(sectionName) {
         dashboard: { title: 'Dashboard', subtitle: 'Tổng quan hệ thống' },
         users: { title: 'Quản lý người dùng', subtitle: 'Danh sách và thông tin người dùng' },
         contacts: { title: 'Quản lý liên hệ', subtitle: 'Tin nhắn từ khách hàng' },
-        feedbacks: { title: 'Quản lý phản hồi', subtitle: 'Đánh giá và góp ý từ người dùng' }
+        feedbacks: { title: 'Quản lý phản hồi', subtitle: 'Đánh giá và góp ý từ người dùng' },
+        listings: { title: 'Quản lý tin đăng', subtitle: 'Duyệt, từ chối và quản lý tất cả tin đăng' }
     };
     
     const pageTitle = document.getElementById('page-title');
@@ -704,6 +705,8 @@ async function navigateTo(sectionName) {
         loadContacts();
     } else if (sectionName === 'feedbacks') {
         loadFeedbacks();
+    } else if (sectionName === 'listings') {
+        await loadAdminListings();
     }
     
     // Close sidebar on mobile after navigation
@@ -730,6 +733,10 @@ window.viewFeedback = viewFeedback;
 window.markFeedbackReviewed = markFeedbackReviewed;
 window.deleteFeedbackAdmin = deleteFeedbackAdmin;
 window.analyzeFeedbackSentiment = analyzeFeedbackSentiment;
+window.adminApproveListing = adminApproveListing;
+window.adminRejectListing = adminRejectListing;
+window.adminDeleteListing = adminDeleteListing;
+window.adminViewListing = adminViewListing;
 
 function updateSidebarUserInfo() {
     const currentUser = getCurrentUser();
@@ -1341,3 +1348,288 @@ async function analyzeFeedbackSentiment(id) {
         `;
     }
 }
+
+// ================== LISTINGS MANAGEMENT (ADMIN) ==================
+let adminListings = [];
+let adminListingsDebounce = null;
+
+async function loadAdminListings() {
+    const backendUrl = getBackendUrl();
+    const status = document.getElementById('listing-filter-status')?.value || 'all';
+    const search = document.getElementById('listing-search-input')?.value || '';
+
+    try {
+        const params = new URLSearchParams({ status, search, limit: '100' });
+        const response = await fetch(`${backendUrl}/api/admin/listings?${params}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.listings) {
+            adminListings = result.listings;
+            renderAdminListings(adminListings);
+            updateListingStats(adminListings);
+
+            const label = document.getElementById('listing-count-label');
+            if (label) label.textContent = `Hiển thị ${adminListings.length} / ${result.total} tin`;
+        } else {
+            throw new Error(result.error || 'Không nhận được dữ liệu');
+        }
+    } catch (error) {
+        console.error('Lỗi tải tin đăng:', error);
+        showMessage('Không thể tải danh sách tin đăng.', 'error');
+    }
+}
+
+function updateListingStats(listings) {
+    const total = listings.length;
+    const pending = listings.filter(l => (l.status || 'pending') === 'pending').length;
+    const approved = listings.filter(l => l.status === 'approved').length;
+    const rejected = listings.filter(l => l.status === 'rejected').length;
+
+    const elTotal = document.getElementById('stat-total-listings');
+    const elPending = document.getElementById('stat-pending-listings');
+    const elApproved = document.getElementById('stat-approved-listings');
+    const elRejected = document.getElementById('stat-rejected-listings');
+
+    if (elTotal) elTotal.textContent = total;
+    if (elPending) elPending.textContent = pending;
+    if (elApproved) elApproved.textContent = approved;
+    if (elRejected) elRejected.textContent = rejected;
+}
+
+function renderAdminListings(listings) {
+    const tbody = document.getElementById('listings-table-body');
+    const noResults = document.getElementById('listings-no-results');
+    if (!tbody) return;
+
+    if (listings.length === 0) {
+        tbody.innerHTML = '';
+        if (noResults) noResults.classList.remove('hidden');
+        return;
+    }
+
+    if (noResults) noResults.classList.add('hidden');
+
+    tbody.innerHTML = listings.map(listing => {
+        const statusBadges = {
+            pending: '<span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded text-xs font-semibold">Chờ duyệt</span>',
+            approved: '<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded text-xs font-semibold">Đã duyệt</span>',
+            rejected: '<span class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-xs font-semibold">Từ chối</span>'
+        };
+        const statusBadge = statusBadges[listing.status] || statusBadges.pending;
+
+        const price = listing.price ? Number(listing.price).toLocaleString('vi-VN') + ' VNĐ' : 'Thỏa thuận';
+        const createdAt = listing.created_at ? new Date(listing.created_at).toLocaleDateString('vi-VN') : 'N/A';
+        const userName = listing.user_name || listing.user_email || 'Ẩn danh';
+        const currentStatus = listing.status || 'pending';
+
+        // Action buttons based on status
+        let actionBtns = `
+            <button onclick="adminViewListing(${listing.id})" class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" title="Xem chi tiết">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>`;
+
+        if (currentStatus === 'pending') {
+            actionBtns += `
+            <button onclick="adminApproveListing(${listing.id})" class="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors" title="Duyệt tin">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            </button>
+            <button onclick="adminRejectListing(${listing.id})" class="p-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors" title="Từ chối">
+                <span class="material-symbols-outlined text-[18px]">cancel</span>
+            </button>`;
+        } else if (currentStatus === 'approved') {
+            actionBtns += `
+            <button onclick="adminRejectListing(${listing.id})" class="p-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors" title="Từ chối">
+                <span class="material-symbols-outlined text-[18px]">cancel</span>
+            </button>`;
+        } else if (currentStatus === 'rejected') {
+            actionBtns += `
+            <button onclick="adminApproveListing(${listing.id})" class="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors" title="Duyệt lại">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            </button>`;
+        }
+
+        actionBtns += `
+            <button onclick="adminDeleteListing(${listing.id})" class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Xóa">
+                <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>`;
+
+        return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-sm text-slate-900 dark:text-white font-mono">${listing.id}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-slate-900 dark:text-white max-w-[250px] truncate" title="${(listing.title || '').replace(/"/g, '&quot;')}">${listing.title || 'Không có tiêu đề'}</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[250px]">${listing.address || ''}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm text-slate-900 dark:text-white">${userName}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-semibold text-primary">${price}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    ${statusBadge}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-slate-600 dark:text-slate-400">${createdAt}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex gap-1">${actionBtns}</div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function adminApproveListing(id) {
+    if (!confirm('Bạn có chắc chắn muốn DUYỆT tin đăng này?')) return;
+
+    try {
+        const response = await fetch(`${getBackendUrl()}/api/admin/listings/${id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'approved' })
+        });
+        const result = await response.json();
+        if (result.success) {
+            showMessage('Đã duyệt tin đăng thành công!', 'success');
+            await loadAdminListings();
+        } else {
+            throw new Error(result.message || 'Lỗi duyệt tin');
+        }
+    } catch (error) {
+        console.error('Error approving listing:', error);
+        showMessage('Lỗi khi duyệt tin: ' + error.message, 'error');
+    }
+}
+
+async function adminRejectListing(id) {
+    const reason = prompt('Lý do từ chối tin đăng (để trống nếu không có):');
+    if (reason === null) return; // user cancelled
+
+    try {
+        const response = await fetch(`${getBackendUrl()}/api/admin/listings/${id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected', reason: reason || '' })
+        });
+        const result = await response.json();
+        if (result.success) {
+            showMessage('Đã từ chối tin đăng.', 'success');
+            await loadAdminListings();
+        } else {
+            throw new Error(result.message || 'Lỗi từ chối tin');
+        }
+    } catch (error) {
+        console.error('Error rejecting listing:', error);
+        showMessage('Lỗi khi từ chối tin: ' + error.message, 'error');
+    }
+}
+
+async function adminDeleteListing(id) {
+    if (!confirm('Bạn có chắc chắn muốn XÓA VĨNH VIỄN tin đăng này? Hành động này không thể hoàn tác.')) return;
+
+    try {
+        const response = await fetch(`${getBackendUrl()}/api/admin/listings/${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+        if (result.success) {
+            showMessage('Đã xóa tin đăng thành công!', 'success');
+            await loadAdminListings();
+        } else {
+            throw new Error(result.message || 'Lỗi xóa tin');
+        }
+    } catch (error) {
+        console.error('Error deleting listing:', error);
+        showMessage('Lỗi khi xóa tin: ' + error.message, 'error');
+    }
+}
+
+function adminViewListing(id) {
+    const listing = adminListings.find(l => l.id === id);
+    if (!listing) {
+        showMessage('Không tìm thấy tin đăng.', 'error');
+        return;
+    }
+
+    const statusLabels = { pending: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Từ chối' };
+    const price = listing.price ? Number(listing.price).toLocaleString('vi-VN') + ' VNĐ' : 'Thỏa thuận';
+    const createdAt = listing.created_at ? new Date(listing.created_at).toLocaleString('vi-VN') : 'N/A';
+    const userName = listing.user_name || listing.user_email || 'Ẩn danh';
+    const imgSrc = listing.image || 'https://placehold.co/600x400?text=No+Image';
+
+    const modalContent = document.getElementById('user-modal-content');
+    modalContent.innerHTML = `
+        <div class="space-y-4">
+            <div class="relative h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                <img src="${imgSrc}" alt="${listing.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Tiêu đề</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${listing.title || 'N/A'}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Người đăng</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${userName}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Giá</p>
+                    <p class="text-sm font-medium text-primary">${price}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Diện tích</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${listing.area || 0} m²</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg col-span-2">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Địa chỉ</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${listing.address || 'Chưa có'}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Trạng thái</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${statusLabels[listing.status] || 'Chờ duyệt'}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Ngày tạo</p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">${createdAt}</p>
+                </div>
+                ${listing.description ? `
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg col-span-2">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Mô tả</p>
+                    <p class="text-sm text-slate-900 dark:text-white whitespace-pre-line">${listing.description}</p>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    // Re-use user modal for display
+    const modalTitle = document.querySelector('#user-modal h3');
+    if (modalTitle) modalTitle.textContent = 'Chi tiết tin đăng';
+    document.getElementById('user-modal').classList.remove('hidden');
+}
+
+// Setup listing filter/search event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const listingSearch = document.getElementById('listing-search-input');
+    const listingFilter = document.getElementById('listing-filter-status');
+
+    if (listingSearch) {
+        listingSearch.addEventListener('input', () => {
+            clearTimeout(adminListingsDebounce);
+            adminListingsDebounce = setTimeout(() => loadAdminListings(), 400);
+        });
+    }
+
+    if (listingFilter) {
+        listingFilter.addEventListener('change', () => loadAdminListings());
+    }
+});
+

@@ -11,6 +11,7 @@ import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 import interactionRoutes from "./routes/interaction.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 const app = express();
 // allow overriding port via environment (useful to run multiple instances)
 let PORT = process.env.PORT ? Number(process.env.PORT) : 3033;
@@ -34,7 +35,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/js/views/Trangchu.html"));
+  res.redirect("/js/views/Trangchu.html");
 });
 
 // ===== Middleware =====
@@ -49,6 +50,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/interactions", interactionRoutes);
+app.use("/api/admin", adminRoutes);
 // ===== Chotot API =====
 app.get("/api/ads", async (req, res) => {
   try {

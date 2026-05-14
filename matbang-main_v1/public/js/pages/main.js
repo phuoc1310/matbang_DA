@@ -27,17 +27,158 @@ async function saveSearchHistory(paramsObj) {
   }
 }
 
+// --- Inject CSS cho Search History Dropdown ---
+(function injectSearchHistoryCSS() {
+  if (document.getElementById('sh-dropdown-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'sh-dropdown-styles';
+  style.textContent = `
+    .sh-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      margin-top: 6px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+      animation: shSlideIn 0.22s cubic-bezier(.4,0,.2,1);
+    }
+    .dark .sh-dropdown {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
+    @keyframes shSlideIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .sh-dropdown.show { display: block; }
+
+    .sh-dropdown-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 8px 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .dark .sh-dropdown-header { border-color: #334155; }
+    .sh-dropdown-header .sh-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sh-dropdown-header .sh-title .material-symbols-outlined { font-size: 16px; }
+    .sh-dropdown-clear {
+      font-size: 12px;
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      transition: all 0.15s;
+    }
+    .sh-dropdown-clear:hover { background: #fef2f2; color: #dc2626; }
+    .dark .sh-dropdown-clear:hover { background: rgba(127,29,29,0.2); }
+
+    .sh-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 14px;
+      color: #334155;
+      border-left: 3px solid transparent;
+    }
+    .dark .sh-dropdown-item { color: #e2e8f0; }
+    .sh-dropdown-item:hover {
+      background: #f8fafc;
+      border-left-color: #137fec;
+    }
+    .dark .sh-dropdown-item:hover {
+      background: #334155;
+      border-left-color: #137fec;
+    }
+    .sh-dropdown-item:last-child { border-radius: 0 0 16px 16px; }
+    .sh-dropdown-item .sh-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .dark .sh-dropdown-item .sh-icon-wrap { background: #334155; }
+    .sh-dropdown-item .sh-icon-wrap .material-symbols-outlined {
+      font-size: 18px;
+      color: #94a3b8;
+    }
+    .sh-dropdown-item:hover .sh-icon-wrap {
+      background: #dbeafe;
+    }
+    .sh-dropdown-item:hover .sh-icon-wrap .material-symbols-outlined {
+      color: #137fec;
+    }
+    .dark .sh-dropdown-item:hover .sh-icon-wrap { background: #1e3a5f; }
+    .sh-dropdown-item .sh-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .sh-dropdown-item .sh-badge {
+      font-size: 11px;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 2px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+    .dark .sh-dropdown-item .sh-badge { background: #334155; color: #94a3b8; }
+
+    .sh-dropdown-empty {
+      padding: 24px 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .sh-dropdown-empty .material-symbols-outlined {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 6px;
+      opacity: 0.5;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
 async function showSearchHistory() {
   const searchInput = document.querySelector("#search");
   if (!searchInput) return;
-  
+
   let dropdown = document.getElementById("searchHistoryDropdown");
   if (!dropdown) {
     dropdown = document.createElement("div");
     dropdown.id = "searchHistoryDropdown";
-    dropdown.className = "absolute top-full left-0 w-full bg-white shadow-lg rounded-xl mt-1 z-50 border hidden overflow-hidden";
-    // Tìm container chứa input để append absolute cho đúng
-    const container = searchInput.parentElement;
+    dropdown.className = "sh-dropdown";
+    const container = searchInput.closest('.relative') || searchInput.parentElement;
     container.style.position = "relative";
     container.appendChild(dropdown);
   }
@@ -50,41 +191,96 @@ async function showSearchHistory() {
   } catch(err) {}
 
   if (history.length === 0) {
-    dropdown.classList.add("hidden");
+    dropdown.innerHTML = `
+      <div class="sh-dropdown-header">
+        <span class="sh-title">
+          <span class="material-symbols-outlined">history</span>
+          Tìm kiếm gần đây
+        </span>
+      </div>
+      <div class="sh-dropdown-empty">
+        <span class="material-symbols-outlined">manage_search</span>
+        Chưa có lịch sử tìm kiếm
+      </div>`;
+    dropdown.classList.add("show");
     return;
   }
 
-  dropdown.innerHTML = `
-    <div class="px-4 py-2 text-xs text-gray-500 font-semibold bg-gray-50 border-b flex justify-between">
-      <span>Tìm kiếm gần đây</span>
-      <button type="button" class="text-red-500 hover:text-red-700" onclick="window.clearHistory()">Xóa</button>
-    </div>
-  `;
-  
+  let html = `
+    <div class="sh-dropdown-header">
+      <span class="sh-title">
+        <span class="material-symbols-outlined">history</span>
+        Tìm kiếm gần đây
+      </span>
+      <button type="button" class="sh-dropdown-clear" onclick="window.clearHistory()">Xóa tất cả</button>
+    </div>`;
+
   history.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-2 text-sm";
-    div.innerHTML = `<span class="material-symbols-outlined text-gray-400 text-[18px]">history</span> 
-                     <span class="flex-1">${item.keyword || "Tất cả"} ${item.city ? ` - ${item.city}` : ""}</span>`;
-    div.onclick = () => {
-      searchInput.value = item.keyword || "";
-      if (document.getElementById("citySelect")) document.getElementById("citySelect").value = item.city || "";
-      dropdown.classList.add("hidden");
-      document.querySelector("#btnSearch")?.click();
-    };
-    dropdown.appendChild(div);
+    const keyword = item.keyword || '';
+    const city = item.city || '';
+    const display = keyword || 'Tất cả';
+    html += `
+      <div class="sh-dropdown-item" data-keyword="${keyword}" data-city="${city}">
+        <div class="sh-icon-wrap">
+          <span class="material-symbols-outlined">history</span>
+        </div>
+        <span class="sh-text">${display}</span>
+        ${city ? `<span class="sh-badge">${city}</span>` : ''}
+      </div>`;
   });
-  
-  dropdown.classList.remove("hidden");
+
+  dropdown.innerHTML = html;
+
+  // Bind click events
+  dropdown.querySelectorAll('.sh-dropdown-item').forEach(el => {
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      searchInput.value = el.dataset.keyword || '';
+      const citySelect = document.getElementById("citySelect");
+      if (citySelect) citySelect.value = el.dataset.city || '';
+      hideSearchHistory();
+      document.querySelector("#btnSearch")?.click();
+    });
+  });
+
+  dropdown.classList.add("show");
+}
+
+function hideSearchHistory() {
+  const dropdown = document.getElementById("searchHistoryDropdown");
+  if (dropdown) dropdown.classList.remove("show");
 }
 
 window.clearHistory = async function() {
   const userId = getClientUserId();
   try {
     await fetch(`/api/interactions/history?userId=${userId}`, { method: "DELETE" });
-    document.getElementById('searchHistoryDropdown')?.classList.add('hidden');
+    // Re-render dropdown empty state
+    showSearchHistory();
   } catch(err){}
 };
+
+// Tự động hiện dropdown khi focus ô search
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.querySelector("#search");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("focus", () => {
+    showSearchHistory();
+  });
+
+  searchInput.addEventListener("blur", () => {
+    setTimeout(hideSearchHistory, 200);
+  });
+
+  searchInput.addEventListener("input", () => {
+    if (searchInput.value.trim().length > 0) {
+      hideSearchHistory();
+    } else {
+      showSearchHistory();
+    }
+  });
+});
 
 // --- FEATURE 2: So sánh mặt bằng ---
 async function initCompare() {

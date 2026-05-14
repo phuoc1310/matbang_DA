@@ -8,7 +8,7 @@ export async function findOrCreateUser(data) {
   );
 
   if (check.rows.length > 0) {
-    // Cập nhật thông tin mới nhất nếu có
+    // Cập nhật thông tin mới nhất nếu có (KHÔNG ghi đè role)
     const updateResult = await db.query(
       `UPDATE users 
        SET email = COALESCE($2, email),
@@ -16,7 +16,7 @@ export async function findOrCreateUser(data) {
            phone_number = COALESCE($4, phone_number),
            avatar_url = COALESCE($5, avatar_url)
        WHERE firebase_uid = $1
-       RETURNING *`,
+       RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, created_at`,
       [data.uid, data.email, data.name, data.phone_number, data.avatar_url]
     );
     return updateResult.rows[0];
@@ -24,10 +24,10 @@ export async function findOrCreateUser(data) {
 
   // Nếu chưa có thì Insert
   const result = await db.query(
-    `INSERT INTO users (firebase_uid, email, name, phone_number, avatar_url)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING *`,
-    [data.uid, data.email, data.name || "No Name", data.phone_number, data.avatar_url]
+    `INSERT INTO users (firebase_uid, email, name, phone_number, avatar_url, role)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, created_at`,
+    [data.uid, data.email, data.name || "No Name", data.phone_number, data.avatar_url, "user"]
   );
 
   return result.rows[0];

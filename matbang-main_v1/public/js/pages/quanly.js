@@ -1,18 +1,15 @@
 // public/asset/js/quanly.js
 
-import { auth } from './auth/firebase.js';
+import { auth } from '../config/firebase.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { firestore } from './auth/firebase.js';
 import { 
   getListings, 
   deleteListing, 
   normalizeListing,
   toggleListingVisibility,
-  updateListingStatus,
   getListingHistory
-} from './listingService.js';
-import { openListingForm } from './listingForm.js';
+} from '../services/listingService.js';
+import { openListingForm } from '../modules/listing/listingForm.js';
 
 let currentUser = null;
 let allListings = [];
@@ -20,9 +17,9 @@ let filteredListings = [];
 
 window.editListing = async function(id) {
   try {
-    const { getListingById } = await import('./listingService.js');
+    const { getListingById } = await import('../services/listingService.js');
     const listing = await getListingById(id);
-    const { openListingForm } = await import('./listingForm.js');
+    const { openListingForm } = await import('../modules/listing/listingForm.js');
     openListingForm(listing);
   } catch (error) {
     console.error('Error loading listing:', error);
@@ -199,17 +196,7 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   
   if (userName) {
-    try {
-      const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        userName.textContent = userData.displayName || user.email || 'Thanh vien';
-      } else {
-        userName.textContent = user.email || 'Thanh vien';
-      }
-    } catch (error) {
-      userName.textContent = user.email || 'Thanh vien';
-    }
+    userName.textContent = user.displayName || user.email || 'Thành viên';
   }
 
   await loadListings();
@@ -317,16 +304,9 @@ function renderListings() {
             </div>
             ${listing.status === 'pending' ? `
             <div class="flex gap-2">
-              <button onclick="changeStatus('${listing.id}', 'approved')" 
-                      class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                <span class="material-symbols-outlined text-[16px] align-middle">check_circle</span>
-                Duyệt
-              </button>
-              <button onclick="changeStatus('${listing.id}', 'rejected')" 
-                      class="flex-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors">
-                <span class="material-symbols-outlined text-[16px] align-middle">cancel</span>
-                Từ chối
-              </button>
+              <div class="flex-1 px-3 py-2 bg-yellow-100 text-yellow-800 text-sm font-semibold rounded-lg text-center">
+                Đang chờ duyệt...
+              </div>
             </div>
             ` : ''}
           </div>

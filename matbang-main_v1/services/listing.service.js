@@ -256,6 +256,17 @@ export async function getListings(rawFilters) {
     idx++;
   }
 
+  // user_id filter
+  if (filters.user_id) {
+    clauses.push(`user_id = $${idx++}`);
+    values.push(filters.user_id);
+  } else {
+    // Only show visible and approved listings to normal users
+    // If not fetching for a specific user, ensure visibility
+    clauses.push(`is_visible = true`);
+    clauses.push(`status = 'approved'`);
+  }
+
   // anti garbage
   clauses.push(`price < 100000000000`);
 
@@ -339,4 +350,42 @@ export async function getListingById(id) {
     latitude: r.lat ?? r.latitude ?? null,
     longitude: r.lng ?? r.longitude ?? null
   };
+}
+
+export async function updateListing(id, data, user_id) {
+  const { title, price, area, address, city, district, ward, type, description, image } = data;
+  const result = await db.query(
+    `
+    UPDATE listings
+    SET title = $1, price = $2, area = $3, address = $4, city = $5, district = $6, ward = $7, type = $8, description = $9, image = $10, status = 'pending'
+    WHERE id = $11 AND (user_id = $12 OR $12 IS NULL)
+    RETURNING *
+    `,
+    [title, Number(price), Number(area), address, city, district, ward, type, description, image, Number(id), user_id]
+  );
+  return result.rows[0];
+}
+
+export async function deleteListing(id, user_id) {
+  const result = await db.query(
+    `DELETE FROM listings WHERE id = $1 AND (user_id = $2 OR $2 IS NULL) RETURNING id`,
+    [Number(id), user_id]
+  );
+  return result.rows.length > 0;
+}
+
+export async function updateListingStatus(id, status) {
+  const result = await db.query(
+    `UPDATE listings SET status = $1 WHERE id = $2 RETURNING *`,
+    [status, Number(id)]
+  );
+  return result.rows[0];
+}
+
+export async function toggleListingVisibility(id, user_id) {
+  const result = await db.query(
+    `UPDATE listings SET is_visible = NOT is_visible WHERE id = $1 AND (user_id = $2 OR $2 IS NULL) RETURNING *`,
+    [Number(id), user_id]
+  );
+  return result.rows[0];
 }

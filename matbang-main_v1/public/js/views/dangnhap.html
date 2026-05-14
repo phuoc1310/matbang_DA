@@ -329,9 +329,13 @@
 
                 if (result.success) {
                     showMessage(result.message, "success");
-                    // Redirect sau 0.8 giây (mượt mà hơn)
+                    // Redirect theo role
                     setTimeout(() => {
-                        window.location.href = "Trangchu.html";
+                        if (result.user && result.user.role === 'admin') {
+                            window.location.href = "admin.html";
+                        } else {
+                            window.location.href = "Trangchu.html";
+                        }
                     }, 800);
                 } else {
                     showMessage(result.message, "error");
@@ -344,8 +348,12 @@
 
             // ================== CHECK IF ALREADY LOGGED IN ==================
             if (isLoggedIn()) {
-                // Nếu đã đăng nhập, redirect đến trang chủ
-                window.location.href = "Trangchu.html";
+                // Nếu đã đăng nhập, redirect theo role
+                if (isAdmin()) {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "Trangchu.html";
+                }
             }
 
             // ================== LINK TO HOME ==================

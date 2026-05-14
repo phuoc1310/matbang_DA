@@ -1,8 +1,8 @@
 // public/asset/js/listingForm.js
 // Xu ly form dang tin mat bang
 
-import { createListing, updateListing } from './listingService.js';
-import { auth } from './auth/firebase.js';
+import { createListing, updateListing } from '../../services/listingService.js';
+import { auth } from '../../config/firebase.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 let currentUser = null;
@@ -26,7 +26,7 @@ export function openListingForm(editData = null) {
   if (!currentUser) {
     const savedUser = localStorage.getItem('currentUser');
     if (!savedUser) {
-      alert('Vui long dang nhap de dang tin');
+      alert('Vui lòng đăng nhập để đăng tin');
       window.location.href = '/dangnhap.html';
       return;
     }
@@ -61,12 +61,12 @@ export function openListingForm(editData = null) {
 
   if (editData) {
     fillForm(editData);
-    document.getElementById('modalTitle').textContent = 'Chinh sua tin dang';
-    document.getElementById('submitBtn').textContent = 'Cap nhat';
+    document.getElementById('modalTitle').textContent = 'Chỉnh sửa tin đăng';
+    document.getElementById('submitBtn').textContent = 'Cập nhật';
     document.getElementById('listingForm').dataset.editId = editData.id;
   } else {
-    document.getElementById('modalTitle').textContent = 'Dang tin mat bang';
-    document.getElementById('submitBtn').textContent = 'Dang tin';
+    document.getElementById('modalTitle').textContent = 'Đăng tin mặt bằng';
+    document.getElementById('submitBtn').textContent = 'Đăng tin';
     delete document.getElementById('listingForm').dataset.editId;
   }
 
@@ -114,7 +114,7 @@ function createModal() {
         <div class="inline-block align-bottom bg-white dark:bg-surface-dark rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
           <div class="bg-white dark:bg-surface-dark px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="flex items-center justify-between mb-4">
-              <h3 id="modalTitle" class="text-lg font-bold text-slate-900 dark:text-white">Dang tin mat bang</h3>
+              <h3 id="modalTitle" class="text-lg font-bold text-slate-900 dark:text-white">Đăng tin mặt bằng</h3>
               <button onclick="window.closeListingForm && window.closeListingForm()" class="text-gray-400 hover:text-gray-600">
                 <span class="material-symbols-outlined">close</span>
               </button>
@@ -123,30 +123,30 @@ function createModal() {
             <form id="listingForm" class="space-y-4">
               <div>
                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Tieu de <span class="text-red-500">*</span>
+                  Tiêu đề <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="listingTitle" required
                   class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="VD: Cho thue mat bang kinh doanh tai quan 1">
+                  placeholder="VD: Cho thuê mặt bằng kinh doanh tại Quận 1">
               </div>
 
               <div>
                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Mo ta
+                  Mô tả
                 </label>
                 <textarea id="listingDescription" rows="3"
                   class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Mo ta chi tiet ve mat bang..."></textarea>
+                  placeholder="Mô tả chi tiết về mặt bằng..."></textarea>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Loai hinh kinh doanh <span class="text-red-500">*</span>
+                    Loại hình kinh doanh <span class="text-red-500">*</span>
                   </label>
                   <select id="businessType" required
                     class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary">
-                    <option value="">Chon loai hinh</option>
+                    <option value="">Chọn loại hình</option>
                     <option value="Đất">Đất</option>
                     <option value="Văn phòng">Văn phòng</option>
                     <option value="Cửa hàng">Cửa hàng</option>
@@ -157,7 +157,7 @@ function createModal() {
 
                 <div>
                   <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Dien tich (m²)
+                    Diện tích (m²)
                   </label>
                   <input type="number" id="area" min="0"
                     class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
@@ -167,7 +167,7 @@ function createModal() {
 
               <div>
                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Gia thue/thang (VND) <span class="text-red-500">*</span>
+                  Giá thuê/tháng (VND) <span class="text-red-500">*</span>
                 </label>
                 <input type="number" id="price" required min="0"
                   class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
@@ -176,41 +176,41 @@ function createModal() {
 
               <div>
                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Dia chi <span class="text-red-500">*</span>
+                  Địa chỉ <span class="text-red-500">*</span>
                 </label>
                 <input type="text" id="address" required
                   class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary mb-2"
-                  placeholder="So nha, ten duong">
+                  placeholder="Số nhà, tên đường">
                 
                 <div class="grid grid-cols-3 gap-2">
                   <input type="text" id="ward" 
                     class="px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Phuong/Xa">
+                    placeholder="Phường/Xã">
                   <input type="text" id="district" 
                     class="px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Quan/Huyen">
+                    placeholder="Quận/Huyện">
                   <input type="text" id="region" 
                     class="px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Tinh/Thanh pho">
+                    placeholder="Tỉnh/Thành phố">
                 </div>
               </div>
 
               <div>
                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Hinh anh
+                  Hình ảnh
                 </label>
                 <div class="space-y-2">
                   <div class="flex gap-2">
                     <input type="file" id="imageFiles" multiple accept="image/*"
                       class="flex-1 px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                      placeholder="Chon hinh anh">
+                      placeholder="Chọn hình ảnh">
                     <button type="button" id="btnUploadImages" 
                       class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold text-sm transition">
                       Upload
                     </button>
                   </div>
                   <div class="text-xs text-slate-500 dark:text-slate-400">
-                    Hoac nhap URL (cach nhau bang dau phay):
+                    Hoặc nhập URL (cách nhau bằng dấu phẩy):
                   </div>
                   <input type="text" id="imageUrls"
                     class="w-full px-4 py-2 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary text-sm"
@@ -223,11 +223,11 @@ function createModal() {
               <div class="flex gap-3 pt-4">
                 <button type="button" onclick="window.closeListingForm && window.closeListingForm()"
                   class="flex-1 px-4 py-2 rounded-lg border border-border-light dark:border-border-dark text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                  Huy
+                  Hủy
                 </button>
                 <button type="submit" id="submitBtn"
                   class="flex-1 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white font-semibold transition">
-                  Dang tin
+                  Đăng tin
                 </button>
               </div>
             </form>
@@ -416,7 +416,7 @@ async function handleFormSubmit(e) {
   
   try {
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Dang xu ly...';
+    submitBtn.textContent = 'Đang xử lý...';
 
     const form = e.target;
     
@@ -433,7 +433,7 @@ async function handleFormSubmit(e) {
 
     if (!titleEl || !businessTypeEl || !priceEl || !addressEl) {
       console.error('Missing form elements:', { titleEl, businessTypeEl, priceEl, addressEl });
-      alert('Loi: Khong tim thay mot so truong trong form. Vui long thu lai.');
+      alert('Lỗi: Không tìm thấy một số trường trong form. Vui lòng thử lại.');
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
       return;
@@ -490,10 +490,10 @@ async function handleFormSubmit(e) {
     
     if (editId) {
       result = await updateListing(editId, listingData);
-      alert('Cap nhat tin dang thanh cong!');
+      alert('Cập nhật tin đăng thành công!');
     } else {
       result = await createListing(listingData);
-      alert('Dang tin thanh cong! Tin dang dang cho duoc duyet.');
+      alert('Đăng tin thành công! Tin đăng đang chờ được duyệt.');
     }
 
     closeListingForm();
@@ -506,7 +506,7 @@ async function handleFormSubmit(e) {
 
   } catch (error) {
     console.error('Error submitting form:', error);
-    alert('Loi: ' + (error.message || 'Khong the dang tin. Vui long thu lai.'));
+    alert('Lỗi: ' + (error.message || 'Không thể đăng tin. Vui lòng thử lại.'));
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;

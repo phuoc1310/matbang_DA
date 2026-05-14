@@ -128,8 +128,8 @@ async function login(email, password) {
       });
       if (syncRes.ok) {
         const postgresUser = await syncRes.json();
-        // Override id với PostgreSQL id để map với search_history/compare
-        user = { ...user, postgres_id: postgresUser.id, id: postgresUser.id || uid };
+        // Override id với PostgreSQL id và lấy role từ DB
+        user = { ...user, postgres_id: postgresUser.id, id: postgresUser.id || uid, role: postgresUser.role || "user", fullName: postgresUser.name };
       } else {
         console.warn("Backend sync failed", await syncRes.text());
       }
@@ -198,12 +198,32 @@ async function changePassword(oldPassword, newPassword) {
 
 /* ================== SET USER AS ADMIN ================== */
 async function setUserAsAdmin(userId) {
-  return { success: false, message: "Tính năng này yêu cầu Backend PostgreSQL." };
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/role`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "admin" })
+    });
+    const data = await res.json();
+    return { success: data.success, message: data.message || "Đã cấp quyền admin!" };
+  } catch (e) {
+    return { success: false, message: "Lỗi kết nối server." };
+  }
 }
 
 /* ================== REMOVE ADMIN ROLE ================== */
 async function removeAdminRole(userId) {
-  return { success: false, message: "Tính năng này yêu cầu Backend PostgreSQL." };
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/role`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "user" })
+    });
+    const data = await res.json();
+    return { success: data.success, message: data.message || "Đã gỡ quyền admin!" };
+  } catch (e) {
+    return { success: false, message: "Lỗi kết nối server." };
+  }
 }
 
 export { register, login, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole };

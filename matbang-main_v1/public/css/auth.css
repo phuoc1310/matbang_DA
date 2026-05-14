@@ -1,52 +1,136 @@
-/* Shared auth styles for login/register pages */
-:root{
-  --primary:#137fec;
-  --primary-hover:#0f6bd0;
-  --surface:#ffffff;
-  --surface-dark:#1e293b;
+/* =========================
+   AUTH PAGE STYLES
+========================= */
+
+.auth-card {
+    animation: fadeUp 0.5s ease;
+    backdrop-filter: blur(10px);
 }
 
-/* card container adjustments (keeps Tailwind utilities but centralizes common sizing) */
-.auth-card{
-  max-width:1100px;
+/* FORM TITLE */
+.auth-form-title {
+    letter-spacing: -0.5px;
 }
 
-/* Inputs used in auth forms */
-.auth-input{
-  padding:0.75rem 0.9rem; /* aligns with py-3 + custom left padding from icon */
-  border-radius:0.5rem;
-  box-shadow:0 1px 0 rgba(15,23,42,0.02);
-  font-size:0.95rem;
+.auth-form-sub {
+    line-height: 1.6;
 }
 
-.auth-input:focus{
-  box-shadow:0 6px 20px rgba(19,127,236,0.08);
-  outline: none;
+/* INPUT */
+.auth-input {
+    height: 52px;
+    outline: none;
+    transition: all 0.25s ease;
+    font-size: 15px;
 }
 
-.auth-submit{
-  padding:0.75rem 1rem;
-  border-radius:0.6rem;
-  font-weight:700;
+.auth-input:focus {
+    border-color: #137fec;
+    box-shadow: 0 0 0 4px rgba(19, 127, 236, 0.15);
+    background: white;
 }
 
-.auth-submit.gradient{
-  background:linear-gradient(90deg,var(--primary),var(--primary-hover));
-  color:#fff;
+.dark .auth-input:focus {
+    background: #1e293b;
 }
 
-.auth-social-grid{gap:1rem}
-.auth-social-btn{padding:0.6rem 0.9rem;border-radius:0.6rem}
-
-/* small screen refinements */
-@media (max-width:640px){
-  .auth-card{padding:0 1rem}
-  .auth-form-title{font-size:20px}
-  .auth-form-sub{font-size:13px}
-  .auth-input{font-size:0.95rem;padding:0.6rem 0.8rem}
-  .auth-submit{padding:0.7rem}
-  .auth-social-grid{grid-template-columns:1fr!important}
+/* BUTTON LOGIN */
+.auth-submit {
+    height: 52px;
+    border-radius: 12px;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(19, 127, 236, 0.25);
 }
 
-/* accessibility helpers */
-.visually-hidden{position:absolute!important;height:1px;width:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.auth-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(19, 127, 236, 0.35);
+}
+
+/* GRADIENT */
+.gradient {
+    background: linear-gradient(135deg, #137fec 0%, #0f6bd0 100%);
+}
+
+/* SOCIAL BUTTON */
+.auth-social-btn {
+    transition: all 0.25s ease;
+}
+
+.auth-social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* TAB BUTTON */
+.tab-button {
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.tab-button:hover {
+    color: #137fec;
+}
+
+/* IMAGE EFFECT */
+.group img {
+    transition: transform 0.7s ease;
+}
+
+/* CARD EFFECT */
+.auth-card:hover {
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .auth-card {
+        border-radius: 20px;
+    }
+
+    .auth-submit {
+        height: 50px;
+    }
+
+    .auth-social-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* DARK MODE */
+.dark .auth-card {
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* CHECKBOX */
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* LINKS */
+a {
+    transition: all 0.2s ease;
+}
+
+/* BUTTON CLICK */
+button:active {
+    transform: scale(0.98);
+}

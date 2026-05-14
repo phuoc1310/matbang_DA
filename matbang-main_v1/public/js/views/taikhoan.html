@@ -149,61 +149,7 @@
         </div>
     </div>
     
-    <!-- PayOS SDK - Phải load trước các script khác -->
-    <script src="https://cdn.payos.vn/payos-checkout/v1/stable/payos-initialize.js" 
-            onerror="console.error('Không thể load PayOS SDK từ CDN. Có thể do mạng hoặc CDN lỗi.'); window.PayOSLoadError = true;"
-            onload="console.log('✅ PayOS SDK đã load thành công'); window.PayOSLoaded = true;"></script>
     <script type="module" src="/js/modules/auth/auth.js"></script>
-    <script src="asset/js/vip.js"></script>
-    <script>
-        // Đợi PayOS SDK load xong trước khi load payos-demo.js
-        function waitForPayOS(callback, maxAttempts = 60) {
-            // Kiểm tra nhiều cách PayOS có thể được expose
-            const isPayOSAvailable = typeof PayOS !== 'undefined' || 
-                                     typeof window.PayOS !== 'undefined';
-            
-            if (isPayOSAvailable || window.PayOSLoaded) {
-                if (!isPayOSAvailable && window.PayOSLoaded) {
-                    console.warn('⚠️ PayOS SDK script đã load nhưng PayOS object chưa sẵn sàng. Sẽ dùng demo mode.');
-                    console.log('💡 Tip: PayOS có thể cần thêm thời gian để khởi tạo. Hãy chờ thêm vài giây.');
-                } else {
-                    console.log('✅ PayOS SDK đã sẵn sàng');
-                }
-                callback();
-            } else if (window.PayOSLoadError) {
-                console.error('❌ PayOS SDK không load được từ CDN. Sẽ dùng demo mode.');
-                callback(); // Vẫn tiếp tục để dùng demo mode
-            } else if (maxAttempts > 0) {
-                setTimeout(() => waitForPayOS(callback, maxAttempts - 1), 200);
-            } else {
-                console.warn('⚠️ PayOS SDK không load được sau 12 giây. Có thể do mạng hoặc CDN lỗi. Sẽ dùng demo mode.');
-                console.log('💡 Không sao, hệ thống vẫn hoạt động với chế độ demo.');
-                callback(); // Vẫn tiếp tục để dùng demo mode
-            }
-        }
-        
-        // Đợi DOM ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                waitForPayOS(loadPayOSScripts);
-            });
-        } else {
-            waitForPayOS(loadPayOSScripts);
-        }
-        
-        function loadPayOSScripts() {
-            // Load payos-demo.js sau khi PayOS SDK đã sẵn sàng (hoặc timeout)
-            const script = document.createElement('script');
-            script.src = 'asset/js/payos-demo.js';
-            script.onload = () => {
-                // Load payos-check.js sau payos-demo.js
-                const checkScript = document.createElement('script');
-                checkScript.src = 'asset/js/payos-check.js';
-                document.body.appendChild(checkScript);
-            };
-            document.body.appendChild(script);
-        }
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Đợi auth module load xong
@@ -256,13 +202,6 @@
             function renderUserInfo() {
                 const userInfoDiv = document.getElementById("user-info");
                 const roleText = user.role === 'chumattbang' ? 'Chủ mặt bằng' : 'Người thuê';
-                const vipStatusInfo = checkVipStatus();
-                let vipStatusBadge = '';
-                if (vipStatusInfo.isVip) {
-                    vipStatusBadge = `<span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-xs font-semibold">VIP (Còn ${vipStatusInfo.daysLeft} ngày)</span>`;
-                } else {
-                    vipStatusBadge = `<span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-semibold">Thường</span>`;
-                }
                 
                 userInfoDiv.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -286,16 +225,6 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Vai trò</p>
                             <p class="text-base font-semibold text-slate-900 dark:text-white">${roleText}</p>
                         </div>
-                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Trạng thái VIP</p>
-                            <p class="text-base">${vipStatusBadge}</p>
-                        </div>
-                        ${vipStatusInfo.isVip ? `
-                        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">VIP hết hạn</p>
-                            <p class="text-base font-semibold text-slate-900 dark:text-white">${formatDate(vipStatusInfo.expiryDate.toISOString())}</p>
-                        </div>
-                        ` : ''}
                     </div>
                 `;
             }
@@ -443,12 +372,6 @@
             
             // Initial render
             renderUserInfo();
-            
-            // Update user object periodically (for VIP status changes)
-            setInterval(() => {
-                updateUserObject();
-                renderUserInfo();
-            }, 5000);
         }
         }
     </script>
