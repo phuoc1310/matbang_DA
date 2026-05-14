@@ -30,3 +30,19 @@
 2026-05-14T04:47:51.471Z 🚀 Server running http://localhost:3033
 2026-05-14T04:47:51.622Z ✅ PostgreSQL connected
 2026-05-14T04:55:01.024Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:01:11.831Z 🚀 Server running http://localhost:3033
+2026-05-14T17:01:11.871Z ✅ PostgreSQL connected
+2026-05-14T17:03:55.217Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:20:26.954Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:23:51.141Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:24:21.313Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:24:52.522Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:24:52.558Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:25:04.707Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:25:12.838Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-05-14T17:26:23.790Z 🚀 Server running http://localhost:3033
+2026-05-14T17:26:23.828Z ✅ PostgreSQL connected
+2026-05-14T17:39:16.083Z 🚀 Server running http://localhost:3033
+2026-05-14T17:39:16.121Z ✅ PostgreSQL connected
+2026-05-14T17:54:48.874Z 🚀 Server running http://localhost:3033
+2026-05-14T17:54:48.915Z ✅ PostgreSQL connected

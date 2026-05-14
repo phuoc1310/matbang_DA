@@ -225,12 +225,31 @@ async function init() {
   document.getElementById("price").textContent = item.price_string;
   document.getElementById("area").textContent =
     item.area_m2 ? `${item.area_m2} m²` : "—";
-  document.getElementById("detail-seller").textContent = item.seller;
+  document.getElementById("detail-seller").textContent = item.seller_name || item.seller || "Chính chủ";
   document.getElementById("detail-rating").textContent =
     item.rating ? `⭐ ${item.rating}` : "Chưa có đánh giá";
 
+  // Cập nhật các trường pháp lý, kích thước
+  // Nếu DB có lưu các trường này thì thay bằng item.legal, item.width, v.v. Tạm thời nếu ko có thì để mặc định.
+  document.getElementById("detail-legal").textContent = item.legal || "Sổ đỏ/Sổ hồng";
+  document.getElementById("detail-width").textContent = item.width ? `${item.width} m` : "Đang cập nhật";
+  document.getElementById("detail-length").textContent = item.length ? `${item.length} m` : "Đang cập nhật";
+
+  const btnContact = document.getElementById("btn-contact-seller");
+  if (btnContact) {
+    if (item.seller_phone) {
+      btnContact.href = `tel:${item.seller_phone}`;
+      btnContact.textContent = `Gọi ${item.seller_phone}`;
+    } else {
+      btnContact.textContent = "Không có SĐT";
+      btnContact.classList.add("opacity-50", "cursor-not-allowed");
+      btnContact.removeAttribute("href");
+    }
+  }
+
   document.getElementById("description").innerHTML = `
     <p class="font-bold">Địa chỉ:</p> <p>${item.address}</p>
+    <div class="mt-4">${item.description}</div>
   `;
 
   /* 🔥 GHI NHẬN VIEW – CHỈ 1 LẦN (Chạy ngầm không block UI) */

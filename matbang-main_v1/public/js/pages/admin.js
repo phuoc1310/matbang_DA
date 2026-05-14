@@ -78,21 +78,15 @@ async function loadUsers() {
 // ================== UPDATE STATISTICS ==================
 function updateStatistics() {
     const total = allUsers.length;
-    const nguoithue = allUsers.filter(u => u.role === 'nguoithue').length;
-    const chumattbang = allUsers.filter(u => u.role === 'chumattbang').length;
-    const admin = allUsers.filter(u => u.role === 'admin').length;
-    const vip = allUsers.filter(u => u.vipStatus === true).length;
+    const userCount = allUsers.filter(u => u.role === 'user' || u.role !== 'admin').length;
+    const adminCount = allUsers.filter(u => u.role === 'admin').length;
     
     // Update statistics cards if they exist (for backward compatibility)
     const statTotal = document.getElementById('stat-total');
-    const statNguoithue = document.getElementById('stat-nguoithue');
-    const statChumattbang = document.getElementById('stat-chumattbang');
-    const statVip = document.getElementById('stat-vip');
+    const statNguoithue = document.getElementById('stat-nguoithue'); // Still mapped to "Người dùng" if the UI wasn't changed
     
     if (statTotal) statTotal.textContent = total;
-    if (statNguoithue) statNguoithue.textContent = nguoithue;
-    if (statChumattbang) statChumattbang.textContent = chumattbang;
-    if (statVip) statVip.textContent = vip;
+    if (statNguoithue) statNguoithue.textContent = userCount;
 }
 
 // ================== RENDER USERS ==================
@@ -115,10 +109,8 @@ function renderUsers() {
         let roleBadge = '';
         if (user.role === 'admin') {
             roleBadge = '<span class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-xs font-semibold">Admin</span>';
-        } else if (user.role === 'chumattbang') {
-            roleBadge = '<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-semibold">Chủ mặt bằng</span>';
         } else {
-            roleBadge = '<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded text-xs font-semibold">Người thuê</span>';
+            roleBadge = '<span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded text-xs font-semibold">Người dùng</span>';
         }
         
         const vipBadge = user.vipStatus
@@ -159,9 +151,6 @@ function renderUsers() {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     ${roleBadge}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    ${vipBadge}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-slate-600 dark:text-slate-400">${createdAt}</div>
@@ -221,11 +210,9 @@ function viewUserDetail(userId) {
         return;
     }
     
-    let roleText = 'Người thuê';
+    let roleText = 'Người dùng';
     if (user.role === 'admin') {
         roleText = 'Quản trị viên';
-    } else if (user.role === 'chumattbang') {
-        roleText = 'Chủ mặt bằng';
     }
     const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleString('vi-VN') : 'N/A';
     const vipExpiry = user.vipExpiry ? new Date(user.vipExpiry).toLocaleString('vi-VN') : 'N/A';
@@ -321,7 +308,7 @@ function editUser(userId) {
     document.getElementById('edit-user-phone').value = user.phone || '';
     document.getElementById('edit-user-email').value = user.email;
     document.getElementById('edit-user-address').value = user.address || '';
-    document.getElementById('edit-user-role').value = user.role === 'admin' ? 'nguoithue' : user.role;
+    document.getElementById('edit-user-role').value = user.role === 'admin' ? 'user' : user.role;
     
     // Hiển thị modal
     document.getElementById('edit-modal').classList.remove('hidden');
@@ -702,9 +689,9 @@ async function navigateTo(sectionName) {
     } else if (sectionName === 'users') {
         await loadUsers();
     } else if (sectionName === 'contacts') {
-        loadContacts();
+        await loadContacts();
     } else if (sectionName === 'feedbacks') {
-        loadFeedbacks();
+        await loadFeedbacks();
     } else if (sectionName === 'listings') {
         await loadAdminListings();
     }
@@ -765,13 +752,13 @@ function switchTab(tabName) {
 }
 
 // ================== CONTACTS MANAGEMENT ==================
-function loadContacts() {
+async function loadContacts() {
     if (typeof getContacts !== 'function') {
         console.error('contact.js chưa được load');
         return;
     }
     
-    const contacts = getContacts();
+    const contacts = await getContacts();
     const filterStatus = document.getElementById('filter-contact-status')?.value || 'all';
     
     let filteredContacts = contacts;
@@ -862,10 +849,10 @@ function renderContacts(contacts) {
     }).join('');
 }
 
-function viewContact(id) {
+async function viewContact(id) {
     if (typeof getContactById !== 'function') return;
     
-    const contact = getContactById(id);
+    const contact = await getContactById(id);
     if (!contact) {
         showMessage('Không tìm thấy liên hệ', 'error');
         return;
@@ -945,28 +932,28 @@ function viewContact(id) {
     document.getElementById('contact-modal').classList.remove('hidden');
 }
 
-function markContactProcessed(id) {
+async function markContactProcessed(id) {
     if (typeof updateContactStatus !== 'function') return;
     
     const currentUser = getCurrentUser();
-    const result = updateContactStatus(id, 'processed', currentUser?.email || 'admin');
+    const result = await updateContactStatus(id, 'processed', currentUser?.email || 'admin');
     
     if (result) {
         showMessage('Đã đánh dấu liên hệ là đã xử lý', 'success');
-        loadContacts();
+        await loadContacts();
     } else {
         showMessage('Có lỗi xảy ra', 'error');
     }
 }
 
-function deleteContactAdmin(id) {
+async function deleteContactAdmin(id) {
     if (confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) {
         if (typeof deleteContact !== 'function') return;
         
-        const result = deleteContact(id);
+        const result = await deleteContact(id);
         if (result) {
             showMessage('Đã xóa liên hệ thành công', 'success');
-            loadContacts();
+            await loadContacts();
         } else {
             showMessage('Có lỗi xảy ra khi xóa', 'error');
         }
@@ -974,13 +961,13 @@ function deleteContactAdmin(id) {
 }
 
 // ================== FEEDBACKS MANAGEMENT ==================
-function loadFeedbacks() {
+async function loadFeedbacks() {
     if (typeof getFeedbacks !== 'function') {
         console.error('feedback.js chưa được load');
         return;
     }
     
-    const feedbacks = getFeedbacks();
+    const feedbacks = await getFeedbacks();
     const filterStatus = document.getElementById('filter-feedback-status')?.value || 'all';
     
     let filteredFeedbacks = feedbacks;
@@ -1059,10 +1046,10 @@ function renderFeedbacks(feedbacks) {
     }).join('');
 }
 
-function viewFeedback(id) {
+async function viewFeedback(id) {
     if (typeof getFeedbackById !== 'function') return;
     
-    const feedback = getFeedbackById(id);
+    const feedback = await getFeedbackById(id);
     if (!feedback) {
         showMessage('Không tìm thấy phản hồi', 'error');
         return;
@@ -1126,28 +1113,28 @@ function viewFeedback(id) {
     document.getElementById('feedback-modal').classList.remove('hidden');
 }
 
-function markFeedbackReviewed(id) {
+async function markFeedbackReviewed(id) {
     if (typeof updateFeedbackStatus !== 'function') return;
     
     const currentUser = getCurrentUser();
-    const result = updateFeedbackStatus(id, 'reviewed', currentUser?.email || 'admin');
+    const result = await updateFeedbackStatus(id, 'reviewed', currentUser?.email || 'admin');
     
     if (result) {
         showMessage('Đã đánh dấu phản hồi là đã xem', 'success');
-        loadFeedbacks();
+        await loadFeedbacks();
     } else {
         showMessage('Có lỗi xảy ra', 'error');
     }
 }
 
-function deleteFeedbackAdmin(id) {
+async function deleteFeedbackAdmin(id) {
     if (confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
         if (typeof deleteFeedback !== 'function') return;
         
-        const result = deleteFeedback(id);
+        const result = await deleteFeedback(id);
         if (result) {
             showMessage('Đã xóa phản hồi thành công', 'success');
-            loadFeedbacks();
+            await loadFeedbacks();
         } else {
             showMessage('Có lỗi xảy ra khi xóa', 'error');
         }
@@ -1352,14 +1339,20 @@ async function analyzeFeedbackSentiment(id) {
 // ================== LISTINGS MANAGEMENT (ADMIN) ==================
 let adminListings = [];
 let adminListingsDebounce = null;
+let adminListingsPage = 1;
+const adminListingsLimit = 50;
 
-async function loadAdminListings() {
+async function loadAdminListings(resetPage = false) {
     const backendUrl = getBackendUrl();
     const status = document.getElementById('listing-filter-status')?.value || 'all';
     const search = document.getElementById('listing-search-input')?.value || '';
 
+    if (resetPage) {
+        adminListingsPage = 1;
+    }
+
     try {
-        const params = new URLSearchParams({ status, search, limit: '100' });
+        const params = new URLSearchParams({ status, search, limit: adminListingsLimit, page: adminListingsPage });
         const response = await fetch(`${backendUrl}/api/admin/listings?${params}`);
 
         if (!response.ok) {
@@ -1369,12 +1362,25 @@ async function loadAdminListings() {
         const result = await response.json();
 
         if (result.success && result.listings) {
-            adminListings = result.listings;
+            if (resetPage) {
+                adminListings = result.listings;
+            } else {
+                adminListings = [...adminListings, ...result.listings];
+            }
             renderAdminListings(adminListings);
-            updateListingStats(adminListings);
+            fetchAndRenderListingStats();
 
             const label = document.getElementById('listing-count-label');
             if (label) label.textContent = `Hiển thị ${adminListings.length} / ${result.total} tin`;
+
+            const loadMoreBtn = document.getElementById('load-more-listings');
+            if (loadMoreBtn) {
+                if (adminListingsPage < result.totalPages) {
+                    loadMoreBtn.classList.remove('hidden');
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+            }
         } else {
             throw new Error(result.error || 'Không nhận được dữ liệu');
         }
@@ -1384,21 +1390,25 @@ async function loadAdminListings() {
     }
 }
 
-function updateListingStats(listings) {
-    const total = listings.length;
-    const pending = listings.filter(l => (l.status || 'pending') === 'pending').length;
-    const approved = listings.filter(l => l.status === 'approved').length;
-    const rejected = listings.filter(l => l.status === 'rejected').length;
+async function fetchAndRenderListingStats() {
+    try {
+        const response = await fetch(`${getBackendUrl()}/api/admin/listings/stats`);
+        const result = await response.json();
+        if (result.success && result.stats) {
+            const stats = result.stats;
+            const elTotal = document.getElementById('stat-total-listings');
+            const elPending = document.getElementById('stat-pending-listings');
+            const elApproved = document.getElementById('stat-approved-listings');
+            const elRejected = document.getElementById('stat-rejected-listings');
 
-    const elTotal = document.getElementById('stat-total-listings');
-    const elPending = document.getElementById('stat-pending-listings');
-    const elApproved = document.getElementById('stat-approved-listings');
-    const elRejected = document.getElementById('stat-rejected-listings');
-
-    if (elTotal) elTotal.textContent = total;
-    if (elPending) elPending.textContent = pending;
-    if (elApproved) elApproved.textContent = approved;
-    if (elRejected) elRejected.textContent = rejected;
+            if (elTotal) elTotal.textContent = stats.total;
+            if (elPending) elPending.textContent = stats.pending;
+            if (elApproved) elApproved.textContent = stats.approved;
+            if (elRejected) elRejected.textContent = stats.rejected;
+        }
+    } catch (error) {
+        console.error('Lỗi tải thống kê:', error);
+    }
 }
 
 function renderAdminListings(listings) {
@@ -1620,16 +1630,24 @@ function adminViewListing(id) {
 document.addEventListener('DOMContentLoaded', () => {
     const listingSearch = document.getElementById('listing-search-input');
     const listingFilter = document.getElementById('listing-filter-status');
+    const loadMoreBtn = document.getElementById('load-more-listings');
 
     if (listingSearch) {
         listingSearch.addEventListener('input', () => {
             clearTimeout(adminListingsDebounce);
-            adminListingsDebounce = setTimeout(() => loadAdminListings(), 400);
+            adminListingsDebounce = setTimeout(() => loadAdminListings(true), 400);
         });
     }
 
     if (listingFilter) {
-        listingFilter.addEventListener('change', () => loadAdminListings());
+        listingFilter.addEventListener('change', () => loadAdminListings(true));
+    }
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            adminListingsPage++;
+            loadAdminListings(false);
+        });
     }
 });
 

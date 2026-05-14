@@ -43,8 +43,8 @@ async function register(userData) {
       return { success: false, message: "Số điện thoại không hợp lệ." };
     }
 
-    const role = userData.role || "nguoithue";
-    if (!["user", "user"].includes(role)) {
+    const role = userData.role || "user";
+    if (!["user", "admin"].includes(role)) {
       return { success: false, message: "Vai trò không hợp lệ." };
     }
 

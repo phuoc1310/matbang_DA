@@ -7,19 +7,19 @@ let trendChart = null;
 let sentimentChart = null;
 
 // ================== INITIALIZE DASHBOARD ==================
-function initDashboard() {
+async function initDashboard() {
     if (typeof Chart === 'undefined') {
         console.error('Chart.js chưa được load');
         return;
     }
     
-    loadDashboardData();
+    await loadDashboardData();
 }
 
 // ================== LOAD DASHBOARD DATA ==================
-function loadDashboardData() {
-    const contacts = getContacts ? getContacts() : [];
-    const feedbacks = getFeedbacks ? getFeedbacks() : [];
+async function loadDashboardData() {
+    const contacts = typeof getContacts === 'function' ? await getContacts() : [];
+    const feedbacks = typeof getFeedbacks === 'function' ? await getFeedbacks() : [];
     
     // Update summary cards
     updateSummaryCards(contacts, feedbacks);
@@ -651,8 +651,8 @@ async function analyzeBatchSentiment() {
         return;
     }
     
-    const contacts = getContacts ? getContacts() : [];
-    const feedbacks = getFeedbacks ? getFeedbacks() : [];
+    const contacts = typeof getContacts === 'function' ? await getContacts() : [];
+    const feedbacks = typeof getFeedbacks === 'function' ? await getFeedbacks() : [];
     
     if (contacts.length === 0 && feedbacks.length === 0) {
         alert('Không có dữ liệu để phân tích');

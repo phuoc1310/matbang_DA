@@ -337,7 +337,10 @@ export async function getListingById(id) {
   if (!id) return null;
 
   const result = await db.query(
-    `SELECT * FROM listings WHERE id = $1 LIMIT 1`,
+    `SELECT l.*, u.name AS seller_name, u.phone_number AS seller_phone, u.email AS seller_email 
+     FROM listings l 
+     LEFT JOIN users u ON l.user_id = u.id 
+     WHERE l.id = $1 LIMIT 1`,
     [Number(id)]
   );
 

@@ -78,7 +78,7 @@ router.delete("/users/:id", async (req, res) => {
 router.put("/users/:id/role", async (req, res) => {
   try {
     const { role } = req.body;
-    if (!["admin", "user", "nguoithue", "chumattbang"].includes(role)) {
+    if (!["admin", "user"].includes(role)) {
       return res.status(400).json({ success: false, message: "Role không hợp lệ" });
     }
     const result = await db.query(
@@ -120,7 +120,7 @@ router.get("/listings", async (req, res) => {
     const offset = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
 
     // Count
-    const countRes = await db.query(`SELECT COUNT(*) AS total FROM listings l LEFT JOIN users u ON l.user_id = u.firebase_uid ${where}`, values);
+    const countRes = await db.query(`SELECT COUNT(*) AS total FROM listings l LEFT JOIN users u ON l.user_id = u.id ${where}`, values);
     const total = Number(countRes.rows[0]?.total) || 0;
 
     // Data
@@ -128,7 +128,7 @@ router.get("/listings", async (req, res) => {
     const result = await db.query(
       `SELECT l.*, u.name AS user_name, u.email AS user_email
        FROM listings l
-       LEFT JOIN users u ON l.user_id = u.firebase_uid
+       LEFT JOIN users u ON l.user_id = u.id
        ${where}
        ORDER BY l.created_at DESC
        LIMIT $${idx++} OFFSET $${idx++}`,
@@ -145,6 +145,37 @@ router.get("/listings", async (req, res) => {
     });
   } catch (err) {
     console.error("Admin get listings error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/admin/listings/stats - Lấy thống kê trạng thái tin đăng
+router.get("/listings/stats", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT status, COUNT(*) as count 
+      FROM listings 
+      GROUP BY status
+    `);
+    
+    const stats = {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0
+    };
+    
+    result.rows.forEach(row => {
+      const count = parseInt(row.count);
+      stats.total += count;
+      if (row.status === 'pending') stats.pending += count;
+      if (row.status === 'approved') stats.approved += count;
+      if (row.status === 'rejected') stats.rejected += count;
+    });
+    
+    res.json({ success: true, stats });
+  } catch (err) {
+    console.error("Admin get listing stats error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -180,6 +211,142 @@ router.delete("/listings/:id", async (req, res) => {
       return res.status(404).json({ success: false, message: "Không tìm thấy tin đăng" });
     }
     res.json({ success: true, message: "Đã xóa tin đăng" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ================== CONTACTS MANAGEMENT ==================
+
+// GET /api/admin/contacts - Lấy toàn bộ liên hệ
+router.get("/contacts", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, full_name AS "fullName", email, phone, subject, content, status, 
+             created_at AS "createdAt", processed_at AS "processedAt"
+      FROM contacts ORDER BY created_at DESC
+    `);
+    res.json({ success: true, contacts: result.rows });
+  } catch (err) {
+    console.error("Admin get contacts error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/admin/contacts/:id - Lấy chi tiết liên hệ
+router.get("/contacts/:id", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, full_name AS "fullName", email, phone, subject, content, status, 
+             created_at AS "createdAt", processed_at AS "processedAt"
+      FROM contacts WHERE id = $1
+    `, [req.params.id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy liên hệ" });
+    }
+    res.json({ success: true, contact: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// PATCH /api/admin/contacts/:id/status - Cập nhật trạng thái liên hệ
+router.patch("/contacts/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    let processedAt = null;
+    
+    if (status === 'processed' || status === 'resolved') {
+      processedAt = new Date();
+    }
+    
+    const result = await db.query(`
+      UPDATE contacts 
+      SET status = $1, processed_at = COALESCE($2, processed_at)
+      WHERE id = $3 RETURNING *
+    `, [status, processedAt, req.params.id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy liên hệ" });
+    }
+    res.json({ success: true, contact: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// DELETE /api/admin/contacts/:id - Xóa liên hệ
+router.delete("/contacts/:id", async (req, res) => {
+  try {
+    const result = await db.query(`DELETE FROM contacts WHERE id = $1 RETURNING id`, [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy liên hệ" });
+    }
+    res.json({ success: true, message: "Đã xóa liên hệ" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ================== FEEDBACKS MANAGEMENT ==================
+
+// GET /api/admin/feedbacks - Lấy toàn bộ phản hồi
+router.get("/feedbacks", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, rating, comment, suggestion, email, status, created_at AS "createdAt"
+      FROM feedbacks ORDER BY created_at DESC
+    `);
+    res.json({ success: true, feedbacks: result.rows });
+  } catch (err) {
+    console.error("Admin get feedbacks error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/admin/feedbacks/:id - Lấy chi tiết phản hồi
+router.get("/feedbacks/:id", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, rating, comment, suggestion, email, status, created_at AS "createdAt"
+      FROM feedbacks WHERE id = $1
+    `, [req.params.id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy phản hồi" });
+    }
+    res.json({ success: true, feedback: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// PATCH /api/admin/feedbacks/:id/status - Cập nhật trạng thái phản hồi
+router.patch("/feedbacks/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const result = await db.query(`
+      UPDATE feedbacks SET status = $1 WHERE id = $2 RETURNING *
+    `, [status, req.params.id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy phản hồi" });
+    }
+    res.json({ success: true, feedback: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// DELETE /api/admin/feedbacks/:id - Xóa phản hồi
+router.delete("/feedbacks/:id", async (req, res) => {
+  try {
+    const result = await db.query(`DELETE FROM feedbacks WHERE id = $1 RETURNING id`, [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy phản hồi" });
+    }
+    res.json({ success: true, message: "Đã xóa phản hồi" });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
