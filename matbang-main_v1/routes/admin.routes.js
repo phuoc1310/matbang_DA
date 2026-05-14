@@ -4,6 +4,37 @@ import db from "../config/db.js";
 
 const router = express.Router();
 
+// ================== DASHBOARD STATS ==================
+
+// GET /api/admin/dashboard/stats
+router.get("/dashboard/stats", async (req, res) => {
+  try {
+    // Ensure site_stats table exists
+    await db.query(`CREATE TABLE IF NOT EXISTS site_stats (key VARCHAR(50) PRIMARY KEY, value INTEGER DEFAULT 0)`);
+    await db.query(`INSERT INTO site_stats (key, value) VALUES ('visits', 0) ON CONFLICT DO NOTHING`);
+
+    const [usersRes, listingsRes, pendingRes, visitsRes] = await Promise.all([
+      db.query("SELECT COUNT(*) as count FROM users"),
+      db.query("SELECT COUNT(*) as count FROM listings"),
+      db.query("SELECT COUNT(*) as count FROM listings WHERE status = 'pending'"),
+      db.query("SELECT value FROM site_stats WHERE key = 'visits'")
+    ]);
+
+    res.json({
+      success: true,
+      stats: {
+        totalUsers: parseInt(usersRes.rows[0].count),
+        totalListings: parseInt(listingsRes.rows[0].count),
+        pendingListings: parseInt(pendingRes.rows[0].count),
+        totalVisits: visitsRes.rows[0]?.value || 0
+      }
+    });
+  } catch (err) {
+    console.error("Dashboard stats error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET /api/admin/users - Lấy danh sách tất cả người dùng
 router.get("/users", async (req, res) => {
   try {

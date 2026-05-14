@@ -1149,6 +1149,34 @@
     })();
   </script>
 
+  <!-- Auth state check -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const guestUI = document.getElementById("guest-actions");
+      const userUI = document.getElementById("user-actions");
+      const userNameEl = document.getElementById("user-name");
+      const logoutBtn = document.getElementById("btn-logout");
+
+      const raw = sessionStorage.getItem("currentUser");
+      if (!raw) return;
+
+      const user = JSON.parse(raw);
+
+      // switch UI
+      guestUI?.classList.add("hidden");
+      userUI?.classList.remove("hidden");
+
+      if (userNameEl) {
+        userNameEl.textContent = user.fullName || user.email || "User";
+      }
+
+      logoutBtn?.addEventListener("click", () => {
+        sessionStorage.removeItem("currentUser");
+        location.reload();
+      });
+    });
+  </script>
+
 </body>
 
 </html>

@@ -26,7 +26,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <style>
         body { 
             font-family: 'Manrope', sans-serif;
@@ -157,158 +157,53 @@
         <!-- Error/Success Message -->
         <div id="message-container" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
 
-        <!-- Dashboard Section -->
         <section id="section-dashboard" class="admin-section">
-            <!-- Analytics Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng liên hệ</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-contacts">0</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả thời gian</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng người dùng</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-users">...</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tài khoản đã đăng ký</p>
                         </div>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">mail</span>
+                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">people</span>
                         </div>
                     </div>
                 </div>
                 <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng phản hồi</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-feedbacks">0</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả thời gian</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng tin đăng</p>
+                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-listings">...</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả bài đăng</p>
                         </div>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">feedback</span>
+                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">apartment</span>
                         </div>
                     </div>
                 </div>
                 <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Đánh giá TB</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-avg-rating">0.0</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">⭐ Rating trung bình</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Chờ duyệt</p>
+                            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="dashboard-pending-listings">...</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Bài đăng chờ xử lý</p>
                         </div>
                         <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">star</span>
+                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">pending</span>
                         </div>
                     </div>
                 </div>
                 <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tỷ lệ giải quyết</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-resolution-rate">0%</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Liên hệ đã xử lý</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Lượt truy cập</p>
+                            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="dashboard-total-visits">...</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tổng lượt xem trang</p>
                         </div>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">task_alt</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Row 1 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <!-- Rating Distribution Chart -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Phân bố đánh giá</h3>
-                        <span class="material-symbols-outlined text-slate-400">pie_chart</span>
-                    </div>
-                    <div class="h-[300px] flex items-center justify-center">
-                        <canvas id="ratingChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Contact Subjects Chart -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Chủ đề liên hệ</h3>
-                        <span class="material-symbols-outlined text-slate-400">bar_chart</span>
-                    </div>
-                    <div class="h-[300px]">
-                        <canvas id="subjectChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Row 2 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <!-- Feedback Trend Chart -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Xu hướng liên hệ & phản hồi</h3>
-                        <span class="material-symbols-outlined text-slate-400">trending_up</span>
-                    </div>
-                    <div class="h-[300px]">
-                        <canvas id="trendChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Sentiment Distribution Chart (AI) -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-purple-600">psychology</span>
-                            Phân bố cảm xúc (AI)
-                        </h3>
-                        <button onclick="analyzeBatchSentiment()" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">refresh</span>
-                            Phân tích
-                        </button>
-                    </div>
-                    <div class="h-[300px] flex items-center justify-center">
-                        <canvas id="sentimentChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Insights -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Top Issues -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                        <span class="material-symbols-outlined align-middle mr-2">priority_high</span>
-                        Chủ đề hàng đầu
-                    </h3>
-                    <div id="top-issues-list" class="space-y-3">
-                        <!-- Will be populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                        <span class="material-symbols-outlined align-middle mr-2">schedule</span>
-                        Hoạt động gần đây
-                    </h3>
-                    <div id="recent-activity-list" class="space-y-3">
-                        <!-- Will be populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Response Time -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark p-6">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                        <span class="material-symbols-outlined align-middle mr-2">timer</span>
-                        Thời gian phản hồi
-                    </h3>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Trung bình</p>
-                            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="avg-response-time">-</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Nhanh nhất</p>
-                            <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="min-response-time">-</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Chậm nhất</p>
-                            <p class="text-lg font-semibold text-orange-600 dark:text-orange-400" id="max-response-time">-</p>
+                            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">visibility</span>
                         </div>
                     </div>
                 </div>
@@ -715,7 +610,6 @@
     <script type="module" src="/js/modules/auth/auth.js"></script>
     <script src="/js/modules/admin/contact.js"></script>
     <script src="/js/modules/admin/feedback.js"></script>
-    <script src="/js/modules/admin/sentiment-analysis.js"></script>
     <script src="/js/modules/dashboard/dashboard.js"></script>
     <script type="module" src="/js/pages/admin.js"></script>
 </body>

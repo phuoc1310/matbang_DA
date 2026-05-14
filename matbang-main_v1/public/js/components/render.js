@@ -179,6 +179,9 @@ function renderPage() {
       <button onclick="event.preventDefault(); if(window.toggleCompare) window.toggleCompare('${item.id}');" class="absolute top-2 left-2 bg-white/90 hover:bg-white text-gray-700 p-1.5 rounded-full shadow z-10 compare-btn-${item.id}" title="So sánh mặt bằng">
         <span class="material-symbols-outlined text-[16px]">compare_arrows</span>
       </button>
+      <button onclick="event.preventDefault(); event.stopPropagation(); if(window.toggleFavoriteCard) window.toggleFavoriteCard(${item.id}, this);" class="absolute bottom-2 right-2 bg-white/90 hover:bg-white p-1.5 rounded-full shadow z-10 fav-card-btn" data-listing-id="${item.id}" title="Yêu thích">
+        <span class="material-symbols-outlined text-[18px] text-gray-400" style="font-variation-settings: 'FILL' 0">favorite</span>
+      </button>
     </div>
     <div class="p-4 flex-1 flex flex-col">
       <h3 class="font-bold text-slate-900 dark:text-white line-clamp-2 mb-2 text-sm leading-snug flex-grow" title="${title}">${title}</h3>
@@ -235,4 +238,142 @@ function renderImages(item) {
 window.renderPage = renderPage;
 window.renderPagination = renderPagination;
 
+// ================== FAVORITE ON CARDS ==================
+let _userFavorites = new Set(); // cached set of favorited listing IDs
+let _cachedFirebaseUser = null;
+
+async function _getFavToken() {
+  try {
+    // Try cached user first
+    if (_cachedFirebaseUser) {
+      return await _cachedFirebaseUser.getIdToken();
+    }
+    // Wait for Firebase auth to be ready
+    const { auth } = await import('/js/config/firebase.js');
+    const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+    
+    // If currentUser exists, use it
+    if (auth.currentUser) {
+      _cachedFirebaseUser = auth.currentUser;
+      return await auth.currentUser.getIdToken();
+    }
+    
+    // Otherwise wait for auth state
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        unsub();
+        if (user) {
+          _cachedFirebaseUser = user;
+          user.getIdToken().then(resolve).catch(() => resolve(null));
+        } else {
+          resolve(null);
+        }
+      });
+      // Timeout after 3s
+      setTimeout(() => { resolve(null); }, 3000);
+    });
+  } catch { return null; }
+}
+
+function _getFavUserId() {
+  try {
+    const raw = sessionStorage.getItem('currentUser');
+    if (raw) return JSON.parse(raw).id;
+  } catch {}
+  return null;
+}
+
+// Load user favorites and highlight cards
+async function loadFavoritesForCards() {
+  const userId = _getFavUserId();
+  const token = await _getFavToken();
+  if (!userId || !token) return;
+
+  try {
+    const res = await fetch(`/api/favorites/${userId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const favorites = await res.json();
+    _userFavorites.clear();
+    if (Array.isArray(favorites)) {
+      favorites.forEach(f => _userFavorites.add(String(f.listing_id)));
+    }
+    // Update all heart icons on current page
+    document.querySelectorAll('.fav-card-btn').forEach(btn => {
+      const lid = btn.dataset.listingId;
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (_userFavorites.has(String(lid))) {
+        icon.style.fontVariationSettings = "'FILL' 1";
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-red-500');
+      }
+    });
+  } catch (e) {
+    console.warn('Load favorites error:', e);
+  }
+}
+
+// Toggle favorite on a card
+window.toggleFavoriteCard = async function(listingId, btnEl) {
+  const userId = _getFavUserId();
+  const token = await _getFavToken();
+  if (!userId || !token) {
+    alert('Vui lòng đăng nhập để lưu yêu thích!');
+    return;
+  }
+
+  const icon = btnEl.querySelector('.material-symbols-outlined');
+  const isFav = _userFavorites.has(String(listingId));
+
+  try {
+    if (isFav) {
+      await fetch('/api/favorites', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
+      });
+      _userFavorites.delete(String(listingId));
+      icon.style.fontVariationSettings = "'FILL' 0";
+      icon.classList.remove('text-red-500');
+      icon.classList.add('text-gray-400');
+    } else {
+      await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
+      });
+      _userFavorites.add(String(listingId));
+      icon.style.fontVariationSettings = "'FILL' 1";
+      icon.classList.remove('text-gray-400');
+      icon.classList.add('text-red-500');
+    }
+  } catch (e) {
+    console.error('Toggle favorite error:', e);
+  }
+};
+
+// Auto-load favorites after first render
+let _favLoaded = false;
+const _origRenderPage = renderPage;
+// Monkey-patch renderPage to auto-check favorites
+window.renderPage = function() {
+  _origRenderPage();
+  if (!_favLoaded) {
+    _favLoaded = true;
+    setTimeout(loadFavoritesForCards, 1000);
+  } else {
+    // Re-apply highlights for already loaded favorites
+    document.querySelectorAll('.fav-card-btn').forEach(btn => {
+      const lid = btn.dataset.listingId;
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (_userFavorites.has(String(lid))) {
+        icon.style.fontVariationSettings = "'FILL' 1";
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-red-500');
+      }
+    });
+  }
+};
+
 export { renderPage, renderPagination, renderImages };
+
