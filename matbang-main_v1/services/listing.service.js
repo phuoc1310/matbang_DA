@@ -258,8 +258,22 @@ export async function getListings(rawFilters) {
 
   // user_id filter
   if (filters.user_id) {
+    let resolvedUserId = filters.user_id;
+    // If user_id is a non-numeric string (Firebase UID), resolve to numeric DB id
+    if (isNaN(Number(filters.user_id))) {
+      const userRes = await db.query(
+        `SELECT id FROM users WHERE firebase_uid = $1 LIMIT 1`,
+        [filters.user_id]
+      );
+      if (userRes.rows.length > 0) {
+        resolvedUserId = userRes.rows[0].id;
+      } else {
+        // User not found in DB, return empty result
+        return { data: [], total: 0, page: 1, limit: 10, totalPages: 0 };
+      }
+    }
     clauses.push(`user_id = $${idx++}`);
-    values.push(filters.user_id);
+    values.push(resolvedUserId);
   } else {
     // Only show visible and approved listings to normal users
     // If not fetching for a specific user, ensure visibility
