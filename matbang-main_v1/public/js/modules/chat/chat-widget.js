@@ -1,6 +1,6 @@
 (function () {
   // ====== CONFIG ======
-  const WEBHOOK_URL = "https://ph215.app.n8n.cloud/webhook/ask-ai";
+  const API_URL = "/api/chat";
   // ====================
 
   let chatOpen = false;
@@ -55,7 +55,7 @@
     chatText.value = "";
 
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

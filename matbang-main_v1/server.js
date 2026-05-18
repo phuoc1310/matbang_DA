@@ -13,6 +13,7 @@ import listingRoutes from "./routes/listing.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 import interactionRoutes from "./routes/interaction.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 
 const app = express();
 // allow overriding port via environment (useful to run multiple instances)
@@ -63,6 +64,7 @@ app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/chat", chatRoutes);
 
 // ===== Chotot API =====
 app.get("/api/ads", async (req, res) => {

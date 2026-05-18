@@ -90,8 +90,7 @@
 | 2.6.1 | Tab "Thông tin cá nhân" — hiển thị profile, VIP status | ✅ | |
 | 2.6.2 | Tab "Chỉnh sửa thông tin" — form cập nhật họ tên, SĐT, địa chỉ | ✅ | |
 | 2.6.3 | Tab "Đổi mật khẩu" | ✅ | |
-| 2.6.4 | Tích hợp thanh toán VIP (PayOS SDK) | ✅ | Load PayOS SDK, có `vip.js` + `payos-demo.js` + `payos-check.js` |
-| 2.6.5 | Đăng xuất | ✅ | |
+| 2.6.4 | Đăng xuất | ✅ | |
 
 ### 2.7. Quản lý tin đăng (`quanly.html`)
 
@@ -137,8 +136,7 @@
 | 3.7 | Lịch sử tìm kiếm (Frontend hiển thị dropdown) | ❌ | **Chưa có giao diện hiển thị lịch sử tìm kiếm gần đây** trên trang chủ/tìm kiếm. API backend đã sẵn sàng nhưng frontend chưa gọi và hiển thị |
 | 3.8 | Bản đồ chi tiết (MapLibre) — trang chi tiết | ✅ | Bản đồ + marker + chỉ đường |
 | 3.9 | Bản đồ tổng quan (MapLibre) — trang tìm kiếm | ✅ | Toggle Map View + markers + popup + fitBounds |
-| 3.10 | Thanh toán VIP (PayOS) | ✅ | Tích hợp SDK + demo mode |
-| 3.11 | Phân quyền (Người thuê / Chủ mặt bằng / Admin) | ✅ | Firebase Auth + Firestore + PostgreSQL |
+| 3.10 | Phân quyền (Người thuê / Chủ mặt bằng / Admin) | ✅ | Firebase Auth + Firestore + PostgreSQL |
 
 ---
 
@@ -152,10 +150,9 @@
 | 4.4 | Authentication: Firebase Auth + Firestore | ✅ | |
 | 4.5 | Bản đồ: MapLibre GL JS | ✅ | |
 | 4.6 | Biểu đồ: Chart.js | ✅ | |
-| 4.7 | Thanh toán: PayOS SDK | ✅ | |
-| 4.8 | AI: Google Gemini API | ✅ | |
-| 4.9 | BI/Analytics: Apache Superset | ✅ | Embedded dashboard |
-| 4.10 | Crawl dữ liệu: Chotot API proxy | ✅ | `config/crawl.js` + `/api/ads` |
+| 4.7 | AI: Google Gemini API | ✅ | |
+| 4.8 | BI/Analytics: Apache Superset | ✅ | Embedded dashboard |
+| 4.9 | Crawl dữ liệu: Chotot API proxy | ✅ | `config/crawl.js` + `/api/ads` |
 
 ---
 

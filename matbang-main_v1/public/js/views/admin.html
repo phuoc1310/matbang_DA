@@ -26,6 +26,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
     <style>
         body { 
@@ -205,6 +206,53 @@
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                             <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">visibility</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <!-- Chart 1: Phân bố trạng thái tin đăng -->
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">pie_chart</span>
+                        Phân bố trạng thái tin đăng
+                    </h3>
+                    <div class="relative h-[280px] flex items-center justify-center">
+                        <canvas id="chart-listing-status"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Phân bố vai trò người dùng -->
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-500">group</span>
+                        Phân bố vai trò người dùng
+                    </h3>
+                    <div class="relative h-[280px]">
+                        <canvas id="chart-user-roles"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Trạng thái liên hệ -->
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-500">mail</span>
+                        Trạng thái liên hệ
+                    </h3>
+                    <div class="relative h-[280px] flex items-center justify-center">
+                        <canvas id="chart-contact-status"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Phân bố đánh giá phản hồi -->
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-yellow-500">star</span>
+                        Phân bố đánh giá phản hồi
+                    </h3>
+                    <div class="relative h-[280px]">
+                        <canvas id="chart-feedback-ratings"></canvas>
                     </div>
                 </div>
             </div>

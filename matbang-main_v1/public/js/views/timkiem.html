@@ -18,6 +18,7 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
   <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="/css/chat-widget.css" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <!-- MapLibre -->
   <link href="https://unpkg.com/maplibre-gl@3.3.0/dist/maplibre-gl.css" rel="stylesheet" />
@@ -416,36 +417,7 @@
   <!-- CHỈ 1 dòng này ở cuối body -->
 
   <!-- ================== CHATBOT AI WIDGET ================== -->
-  <link rel="stylesheet" href="/js/modules/chat/chatbot.css">
-  <button id="chatbot-toggle" aria-label="Mo chatbot ho tro">
-      <span class="material-symbols-outlined">support_agent</span>
-  </button>
-  <div id="chatbot-container">
-      <div id="chatbot-header">
-          <h3>
-              <span class="material-symbols-outlined">smart_toy</span>
-              Tro ly AI SpaceRent
-          </h3>
-          <button id="chatbot-close" aria-label="Dong chatbot">
-              <span class="material-symbols-outlined">close</span>
-          </button>
-      </div>
-      <div id="chatbot-messages"></div>
-      <div id="chatbot-input-container">
-          <textarea id="chatbot-input" placeholder="Nhap cau hoi cua ban..." rows="1"></textarea>
-          <button id="chatbot-send" aria-label="Gui tin nhan">
-              <span class="material-symbols-outlined">send</span>
-          </button>
-      </div>
-  </div>
-  <script src="/js/modules/chat/chatbot.js"></script>
-  <script>
-      document.addEventListener('DOMContentLoaded', () => {
-          if (typeof initChatbot === 'function') {
-              initChatbot();
-          }
-      });
-  </script>
+  <script src="/js/modules/chat/chat-widget.js"></script>
   <!-- ================== END CHATBOT ================== -->
   <!-- Script chính: tìm kiếm & render -->
   <!-- Dán đè vào phần Script cuối file timkiem.html -->
@@ -454,14 +426,35 @@
   <!-- ========================= -->
   <!-- Search History Dropdown -->
   <script>
-    // User ID helper
+    // User ID helper — ưu tiên user thực từ session
     function getClientUserId() {
+      try {
+        const raw = sessionStorage.getItem('currentUser');
+        if (raw) {
+          const u = JSON.parse(raw);
+          if (u.id || u.postgres_id) return u.id || u.postgres_id;
+        }
+      } catch (e) {}
+      // Fallback cho guest
       let uid = localStorage.getItem("client_user_id");
       if (!uid) {
         uid = "guest_" + Math.random().toString(36).substr(2, 9) + Date.now();
         localStorage.setItem("client_user_id", uid);
       }
       return uid;
+    }
+
+    // Lưu lịch sử tìm kiếm vào API
+    async function saveSearchToHistory(keyword, city) {
+      const userId = getClientUserId();
+      if (!userId || (!keyword && !city)) return;
+      try {
+        await fetch('/api/interactions/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, keyword: keyword || null, city: city || null })
+        });
+      } catch (e) { console.warn('Lỗi lưu lịch sử:', e); }
     }
 
     // Inject CSS
@@ -707,6 +700,11 @@
         ) {
 
           applyFilter();
+
+          // Lưu lịch sử tìm kiếm nếu có keyword hoặc city
+          if (keyword || city) {
+            saveSearchToHistory(keyword, city);
+          }
 
         } else {
 

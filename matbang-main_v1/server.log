@@ -60,3 +60,9 @@
 2026-05-15T03:08:12.654Z ✅ PostgreSQL connected
 2026-05-15T03:09:16.695Z 🚀 Server running http://localhost:3033
 2026-05-15T03:09:16.734Z ✅ PostgreSQL connected
+2026-05-18T16:17:22.007Z 🚀 Server running http://localhost:3033
+2026-05-18T16:17:22.078Z ✅ PostgreSQL connected
+2026-05-18T16:17:54.048Z ERROR Lỗi hệ thống khi gọi Dify API: {}
+2026-05-18T16:19:06.852Z ERROR Lỗi hệ thống khi gọi Dify API: {}
+2026-05-18T16:19:13.181Z 🚀 Server running http://localhost:3033
+2026-05-18T16:19:13.219Z ✅ PostgreSQL connected

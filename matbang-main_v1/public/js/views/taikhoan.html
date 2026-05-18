@@ -26,6 +26,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/chat-widget.css">
     <style>
         body { font-family: 'Manrope', sans-serif; }
     </style>
@@ -500,37 +501,8 @@
         }
     </script>
 
-    <!-- ================== CHATBOT AI WIDGET (TẠM THỜI TẮT) ==================
-    <link rel="stylesheet" href="asset/css/chatbot.css">
-    <button id="chatbot-toggle" aria-label="Mở chatbot hỗ trợ">
-        <span class="material-symbols-outlined">support_agent</span>
-    </button>
-    <div id="chatbot-container">
-        <div id="chatbot-header">
-            <h3>
-                <span class="material-symbols-outlined">smart_toy</span>
-                Trợ lý AI SpaceRent
-            </h3>
-            <button id="chatbot-close" aria-label="Đóng chatbot">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div id="chatbot-messages"></div>
-        <div id="chatbot-input-container">
-            <textarea id="chatbot-input" placeholder="Nhập câu hỏi của bạn..." rows="1"></textarea>
-            <button id="chatbot-send" aria-label="Gửi tin nhắn">
-                <span class="material-symbols-outlined">send</span>
-            </button>
-        </div>
-    </div>
-    <script src="asset/js/chat/chatbot.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof initChatbot === 'function') {
-                initChatbot();
-            }
-        });
-    </script>
-    ================== END CHATBOT ================== -->
+    <!-- ================== CHATBOT AI WIDGET ================== -->
+    <script src="/js/modules/chat/chat-widget.js"></script>
+    <!-- ================== END CHATBOT ================== -->
 </body>
 </html>
