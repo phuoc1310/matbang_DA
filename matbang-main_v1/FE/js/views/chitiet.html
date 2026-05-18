@@ -34,6 +34,7 @@
             } catch(e){}
           }
           return el;
+ 
         };
 
         const protectInsert = (proto, method) => {
@@ -236,10 +237,16 @@
       <!-- LEFT -->
       <div class="flex-1 min-w-0">
         <div class="mb-6">
-          <!-- title -->
-          <h1 id="title" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3 leading-tight">
-            Đang tải tiêu đề...
-          </h1>
+          <!-- title + favorite -->
+          <div class="flex items-start gap-3">
+            <h1 id="title" class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3 leading-tight flex-1">
+              Đang tải tiêu đề...
+            </h1>
+            <button id="btn-favorite" onclick="toggleFavoriteDetail()" title="Lưu yêu thích"
+              class="flex-shrink-0 mt-1 w-10 h-10 flex items-center justify-center rounded-full border-2 border-red-200 hover:border-red-400 hover:bg-red-50 transition-all duration-300 group">
+              <span class="material-symbols-outlined text-2xl text-gray-400 group-hover:text-red-500 transition-colors" id="fav-icon" style="font-variation-settings: 'FILL' 0">favorite</span>
+            </button>
+          </div>
 
           <!-- location -->
           <div class="flex items-center gap-2 text-gray-600 mb-4">
@@ -267,7 +274,7 @@
               </div>
               <div>
                 <p class="text-[10px] text-gray-400 uppercase font-bold">Pháp lý</p>
-                <p class="text-sm font-bold text-gray-800">Đang cập nhật</p>
+                <p id="detail-legal" class="text-sm font-bold text-gray-800">Sổ đỏ/Sổ hồng</p>
               </div>
             </div>
 
@@ -277,7 +284,7 @@
               </div>
               <div>
                 <p class="text-[10px] text-gray-400 uppercase font-bold">Chiều ngang</p>
-                <p class="text-sm font-bold text-gray-800">Đang cập nhật</p>
+                <p id="detail-width" class="text-sm font-bold text-gray-800">Đang cập nhật</p>
               </div>
             </div>
 
@@ -287,7 +294,7 @@
               </div>
               <div>
                 <p class="text-[10px] text-gray-400 uppercase font-bold">Chiều dài</p>
-                <p class="text-sm font-bold text-gray-800">Đang cập nhật</p>
+                <p id="detail-length" class="text-sm font-bold text-gray-800">Đang cập nhật</p>
               </div>
             </div>
           </div>
@@ -322,9 +329,9 @@
           <p id="detail-rating" class="text-yellow-500"></p>
 
           <div class="space-y-3 mt-4">
-            <button class="w-full bg-primary text-white py-3 rounded-lg font-bold">
+            <a id="btn-contact-seller" href="#" class="w-full bg-primary text-white py-3 rounded-lg font-bold flex justify-center items-center">
               Liên hệ ngay
-            </button>
+            </a>
             <button class="w-full border-2 border-primary text-primary py-3 rounded-lg font-bold">
               Đặt lịch xem phòng
             </button>
@@ -458,6 +465,126 @@ document.addEventListener("DOMContentLoaded", async () => {
         sessionStorage.removeItem("currentUser");
         location.reload();
       });
+    });
+  </script>
+  <!-- ================== FAVORITE LOGIC ================== -->
+  <script type="module">
+    import { auth } from "/js/config/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    let isFavorited = false;
+    const BACKEND = '';
+    let _fbUser = null;
+
+    async function getToken() {
+      try {
+        if (_fbUser) return await _fbUser.getIdToken();
+        if (auth.currentUser) {
+          _fbUser = auth.currentUser;
+          return await auth.currentUser.getIdToken();
+        }
+        // Wait for auth
+        return new Promise((resolve) => {
+          const unsub = onAuthStateChanged(auth, (user) => {
+            unsub();
+            if (user) {
+              _fbUser = user;
+              user.getIdToken().then(resolve).catch(() => resolve(null));
+            } else { resolve(null); }
+          });
+          setTimeout(() => resolve(null), 3000);
+        });
+      } catch { return null; }
+    }
+
+    function getUserId() {
+      try {
+        const raw = sessionStorage.getItem('currentUser');
+        if (raw) return JSON.parse(raw).id;
+      } catch {}
+      return null;
+    }
+
+    function updateFavIcon(active) {
+      const icon = document.getElementById('fav-icon');
+      const btn = document.getElementById('btn-favorite');
+      if (!icon || !btn) return;
+      isFavorited = active;
+      if (active) {
+        icon.style.fontVariationSettings = "'FILL' 1";
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-red-500');
+        btn.classList.remove('border-red-200');
+        btn.classList.add('border-red-400', 'bg-red-50');
+      } else {
+        icon.style.fontVariationSettings = "'FILL' 0";
+        icon.classList.remove('text-red-500');
+        icon.classList.add('text-gray-400');
+        btn.classList.remove('border-red-400', 'bg-red-50');
+        btn.classList.add('border-red-200');
+      }
+    }
+
+    // Check if listing is already favorited
+    async function checkFavorite() {
+      const userId = getUserId();
+      const token = await getToken();
+      if (!userId || !token) return;
+
+      try {
+        const res = await fetch(`${BACKEND}/api/favorites/${userId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const favorites = await res.json();
+        if (Array.isArray(favorites)) {
+          const params = new URLSearchParams(window.location.search);
+          const listingId = params.get('id');
+          const found = favorites.some(f => String(f.listing_id) === String(listingId));
+          updateFavIcon(found);
+        }
+      } catch (e) {
+        console.warn('Check favorite error:', e);
+      }
+    }
+
+    // Toggle favorite
+    window.toggleFavoriteDetail = async function() {
+      const userId = getUserId();
+      const token = await getToken();
+      if (!userId || !token) {
+        alert('Vui lòng đăng nhập để lưu yêu thích!');
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const listingId = params.get('id');
+      if (!listingId) return;
+
+      try {
+        if (isFavorited) {
+          await fetch(`${BACKEND}/api/favorites`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
+          });
+          updateFavIcon(false);
+        } else {
+          await fetch(`${BACKEND}/api/favorites`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
+          });
+          updateFavIcon(true);
+        }
+      } catch (e) {
+        console.error('Toggle favorite error:', e);
+      }
+    };
+
+    // Run check after page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      // Wait a bit for auth to initialize
+      setTimeout(checkFavorite, 1500);
     });
   </script>
 

@@ -1,7 +1,7 @@
 // ================== DASHBOARD MODULE ==================
 // Fetches real statistics from the backend API and renders Chart.js charts
 
-const BACKEND_URL = localStorage.getItem('admin_backend_url') || 'http://localhost:3033';
+const BACKEND_URL = '';
 
 // Store chart instances to destroy before re-creating
 let chartInstances = {};

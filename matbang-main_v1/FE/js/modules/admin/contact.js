@@ -1,7 +1,7 @@
 // public/js/modules/admin/contact.js
 
 function getBackendUrl() {
-    return localStorage.getItem('admin_backend_url') || 'http://localhost:3033';
+    return '';
 }
 
 async function getContacts() {

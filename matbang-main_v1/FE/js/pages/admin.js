@@ -10,7 +10,7 @@ function validatePhone(phone) {
 
 // Helper function to get backend URL
 function getBackendUrl() {
-    return localStorage.getItem('admin_backend_url') || 'http://localhost:3033';
+    return '';
 }
 
 let allUsers = [];
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ================== LOAD USERS ==================
 async function loadUsers() {
     try {
-        const backendUrl = localStorage.getItem('admin_backend_url') || 'http://localhost:3033';
+        const backendUrl = '';
         const response = await fetch(`${backendUrl}/api/admin/users`);
         
         if (!response.ok) {
