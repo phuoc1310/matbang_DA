@@ -1,9 +1,7 @@
 import { renderPage } from "./render.js";
+import { runBIAnalysis } from "../features/ranking/rankingService.js";
 
-// Stub functions for missing modules
-function runBIAnalysis(items) {
-  return items.map(item => ({ id: item.id, score: 0.5, level: "Bình thường" }));
-}
+// Interest count map - currently no dedicated API, return empty map
 async function getInterestCountMap() { return {}; }
 
 
@@ -57,6 +55,8 @@ function collectFilterState() {
     areas: Array.from(
       document.querySelectorAll("input[data-area]:checked")
     ).map(cb => cb.dataset.area),
+    minArea: state.minArea || 0,
+    maxArea: state.maxArea || 99999,
   };
 }
 
@@ -88,7 +88,8 @@ export async function applyFilter() {
 
   /* ===== 1. FILTER DATA ===== */
   const hasActiveFilters = f.keyword || f.city || f.areas.length > 0 || 
-    (f.minPrice !== 0) || (f.maxPrice !== 20000000000 && f.maxPrice !== Infinity);
+    (f.minPrice !== 0) || (f.maxPrice !== 20000000000 && f.maxPrice !== Infinity) ||
+    (f.minArea > 0) || (f.maxArea < 99999);
 
   if (!hasActiveFilters) {
     window.filteredData = window.rawData.map(item => ({
@@ -126,7 +127,7 @@ export async function applyFilter() {
       if (price < f.minPrice || price > f.maxPrice) return false;
     }
 
-    // AREA - chỉ filter nếu có area được chọn
+    // AREA (checkbox) - chỉ filter nếu có area được chọn
     if (f.areas.length) {
       const area = item.area_m2 || 0;
       let ok = false;
@@ -137,6 +138,12 @@ export async function applyFilter() {
         if (a === "80+" && area > 80) ok = true;
       }
       if (!ok) return false;
+    }
+
+    // AREA RANGE (từ trang chủ truyền qua URL params)
+    if (f.minArea > 0 || f.maxArea < 99999) {
+      const area = item.area_m2 || 0;
+      if (area < f.minArea || area > f.maxArea) return false;
     }
 
     return true;
@@ -193,15 +200,52 @@ export async function applyFilter() {
       renderPage();
     }
   }
-
-  /* ================= EVENTS ================= */
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("search")?.addEventListener("input", applyFilter);
-    document
-      .getElementById("applyFilterBtn")
-      ?.addEventListener("click", applyFilter);
-  });
-};
+}
 
 // expose for other modules
 window.applyFilter = applyFilter;
+
+/* ================= EVENTS ================= */
+function setupFilterEvents() {
+  document.getElementById("search")?.addEventListener("input", applyFilter);
+  document
+    .getElementById("applyFilterBtn")
+    ?.addEventListener("click", applyFilter);
+
+  // Auto-trigger filter khi tick checkbox diện tích
+  document.querySelectorAll("input[data-area]").forEach(cb => {
+    cb.addEventListener("change", applyFilter);
+  });
+
+  // Auto-trigger filter khi thay đổi giá
+  document.getElementById("minPrice")?.addEventListener("change", applyFilter);
+  document.getElementById("maxPrice")?.addEventListener("change", applyFilter);
+
+  // Nút "Đặt lại" bộ lọc
+  document.getElementById("resetFilterBtn")?.addEventListener("click", () => {
+    // Bỏ tick tất cả checkbox
+    document.querySelectorAll("input[data-area]:checked").forEach(cb => {
+      cb.checked = false;
+    });
+    // Reset giá về mặc định
+    const minPriceEl = document.getElementById("minPrice");
+    const maxPriceEl = document.getElementById("maxPrice");
+    if (minPriceEl) minPriceEl.value = "0";
+    if (maxPriceEl) maxPriceEl.value = "20,000,000,000";
+    // Reset ô search
+    const searchEl = document.getElementById("search");
+    if (searchEl) searchEl.value = "";
+    // Xóa state
+    window.__SEARCH_STATE__ = { keyword: "", city: "" };
+    window.currentPage = 1;
+    // Apply lại
+    applyFilter();
+  });
+}
+
+// Module scripts are deferred — DOMContentLoaded may have already fired
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", setupFilterEvents);
+} else {
+  setupFilterEvents();
+}

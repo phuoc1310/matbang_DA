@@ -180,7 +180,7 @@
             <span class="material-symbols-outlined text-primary">tune</span>
             Bộ lọc
           </h3>
-          <button class="text-sm text-primary font-medium hover:underline">Đặt lại</button>
+          <button id="resetFilterBtn" class="text-sm text-primary font-medium hover:underline">Đặt lại</button>
         </div>
         <div
           class="bg-card-light dark:bg-card-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden p-4 space-y-1">
@@ -649,15 +649,30 @@
       // =====================================
       // SEARCH STATE
       // =====================================
+      const urlMinPrice = params.get("minPrice");
+      const urlMaxPrice = params.get("maxPrice");
+      const urlMinArea = params.get("minArea");
+      const urlMaxArea = params.get("maxArea");
+
       window.__SEARCH_STATE__ = {
         keyword,
         city,
         type: typeParam,
-        minPrice: 0,
-        maxPrice: 20000000000,
-        minArea: 0,
-        maxArea: 99999,
+        minPrice: urlMinPrice ? Number(urlMinPrice) : 0,
+        maxPrice: urlMaxPrice ? Number(urlMaxPrice) : 20000000000,
+        minArea: urlMinArea ? Number(urlMinArea) : 0,
+        maxArea: urlMaxArea ? Number(urlMaxArea) : 99999,
       };
+
+      // Pre-fill price inputs from URL params
+      if (urlMinPrice) {
+        const minPriceEl = document.getElementById("minPrice");
+        if (minPriceEl) minPriceEl.value = urlMinPrice;
+      }
+      if (urlMaxPrice) {
+        const maxPriceEl = document.getElementById("maxPrice");
+        if (maxPriceEl) maxPriceEl.value = urlMaxPrice;
+      }
 
       // =====================================
       // LOADING
@@ -852,16 +867,16 @@
               case "area_asc":
                 window.filteredData.sort(
                   (a, b) =>
-                    (a.area || 0) -
-                    (b.area || 0)
+                    (a.area_m2 || 0) -
+                    (b.area_m2 || 0)
                 );
                 break;
 
               case "area_desc":
                 window.filteredData.sort(
                   (a, b) =>
-                    (b.area || 0) -
-                    (a.area || 0)
+                    (b.area_m2 || 0) -
+                    (a.area_m2 || 0)
                 );
                 break;
 

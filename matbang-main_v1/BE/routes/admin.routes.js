@@ -1,8 +1,33 @@
 // routes/admin.routes.js
 import express from "express";
 import db from "../config/db.js";
+import { verifyToken } from "../middlewares/auth.js";
 
 const router = express.Router();
+
+// Middleware kiểm tra quyền admin sau khi đã xác thực token
+async function verifyAdmin(req, res, next) {
+  try {
+    const firebase_uid = req.user?.uid;
+    if (!firebase_uid) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const result = await db.query(
+      `SELECT role FROM users WHERE firebase_uid = $1 LIMIT 1`,
+      [firebase_uid]
+    );
+    if (result.rows.length === 0 || result.rows[0].role !== 'admin') {
+      return res.status(403).json({ success: false, message: "Forbidden: Admin access required" });
+    }
+    next();
+  } catch (err) {
+    console.error("verifyAdmin error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+// Áp dụng xác thực cho toàn bộ admin routes
+router.use(verifyToken, verifyAdmin);
 
 // ================== DASHBOARD STATS ==================
 

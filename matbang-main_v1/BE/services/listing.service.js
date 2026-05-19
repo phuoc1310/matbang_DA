@@ -236,6 +236,25 @@ export async function getListings(rawFilters) {
     }
   }
 
+  // keyword search
+  if (filters.keyword?.trim()) {
+    const parts = filters.keyword.split(',').map(p => p.trim()).filter(Boolean);
+    parts.forEach(part => {
+      clauses.push(`
+        (
+          LOWER(COALESCE(title, '')) LIKE LOWER($${idx})
+          OR LOWER(COALESCE(description, '')) LIKE LOWER($${idx})
+          OR LOWER(COALESCE(address, '')) LIKE LOWER($${idx})
+          OR LOWER(COALESCE(district, '')) LIKE LOWER($${idx})
+          OR LOWER(COALESCE(ward, '')) LIKE LOWER($${idx})
+          OR LOWER(COALESCE(city, '')) LIKE LOWER($${idx})
+        )
+      `);
+      values.push(`%${part}%`);
+      idx++;
+    });
+  }
+
   // type search
   if (filters.type?.trim()) {
     clauses.push(`

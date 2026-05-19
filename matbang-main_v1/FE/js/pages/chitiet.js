@@ -338,11 +338,34 @@ window.askAIAdvisor = async function () {
   if (!window.currentListing) return;
   box.innerHTML = `<span class="animate-pulse">🤖 Đang phân tích...</span>`;
 
-  setTimeout(() => {
-    const price = window.currentListing.price || 0;
-    let msg = "Vị trí này khá thuận lợi.";
-    if (price > 10000000) msg += " Giá thuê hơi cao so với mặt bằng chung.";
-    else msg += " Mức giá hợp lý, tiềm năng sinh lời tốt.";
-    box.innerHTML = `<b>AI:</b> ${msg}`;
-  }, 1000);
+  const listing = window.currentListing;
+  const priceText = listing.price ? `${(listing.price / 1000000).toFixed(1)} triệu VNĐ/tháng` : 'chưa rõ';
+  const areaText = listing.area_m2 ? `${listing.area_m2} m²` : 'chưa rõ';
+
+  const prompt = `Phân tích mặt bằng cho thuê sau và đưa ra nhận xét ngắn gọn về mức giá, vị trí, tiềm năng kinh doanh:
+- Tiêu đề: ${listing.title || 'Không rõ'}
+- Giá thuê: ${priceText}
+- Diện tích: ${areaText}
+- Địa chỉ: ${listing.address || 'Không rõ'}
+- Loại hình: ${listing.category || listing.type || 'Mặt bằng'}
+Hãy trả lời ngắn gọn trong 3-4 câu.`;
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversation: [{ role: "user", content: prompt }],
+        conversation_id: "",
+        user: "ai-advisor"
+      })
+    });
+
+    const data = await res.json();
+    const answer = data.answer || "(AI không trả lời)";
+    box.innerHTML = `<b>🤖 AI Tư vấn:</b><br>${answer}`;
+  } catch (e) {
+    console.error("AI Advisor error:", e);
+    box.innerHTML = `<b>AI:</b> Xin lỗi, không thể kết nối với AI lúc này. Vui lòng thử lại sau.`;
+  }
 };

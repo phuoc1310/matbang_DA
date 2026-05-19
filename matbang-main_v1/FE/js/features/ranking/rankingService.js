@@ -1,4 +1,4 @@
-import { buildBIModel } from "./biModel.js";
+import { buildBIModel } from "./model.js";
 import { scoreListing } from "./scoring.js";
 
 export function runBIAnalysis(rawData = [], searchContext = {}) {
