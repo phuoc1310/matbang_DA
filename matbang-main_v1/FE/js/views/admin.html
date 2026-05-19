@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,38 +26,42 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
     <style>
-        body { 
+        body {
             font-family: 'Manrope', sans-serif;
             overflow-x: hidden;
         }
-        
+
         /* Sidebar Responsive */
         @media (max-width: 1023px) {
             #sidebar {
                 transform: translateX(-100%);
             }
+
             #sidebar.show {
                 transform: translateX(0);
             }
+
             main {
                 margin-left: 0 !important;
             }
         }
-        
+
         /* Smooth transitions */
         .admin-section {
             animation: fadeIn 0.3s ease-in;
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -64,10 +69,12 @@
         }
     </style>
 </head>
+
 <body class="bg-background-light dark:bg-background-dark min-h-screen">
     <div class="flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark transition-transform duration-300 z-50 flex flex-col">
+        <aside id="sidebar"
+            class="fixed left-0 top-0 h-full w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark transition-transform duration-300 z-50 flex flex-col">
             <!-- Logo & Title -->
             <div class="p-6 border-b border-border-light dark:border-border-dark">
                 <div class="flex items-center gap-3 mb-2">
@@ -75,58 +82,65 @@
                         <span class="material-symbols-outlined text-white text-2xl">admin_panel_settings</span>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold text-slate-900 dark:text-white">Admin Panel</h1>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">SpaceRent</p>
+                        <h1 class="text-lg font-bold text-slate-900 dark:text-white">Admin</h1>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Navigation -->
             <nav class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-1">
-                    <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-primary/10 text-primary border-l-4 border-primary">
+                    <button onclick="navigateTo('dashboard')" data-nav="dashboard"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-primary/10 text-primary border-l-4 border-primary">
                         <span class="material-symbols-outlined text-xl">dashboard</span>
                         <span class="font-semibold">Dashboard</span>
                     </button>
-                    
-                    <button onclick="navigateTo('users')" data-nav="users" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+
+                    <button onclick="navigateTo('users')" data-nav="users"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span class="material-symbols-outlined text-xl">people</span>
                         <span class="font-semibold">Người dùng</span>
                     </button>
-                    
-                    <button onclick="navigateTo('contacts')" data-nav="contacts" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+
+                    <button onclick="navigateTo('contacts')" data-nav="contacts"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span class="material-symbols-outlined text-xl">mail</span>
                         <span class="font-semibold">Liên hệ</span>
                     </button>
-                    
-                    <button onclick="navigateTo('feedbacks')" data-nav="feedbacks" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+
+                    <button onclick="navigateTo('feedbacks')" data-nav="feedbacks"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span class="material-symbols-outlined text-xl">feedback</span>
                         <span class="font-semibold">Phản hồi</span>
                     </button>
-                    
-                    <button onclick="navigateTo('listings')" data-nav="listings" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+
+                    <button onclick="navigateTo('listings')" data-nav="listings"
+                        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span class="material-symbols-outlined text-xl">apartment</span>
                         <span class="font-semibold">Tin đăng</span>
                     </button>
                 </div>
-                
+
                 <div class="mt-6 pt-6 border-t border-border-light dark:border-border-dark space-y-1">
-                    <a href="Trangchu.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <a href="Trangchu.html"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span class="material-symbols-outlined text-xl">home</span>
                         <span class="font-semibold">Trang chủ</span>
                     </a>
-                    
-                    <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+
+                    <button id="logout-btn"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                         <span class="material-symbols-outlined text-xl">logout</span>
                         <span class="font-semibold">Đăng xuất</span>
                     </button>
                 </div>
             </nav>
-            
+
             <!-- User Info -->
             <div class="p-4 border-t border-border-light dark:border-border-dark">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                    <div
+                        class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
                         <span id="user-avatar">A</span>
                     </div>
                     <div class="flex-1">
@@ -136,389 +150,515 @@
                 </div>
             </div>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="flex-1 ml-64">
             <!-- Header -->
-            <header class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-6">
+            <header
+                class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">Dashboard</h2>
                         <p class="text-sm text-slate-600 dark:text-slate-400" id="page-subtitle">Tổng quan hệ thống</p>
                     </div>
-                    <button id="toggle-sidebar" class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <button id="toggle-sidebar"
+                        class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
                 </div>
             </header>
-            
+
             <!-- Content Area -->
             <div class="p-6">
-        
-        <!-- Error/Success Message -->
-        <div id="message-container" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
 
-        <section id="section-dashboard" class="admin-section">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng người dùng</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-users">...</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tài khoản đã đăng ký</p>
-                        </div>
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">people</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng tin đăng</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="dashboard-total-listings">...</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả bài đăng</p>
-                        </div>
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">apartment</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Chờ duyệt</p>
-                            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="dashboard-pending-listings">...</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Bài đăng chờ xử lý</p>
-                        </div>
-                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">pending</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Lượt truy cập</p>
-                            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="dashboard-total-visits">...</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tổng lượt xem trang</p>
-                        </div>
-                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">visibility</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <!-- Error/Success Message -->
+                <div id="message-container" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
 
-            <!-- Dashboard Charts -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <!-- Chart 1: Phân bố trạng thái tin đăng -->
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">pie_chart</span>
-                        Phân bố trạng thái tin đăng
-                    </h3>
-                    <div class="relative h-[280px] flex items-center justify-center">
-                        <canvas id="chart-listing-status"></canvas>
-                    </div>
-                </div>
-
-                <!-- Chart 2: Phân bố vai trò người dùng -->
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-blue-500">group</span>
-                        Phân bố vai trò người dùng
-                    </h3>
-                    <div class="relative h-[280px]">
-                        <canvas id="chart-user-roles"></canvas>
-                    </div>
-                </div>
-
-                <!-- Chart 3: Trạng thái liên hệ -->
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-green-500">mail</span>
-                        Trạng thái liên hệ
-                    </h3>
-                    <div class="relative h-[280px] flex items-center justify-center">
-                        <canvas id="chart-contact-status"></canvas>
-                    </div>
-                </div>
-
-                <!-- Chart 4: Phân bố đánh giá phản hồi -->
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-yellow-500">star</span>
-                        Phân bố đánh giá phản hồi
-                    </h3>
-                    <div class="relative h-[280px]">
-                        <canvas id="chart-feedback-ratings"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Users Section -->
-        <section id="section-users" class="admin-section hidden">
-        <!-- Search and Filter -->
-        <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tìm kiếm</label>
-                    <div class="relative">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl">search</span>
-                        <input type="text" id="search-input" class="w-full pl-10 pr-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Tìm theo tên, email, SĐT...">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc theo vai trò</label>
-                    <select id="filter-role" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                        <option value="all">Tất cả</option>
-                        <option value="admin">Admin</option>
-                        <option value="user">Người dùng</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Users Table -->
-        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
-            <div class="p-5 border-b border-border-light dark:border-border-dark">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách người dùng</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Họ tên</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">SĐT</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Vai trò</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Ngày tạo</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body" class="divide-y divide-border-light dark:divide-border-dark">
-                        <tr>
-                            <td colspan="8" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                                <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
-                                Đang tải dữ liệu...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div id="no-results" class="hidden p-8 text-center text-slate-500 dark:text-slate-400">
-                <span class="material-symbols-outlined text-4xl mb-2 block">search_off</span>
-                Không tìm thấy người dùng nào
-            </div>
-        </div>
-        </section>
-
-        <!-- Contacts Section -->
-        <section id="section-contacts" class="admin-section hidden">
-            <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
-                <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách liên hệ</h2>
-                    <div class="flex gap-2">
-                        <select id="filter-contact-status" class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
-                            <option value="all">Tất cả</option>
-                            <option value="pending">Chưa xử lý</option>
-                            <option value="processed">Đã xử lý</option>
-                            <option value="resolved">Đã giải quyết</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-slate-50 dark:bg-slate-800/50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Họ tên</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">SĐT</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Chủ đề</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Trạng thái</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Ngày gửi</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="contacts-table-body" class="divide-y divide-border-light dark:divide-border-dark">
-                            <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                                    <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
-                                    Đang tải dữ liệu...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Feedbacks Section -->
-        <section id="section-feedbacks" class="admin-section hidden">
-            <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
-                <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách phản hồi</h2>
-                    <div class="flex gap-2">
-                        <select id="filter-feedback-status" class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
-                            <option value="all">Tất cả</option>
-                            <option value="pending">Chưa xem</option>
-                            <option value="reviewed">Đã xem</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-slate-50 dark:bg-slate-800/50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Đánh giá</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Nhận xét</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Gợi ý</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Trạng thái</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Ngày gửi</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="feedbacks-table-body" class="divide-y divide-border-light dark:divide-border-dark">
-                            <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                                    <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
-                                    Đang tải dữ liệu...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Listings Section -->
-        <section id="section-listings" class="admin-section hidden">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng tin đăng</p>
-                            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-total-listings">0</p>
+                <section id="section-dashboard" class="admin-section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng người dùng</p>
+                                    <p class="text-2xl font-bold text-slate-900 dark:text-white"
+                                        id="dashboard-total-users">...</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tài khoản đã đăng ký</p>
+                                </div>
+                                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">people</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">apartment</span>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng tin đăng</p>
+                                    <p class="text-2xl font-bold text-slate-900 dark:text-white"
+                                        id="dashboard-total-listings">...</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tất cả bài đăng</p>
+                                </div>
+                                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">apartment</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Chờ duyệt</p>
+                                    <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"
+                                        id="dashboard-pending-listings">...</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Bài đăng chờ xử lý</p>
+                                </div>
+                                <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">pending</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Lượt truy cập</p>
+                                    <p class="text-2xl font-bold text-purple-600 dark:text-purple-400"
+                                        id="dashboard-total-visits">...</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tổng lượt xem trang</p>
+                                </div>
+                                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">visibility</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Chờ duyệt</p>
-                            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="stat-pending-listings">0</p>
-                        </div>
-                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">pending</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Đã duyệt</p>
-                            <p class="text-2xl font-bold text-green-600 dark:text-green-400" id="stat-approved-listings">0</p>
-                        </div>
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Từ chối</p>
-                            <p class="text-2xl font-bold text-red-600 dark:text-red-400" id="stat-rejected-listings">0</p>
-                        </div>
-                        <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                            <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">cancel</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Filter & Search -->
-            <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tìm kiếm</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl">search</span>
-                            <input type="text" id="listing-search-input" class="w-full pl-10 pr-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Tìm theo tiêu đề, địa chỉ, người đăng...">
+                    <!-- Dashboard Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <!-- Chart 1: Phân bố trạng thái tin đăng -->
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">pie_chart</span>
+                                Phân bố trạng thái tin đăng
+                            </h3>
+                            <div class="relative h-[280px] flex items-center justify-center">
+                                <canvas id="chart-listing-status"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Phân bố vai trò người dùng -->
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-500">group</span>
+                                Phân bố vai trò người dùng
+                            </h3>
+                            <div class="relative h-[280px]">
+                                <canvas id="chart-user-roles"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 3: Trạng thái liên hệ -->
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-green-500">mail</span>
+                                Trạng thái liên hệ
+                            </h3>
+                            <div class="relative h-[280px] flex items-center justify-center">
+                                <canvas id="chart-contact-status"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Phân bố đánh giá phản hồi -->
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-yellow-500">star</span>
+                                Phân bố đánh giá phản hồi
+                            </h3>
+                            <div class="relative h-[280px]">
+                                <canvas id="chart-feedback-ratings"></canvas>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc theo trạng thái</label>
-                        <select id="listing-filter-status" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                            <option value="all">Tất cả</option>
-                            <option value="pending">Chờ duyệt</option>
-                            <option value="approved">Đã duyệt</option>
-                            <option value="rejected">Từ chối</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Listings Table -->
-            <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
-                <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách tin đăng</h2>
-                    <span class="text-sm text-slate-500 dark:text-slate-400" id="listing-count-label"></span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-slate-50 dark:bg-slate-800/50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Tiêu đề</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Người đăng</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Giá</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Trạng thái</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Ngày tạo</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listings-table-body" class="divide-y divide-border-light dark:divide-border-dark">
-                            <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                                    <span class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
-                                    Đang tải dữ liệu...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="listings-no-results" class="hidden p-8 text-center text-slate-500 dark:text-slate-400">
-                    <span class="material-symbols-outlined text-4xl mb-2 block">search_off</span>
-                    Không tìm thấy tin đăng nào
-                </div>
-                <div class="p-4 flex justify-center border-t border-border-light dark:border-border-dark">
-                    <button id="load-more-listings" class="hidden px-6 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">expand_more</span>
-                        Tải thêm tin đăng
-                    </button>
-                </div>
-            </div>
-        </section>
-        
+                <!-- Users Section -->
+                <section id="section-users" class="admin-section hidden">
+                    <!-- Search and Filter -->
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tìm
+                                    kiếm</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl">search</span>
+                                    <input type="text" id="search-input"
+                                        class="w-full pl-10 pr-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                        placeholder="Tìm theo tên, email, SĐT...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc
+                                    theo vai trò</label>
+                                <select id="filter-role"
+                                    class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                    <option value="all">Tất cả</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">Người dùng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                        <div class="p-5 border-b border-border-light dark:border-border-dark">
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách người dùng</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            ID</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Họ tên</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            SĐT</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Vai trò</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Ngày tạo</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body"
+                                    class="divide-y divide-border-light dark:divide-border-dark">
+                                    <tr>
+                                        <td colspan="8"
+                                            class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            <span
+                                                class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="no-results" class="hidden p-8 text-center text-slate-500 dark:text-slate-400">
+                            <span class="material-symbols-outlined text-4xl mb-2 block">search_off</span>
+                            Không tìm thấy người dùng nào
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contacts Section -->
+                <section id="section-contacts" class="admin-section hidden">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                        <div
+                            class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách liên hệ</h2>
+                            <div class="flex gap-2">
+                                <select id="filter-contact-status"
+                                    class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
+                                    <option value="all">Tất cả</option>
+                                    <option value="pending">Chưa xử lý</option>
+                                    <option value="processed">Đã xử lý</option>
+                                    <option value="resolved">Đã giải quyết</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Họ tên</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            SĐT</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Chủ đề</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Trạng thái</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Ngày gửi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contacts-table-body"
+                                    class="divide-y divide-border-light dark:divide-border-dark">
+                                    <tr>
+                                        <td colspan="7"
+                                            class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            <span
+                                                class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Feedbacks Section -->
+                <section id="section-feedbacks" class="admin-section hidden">
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                        <div
+                            class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách phản hồi</h2>
+                            <div class="flex gap-2">
+                                <select id="filter-feedback-status"
+                                    class="px-4 py-2 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm">
+                                    <option value="all">Tất cả</option>
+                                    <option value="pending">Chưa xem</option>
+                                    <option value="reviewed">Đã xem</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Đánh giá</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Nhận xét</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Gợi ý</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Trạng thái</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Ngày gửi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">
+                                            Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedbacks-table-body"
+                                    class="divide-y divide-border-light dark:divide-border-dark">
+                                    <tr>
+                                        <td colspan="7"
+                                            class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            <span
+                                                class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Listings Section -->
+                <section id="section-listings" class="admin-section hidden">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Tổng tin đăng</p>
+                                    <p class="text-2xl font-bold text-slate-900 dark:text-white"
+                                        id="stat-total-listings">0</p>
+                                </div>
+                                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">apartment</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Chờ duyệt</p>
+                                    <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"
+                                        id="stat-pending-listings">0</p>
+                                </div>
+                                <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-2xl">pending</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Đã duyệt</p>
+                                    <p class="text-2xl font-bold text-green-600 dark:text-green-400"
+                                        id="stat-approved-listings">0</p>
+                                </div>
+                                <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">Từ chối</p>
+                                    <p class="text-2xl font-bold text-red-600 dark:text-red-400"
+                                        id="stat-rejected-listings">0</p>
+                                </div>
+                                <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                                    <span
+                                        class="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">cancel</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter & Search -->
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-lg border border-border-light dark:border-border-dark mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tìm
+                                    kiếm</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl">search</span>
+                                    <input type="text" id="listing-search-input"
+                                        class="w-full pl-10 pr-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                        placeholder="Tìm theo tiêu đề, địa chỉ, người đăng...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Lọc
+                                    theo trạng thái</label>
+                                <select id="listing-filter-status"
+                                    class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                                    <option value="all">Tất cả</option>
+                                    <option value="pending">Chờ duyệt</option>
+                                    <option value="approved">Đã duyệt</option>
+                                    <option value="rejected">Từ chối</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Listings Table -->
+                    <div
+                        class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-border-light dark:border-border-dark overflow-hidden">
+                        <div
+                            class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Danh sách tin đăng</h2>
+                            <span class="text-sm text-slate-500 dark:text-slate-400" id="listing-count-label"></span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            ID</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Tiêu đề</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Người đăng</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Giá</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Trạng thái</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Ngày tạo</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                            Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listings-table-body"
+                                    class="divide-y divide-border-light dark:divide-border-dark">
+                                    <tr>
+                                        <td colspan="7"
+                                            class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            <span
+                                                class="material-symbols-outlined text-4xl mb-2 block">hourglass_empty</span>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="listings-no-results" class="hidden p-8 text-center text-slate-500 dark:text-slate-400">
+                            <span class="material-symbols-outlined text-4xl mb-2 block">search_off</span>
+                            Không tìm thấy tin đăng nào
+                        </div>
+                        <div class="p-4 flex justify-center border-t border-border-light dark:border-border-dark">
+                            <button id="load-more-listings"
+                                class="hidden px-6 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">expand_more</span>
+                                Tải thêm tin đăng
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
             </div> <!-- End Content Area p-6 -->
         </main> <!-- End Main -->
     </div> <!-- End Flex Container -->
-    
+
     <!-- User Detail Modal -->
-    <div id="user-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+    <div id="user-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div
+                class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết người dùng</h3>
-                <button id="close-modal" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button id="close-modal"
+                    class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
                 </button>
             </div>
@@ -527,82 +667,107 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Edit User Modal -->
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+    <div id="edit-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div
+                class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chỉnh sửa thông tin người dùng</h3>
-                <button id="close-edit-modal" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button id="close-edit-modal"
+                    class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
                 </button>
             </div>
             <form id="edit-user-form" class="p-5 space-y-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và tên</label>
-                        <input type="text" id="edit-user-fullName" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập họ và tên">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và
+                            tên</label>
+                        <input type="text" id="edit-user-fullName"
+                            class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                            placeholder="Nhập họ và tên">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số điện thoại</label>
-                        <input type="tel" id="edit-user-phone" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập số điện thoại">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số điện
+                            thoại</label>
+                        <input type="tel" id="edit-user-phone"
+                            class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                            placeholder="Nhập số điện thoại">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
-                    <input type="email" id="edit-user-email" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed" disabled>
+                    <input type="email" id="edit-user-email"
+                        class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                        disabled>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Email không thể thay đổi</p>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Địa chỉ</label>
-                    <input type="text" id="edit-user-address" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Nhập địa chỉ">
+                    <input type="text" id="edit-user-address"
+                        class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        placeholder="Nhập địa chỉ">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Vai trò</label>
-                    <select id="edit-user-role" class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                    <select id="edit-user-role"
+                        class="w-full px-4 py-2.5 border border-border-light dark:border-border-dark rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
                         <option value="user">Người dùng</option>
                     </select>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lưu ý: Không thể chuyển thành admin từ đây. Vui lòng dùng nút "Cấp quyền admin"</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lưu ý: Không thể chuyển thành admin từ
+                        đây. Vui lòng dùng nút "Cấp quyền admin"</p>
                 </div>
                 <div class="flex gap-3 pt-4 border-t border-border-light dark:border-border-dark">
-                    <button type="submit" class="flex-1 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                    <button type="submit"
+                        class="flex-1 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">save</span>
                         <span>Lưu thay đổi</span>
                     </button>
-                    <button type="button" id="cancel-edit-user" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                    <button type="button" id="cancel-edit-user"
+                        class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
                         Hủy
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <!-- Admin Action Confirmation Modal -->
-    <div id="admin-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="admin-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-md w-full p-6">
             <div class="flex items-center gap-4 mb-4">
                 <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-3xl" id="admin-confirm-icon">shield</span>
+                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-3xl"
+                        id="admin-confirm-icon">shield</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="admin-confirm-title">Cấp quyền admin</h3>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="admin-confirm-title">Cấp quyền
+                        admin</h3>
                     <p class="text-sm text-slate-600 dark:text-slate-400">Thay đổi quyền người dùng</p>
                 </div>
             </div>
-            <p class="text-slate-700 dark:text-slate-300 mb-6" id="admin-confirm-text">Bạn có chắc chắn muốn cấp quyền admin?</p>
+            <p class="text-slate-700 dark:text-slate-300 mb-6" id="admin-confirm-text">Bạn có chắc chắn muốn cấp quyền
+                admin?</p>
             <div class="flex gap-3">
-                <button id="admin-confirm-btn" class="flex-1 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-semibold transition-colors">
+                <button id="admin-confirm-btn"
+                    class="flex-1 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-semibold transition-colors">
                     Cấp quyền
                 </button>
-                <button id="cancel-admin-action" class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                <button id="cancel-admin-action"
+                    class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
                     Hủy
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="delete-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-md w-full p-6">
             <div class="flex items-center gap-4 mb-4">
                 <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
@@ -613,24 +778,31 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">Hành động này không thể hoàn tác</p>
                 </div>
             </div>
-            <p class="text-slate-700 dark:text-slate-300 mb-6" id="delete-confirm-text">Bạn có chắc chắn muốn xóa tài khoản này?</p>
+            <p class="text-slate-700 dark:text-slate-300 mb-6" id="delete-confirm-text">Bạn có chắc chắn muốn xóa tài
+                khoản này?</p>
             <div class="flex gap-3">
-                <button id="confirm-delete" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">
+                <button id="confirm-delete"
+                    class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors">
                     Xóa
                 </button>
-                <button id="cancel-delete" class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+                <button id="cancel-delete"
+                    class="flex-1 px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-semibold transition-colors">
                     Hủy
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Contact Detail Modal -->
-    <div id="contact-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+    <div id="contact-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div
+                class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết liên hệ</h3>
-                <button class="close-contact-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button
+                    class="close-contact-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
                 </button>
             </div>
@@ -641,11 +813,15 @@
     </div>
 
     <!-- Feedback Detail Modal -->
-    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
+    <div id="feedback-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div
+                class="sticky top-0 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark p-5 flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Chi tiết phản hồi</h3>
-                <button class="close-feedback-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <button
+                    class="close-feedback-modal p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">close</span>
                 </button>
             </div>
@@ -661,4 +837,5 @@
     <script src="/js/modules/dashboard/dashboard.js"></script>
     <script type="module" src="/js/pages/admin.js"></script>
 </body>
+
 </html>

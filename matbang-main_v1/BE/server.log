@@ -72,3 +72,9 @@
 2026-05-18T16:48:54.294Z ✅ PostgreSQL connected
 2026-05-18T16:50:40.132Z 🚀 Server running http://localhost:3033
 2026-05-18T16:50:40.173Z ✅ PostgreSQL connected
+2026-05-18T17:04:43.077Z 🚀 Server running http://localhost:3033
+2026-05-18T17:04:43.116Z ✅ PostgreSQL connected
+2026-05-18T17:05:28.180Z getDbUserId: req.user = {"iss":"https://securetoken.google.com/damb-7c12d","aud":"damb-7c12d","auth_time":1778814561,"user_id":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2","sub":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2","iat":1779121066,"exp":1779124666,"email":"ph2152004@gmail.com","email_verified":false,"firebase":{"identities":{"email":["ph2152004@gmail.com"]},"sign_in_provider":"password"},"uid":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2"}
+2026-05-18T17:05:28.212Z getDbUserId: resolved id = 2
+2026-05-19T01:46:41.858Z 🚀 Server running http://localhost:3033
+2026-05-19T01:46:41.926Z ✅ PostgreSQL connected

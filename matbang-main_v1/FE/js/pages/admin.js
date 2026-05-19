@@ -178,7 +178,6 @@ function renderUsers() {
 function filterUsers() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
     const roleFilter = document.getElementById('filter-role').value;
-    const vipFilter = document.getElementById('filter-vip').value;
     
     filteredUsers = allUsers.filter(user => {
         // Search filter
@@ -191,12 +190,7 @@ function filterUsers() {
         // Role filter
         const matchesRole = roleFilter === 'all' || user.role === roleFilter;
         
-        // VIP filter
-        const matchesVip = vipFilter === 'all' || 
-            (vipFilter === 'true' && user.vipStatus === true) ||
-            (vipFilter === 'false' && user.vipStatus !== true);
-        
-        return matchesSearch && matchesRole && matchesVip;
+        return matchesSearch && matchesRole;
     });
     
     renderUsers();
@@ -475,7 +469,6 @@ function setupEventListeners() {
     
     // Filter selects
     document.getElementById('filter-role').addEventListener('change', filterUsers);
-    document.getElementById('filter-vip').addEventListener('change', filterUsers);
     
     // Modal close
     document.getElementById('close-modal').addEventListener('click', () => {
