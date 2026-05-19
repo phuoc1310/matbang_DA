@@ -1,24 +1,27 @@
-# 🏢 Hệ thống tìm kiếm mặt bằng cho thuê
+Nền tảng tìm kiếm và gợi ý mặt bằng cho thuê theo vị trí và giá.
 
-## 📌 Giới thiệu
-
-Đây là hệ thống tìm kiếm mặt bằng cho thuê trực tuyến, được xây dựng nhằm hỗ trợ người dùng tìm kiếm địa điểm kinh doanh một cách nhanh chóng và hiệu quả. Hệ thống cho phép tìm kiếm theo nhiều tiêu chí như vị trí, giá thuê, diện tích và loại hình kinh doanh, giúp người dùng dễ dàng so sánh và lựa chọn.
-
-## 🎯 Mục tiêu
-
-* Xây dựng nền tảng tìm kiếm với bộ lọc đa tiêu chí
-* Xếp hạng kết quả theo mức độ phù hợp
-* Tích hợp bản đồ hỗ trợ tìm kiếm theo khu vực
-* Hỗ trợ lưu và so sánh mặt bằng
-* Quản lý tài khoản và đăng tin cho thuê
-
-## ⚙️ Công nghệ sử dụng
-
-* Frontend: HTML, CSS, JavaScript, Bootstrap
-* Backend: Node.js, Express.js
-* Database: PostgreSQL
-* Tích hợp: Chatbot hỗ trợ tìm kiếm, Dashboard thống kê
-
-## 🚀 Kết quả đạt được
-
-Hệ thống cung cấp giao diện thân thiện, cho phép tìm kiếm và lọc mặt bằng hiệu quả, hỗ trợ hiển thị bản đồ và giúp người dùng đưa ra quyết định nhanh chóng.
+🚀 Chức năng chính
+Tìm kiếm mặt bằng theo:
+Vị trí
+Giá thuê
+Diện tích
+Loại hình kinh doanh
+Gợi ý & xếp hạng kết quả theo độ phù hợp
+Hiển thị bản đồ và chỉ đường
+Đăng tin cho thuê
+So sánh mặt bằng
+Lưu lịch sử tìm kiếm & yêu thích
+Chatbot AI hỗ trợ tìm kiếm
+Dashboard quản trị & thống kê
+🛠 Công nghệ sử dụng
+Frontend
+HTML/CSS/JavaScript
+TailwindCSS
+MapLibre GL JS
+Chart.js
+Firebase Authentication
+Backend
+Node.js
+Express.js
+PostgreSQL
+JWT Authentication
