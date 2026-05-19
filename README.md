@@ -24,4 +24,5 @@ Backend
 Node.js
 Express.js
 PostgreSQL
+
 JWT Authentication
