@@ -1,90 +1,14 @@
-2026-05-08T09:10:46.739Z 🚀 Server running http://localhost:3033
-2026-05-08T09:10:46.883Z ✅ PostgreSQL connected
-2026-05-08T09:20:43.183Z 🚀 Server running http://localhost:3033
-2026-05-08T09:20:43.223Z ✅ PostgreSQL connected
-2026-05-11T16:30:40.457Z 🚀 Server running http://localhost:3033
-2026-05-11T16:30:40.507Z ✅ PostgreSQL connected
-2026-05-11T16:44:02.207Z 🚀 Server running http://localhost:3033
-2026-05-11T16:44:02.249Z ✅ PostgreSQL connected
-2026-05-11T16:54:39.732Z 🚀 Server running http://localhost:3033
-2026-05-11T16:54:39.781Z ✅ PostgreSQL connected
-2026-05-11T16:54:46.810Z ERROR Token verification error: {"code":"auth/argument-error","message":"Firebase ID token has incorrect \"aud\" (audience) claim. Expected \"midtest4-e87d2\" but got \"damb-d6ead\". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
-2026-05-11T17:09:19.844Z 🚀 Server running http://localhost:3033
-2026-05-11T17:09:19.887Z ✅ PostgreSQL connected
-2026-05-11T17:12:27.984Z 🚀 Server running http://localhost:3033
-2026-05-11T17:12:28.132Z ✅ PostgreSQL connected
-2026-05-12T00:11:10.127Z 🚀 Server running http://localhost:3033
-2026-05-12T00:11:10.212Z ✅ PostgreSQL connected
-2026-05-12T01:15:56.650Z 🚀 Server running http://localhost:3033
-2026-05-12T01:15:56.689Z ✅ PostgreSQL connected
-2026-05-12T02:04:03.355Z 🚀 Server running http://localhost:3033
-2026-05-12T02:04:03.404Z ✅ PostgreSQL connected
-2026-05-12T03:56:11.778Z 🚀 Server running http://localhost:3033
-2026-05-12T03:56:11.819Z ✅ PostgreSQL connected
-2026-05-12T04:05:02.148Z 🚀 Server running http://localhost:3033
-2026-05-12T04:05:02.190Z ✅ PostgreSQL connected
-2026-05-14T03:52:00.370Z 🚀 Server running http://localhost:3033
-2026-05-14T03:52:00.465Z ✅ PostgreSQL connected
-2026-05-14T03:57:22.586Z 🚀 Server running http://localhost:3033
-2026-05-14T03:57:22.725Z ✅ PostgreSQL connected
-2026-05-14T04:47:51.471Z 🚀 Server running http://localhost:3033
-2026-05-14T04:47:51.622Z ✅ PostgreSQL connected
-2026-05-14T04:55:01.024Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:01:11.831Z 🚀 Server running http://localhost:3033
-2026-05-14T17:01:11.871Z ✅ PostgreSQL connected
-2026-05-14T17:03:55.217Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:20:26.954Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:23:51.141Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:24:21.313Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:24:52.522Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:24:52.558Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:25:04.707Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:25:12.838Z ERROR Admin get listings error: {"length":199,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"73","file":"parse_oper.c","line":"644","routine":"op_error"}
-2026-05-14T17:26:23.790Z 🚀 Server running http://localhost:3033
-2026-05-14T17:26:23.828Z ✅ PostgreSQL connected
-2026-05-14T17:39:16.083Z 🚀 Server running http://localhost:3033
-2026-05-14T17:39:16.121Z ✅ PostgreSQL connected
-2026-05-14T17:54:48.874Z 🚀 Server running http://localhost:3033
-2026-05-14T17:54:48.915Z ✅ PostgreSQL connected
-2026-05-14T18:02:13.517Z 🚀 Server running http://localhost:3033
-2026-05-14T18:02:13.564Z ✅ PostgreSQL connected
-2026-05-14T18:17:26.462Z 🚀 Server running http://localhost:3033
-2026-05-14T18:17:26.503Z ✅ PostgreSQL connected
-2026-05-14T18:32:38.441Z 🚀 Server running http://localhost:3033
-2026-05-14T18:32:38.482Z ✅ PostgreSQL connected
-2026-05-15T01:51:10.013Z 🚀 Server running http://localhost:3033
-2026-05-15T01:51:10.081Z ✅ PostgreSQL connected
-2026-05-15T03:03:28.830Z 🚀 Server running http://localhost:3033
-2026-05-15T03:03:28.872Z ✅ PostgreSQL connected
-2026-05-15T03:08:12.611Z 🚀 Server running http://localhost:3033
-2026-05-15T03:08:12.654Z ✅ PostgreSQL connected
-2026-05-15T03:09:16.695Z 🚀 Server running http://localhost:3033
-2026-05-15T03:09:16.734Z ✅ PostgreSQL connected
-2026-05-18T16:17:22.007Z 🚀 Server running http://localhost:3033
-2026-05-18T16:17:22.078Z ✅ PostgreSQL connected
-2026-05-18T16:17:54.048Z ERROR Lỗi hệ thống khi gọi Dify API: {}
-2026-05-18T16:19:06.852Z ERROR Lỗi hệ thống khi gọi Dify API: {}
-2026-05-18T16:19:13.181Z 🚀 Server running http://localhost:3033
-2026-05-18T16:19:13.219Z ✅ PostgreSQL connected
-2026-05-18T16:32:33.885Z 🚀 Server running http://localhost:3033
-2026-05-18T16:32:33.925Z ✅ PostgreSQL connected
-2026-05-18T16:48:54.236Z 🚀 Server running http://localhost:3033
-2026-05-18T16:48:54.294Z ✅ PostgreSQL connected
-2026-05-18T16:50:40.132Z 🚀 Server running http://localhost:3033
-2026-05-18T16:50:40.173Z ✅ PostgreSQL connected
-2026-05-18T17:04:43.077Z 🚀 Server running http://localhost:3033
-2026-05-18T17:04:43.116Z ✅ PostgreSQL connected
-2026-05-18T17:05:28.180Z getDbUserId: req.user = {"iss":"https://securetoken.google.com/damb-7c12d","aud":"damb-7c12d","auth_time":1778814561,"user_id":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2","sub":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2","iat":1779121066,"exp":1779124666,"email":"ph2152004@gmail.com","email_verified":false,"firebase":{"identities":{"email":["ph2152004@gmail.com"]},"sign_in_provider":"password"},"uid":"a3EOpIXvOyRJW4a7HGGhn0ljkaB2"}
-2026-05-18T17:05:28.212Z getDbUserId: resolved id = 2
-2026-05-19T01:46:41.858Z 🚀 Server running http://localhost:3033
-2026-05-19T01:46:41.926Z ✅ PostgreSQL connected
-2026-05-19T02:04:40.900Z 🚀 Server running http://localhost:3033
-2026-05-19T02:04:40.939Z ✅ PostgreSQL connected
-2026-05-19T02:38:34.167Z 🚀 Server running http://localhost:3033
-2026-05-19T02:38:34.208Z ✅ PostgreSQL connected
-2026-05-19T02:45:27.181Z 🚀 Server running http://localhost:3033
-2026-05-19T02:45:27.248Z ✅ PostgreSQL connected
-2026-05-19T02:46:29.593Z 🚀 Server running http://localhost:3033
-2026-05-19T02:46:29.648Z ✅ PostgreSQL connected
-2026-05-19T02:55:17.762Z 🚀 Server running http://localhost:3033
-2026-05-19T02:55:17.799Z ✅ PostgreSQL connected
+2026-05-23T01:29:24.240Z 🚀 Server running http://localhost:3033
+2026-05-23T01:29:24.350Z ✅ PostgreSQL connected
+2026-05-23T02:27:17.379Z 🚀 Server running http://localhost:3033
+2026-05-23T02:27:17.418Z ✅ PostgreSQL connected
+2026-05-23T02:37:44.024Z 🚀 Server running http://localhost:3033
+2026-05-23T02:37:44.068Z ✅ PostgreSQL connected
+2026-05-23T02:41:18.394Z 🚀 Server running http://localhost:3033
+2026-05-23T02:41:18.535Z ✅ PostgreSQL connected
+2026-05-23T02:42:10.819Z 🚀 Server running http://localhost:3033
+2026-05-23T02:42:10.959Z ✅ PostgreSQL connected
+2026-05-23T03:03:03.936Z getDbUserId: req.user = {"iss":"https://securetoken.google.com/damb-7c12d","aud":"damb-7c12d","auth_time":1779156453,"user_id":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","sub":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","iat":1779503725,"exp":1779507325,"email":"nn3510585@gmail.com","email_verified":false,"firebase":{"identities":{"email":["nn3510585@gmail.com"]},"sign_in_provider":"password"},"uid":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1"}
+2026-05-23T03:03:03.972Z getDbUserId: resolved id = 9
+2026-05-23T03:04:24.421Z getDbUserId: req.user = {"iss":"https://securetoken.google.com/damb-7c12d","aud":"damb-7c12d","auth_time":1779156453,"user_id":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","sub":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","iat":1779503725,"exp":1779507325,"email":"nn3510585@gmail.com","email_verified":false,"firebase":{"identities":{"email":["nn3510585@gmail.com"]},"sign_in_provider":"password"},"uid":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1"}
+2026-05-23T03:04:24.558Z getDbUserId: resolved id = 9

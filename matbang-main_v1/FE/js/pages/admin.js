@@ -1,7 +1,7 @@
 // ================== ADMIN MODULE ==================
 // Quản lý tài khoản người dùng cho admin
 
-import { setUserAsAdmin, removeAdminRole, logout } from "/js/modules/auth/auth.js";
+import { setUserAsAdmin, removeAdminRole, logout } from "/js/modules/auth/auth.js?v=1.0.1";
 
 // Helper function for phone validation
 function validatePhone(phone) {

@@ -49,7 +49,8 @@ function normalizeChoTotItem(item) {
     lat: item.latitude,
     lng: item.longitude,
     date: item.date || item.created_at || item.list_time,
-    category: item.category_name || item.category
+    category: item.category_name || item.category,
+    type: item.category_name || item.category || ""
   };
 }
 
@@ -122,6 +123,9 @@ export async function fetchDetail(id) {
           region: item.city || item.region || '',
           address: item.address || '',
           seller: item.seller || item.user_id || 'Chính chủ',
+          seller_name: item.seller_name || item.seller || 'Chính chủ',
+          seller_phone: item.seller_phone || '',
+          seller_email: item.seller_email || '',
           rating: item.rating || 0,
           lat: item.latitude ?? item.lat,
           lng: item.longitude ?? item.lng,
@@ -185,6 +189,7 @@ export async function fetchListings(opts = {}) {
         seller: item.seller || item.user_id || 'Chính chủ',
         date: item.created_at || item.date,
         score: item.score || Math.random(),
+        type: item.type || item.category || "",
       };
     });
 

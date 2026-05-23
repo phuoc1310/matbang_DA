@@ -293,6 +293,9 @@ export async function getListings(rawFilters) {
     }
     clauses.push(`user_id = $${idx++}`);
     values.push(resolvedUserId);
+    
+    // Chỉ hiện tin đăng cá nhân tự tạo (không hiện tin crawled 'nhatot')
+    clauses.push(`(source IS NULL OR source = 'user')`);
   } else {
     // Only show visible and approved listings to normal users
     // If not fetching for a specific user, ensure visibility

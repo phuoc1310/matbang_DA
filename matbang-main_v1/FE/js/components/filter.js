@@ -55,6 +55,9 @@ function collectFilterState() {
     areas: Array.from(
       document.querySelectorAll("input[data-area]:checked")
     ).map(cb => cb.dataset.area),
+    types: Array.from(
+      document.querySelectorAll("input[data-type]:checked")
+    ).map(cb => cb.dataset.type),
     minArea: state.minArea || 0,
     maxArea: state.maxArea || 99999,
   };
@@ -62,13 +65,62 @@ function collectFilterState() {
 
 /* ================= APPLY FILTER ================= */
 /* ================= APPLY FILTER ================= */
-export async function applyFilter() {
-  console.log("🔄 Applying filter...");
+export async function applyFilter(refetch = false) {
+  console.log("🔄 Applying filter...", { refetch });
 
   if (!location.pathname.includes("timkiem")) {
     window.filteredData = window.rawData || [];
     if (window.renderPage) window.renderPage();
     return;
+  }
+
+  const f = collectFilterState();
+  console.log("📋 Filter state:", f);
+
+  // Update window.__SEARCH_STATE__ completely to preserve all filters for paging/caching
+  window.__SEARCH_STATE__ = {
+    ...window.__SEARCH_STATE__,
+    keyword: f.keyword,
+    city: f.city,
+    minPrice: f.minPrice,
+    maxPrice: f.maxPrice,
+    minArea: f.minArea,
+    maxArea: f.maxArea,
+    types: f.types,
+    areas: f.areas,
+  };
+
+  if (refetch && typeof window.apiFetchAllListings === 'function') {
+    try {
+      // Show loading spinner while updating
+      const listingEl = document.getElementById("listing");
+      if (listingEl) {
+        listingEl.innerHTML = `
+          <div class="col-span-3 text-center py-20">
+            <span class="material-symbols-outlined animate-spin text-5xl text-primary">
+              progress_activity
+            </span>
+            <p class="mt-4 text-slate-500">
+              Đang cập nhật kết quả bộ lọc...
+            </p>
+          </div>
+        `;
+      }
+      
+      console.log("📡 Refetching listings from backend with state:", window.__SEARCH_STATE__);
+      await window.apiFetchAllListings({
+        keyword: f.keyword,
+        city: f.city,
+        minPrice: f.minPrice,
+        maxPrice: f.maxPrice,
+        minArea: f.minArea,
+        maxArea: f.maxArea,
+        limit: 100,
+        maxPages: 5
+      });
+    } catch (e) {
+      console.error("Failed to refetch filtered listings:", e);
+    }
   }
 
   if (!window.rawData || !Array.isArray(window.rawData)) {
@@ -78,16 +130,8 @@ export async function applyFilter() {
     return;
   }
 
-  const f = collectFilterState();
-  console.log("📋 Filter state:", f);
-
-  window.__SEARCH_STATE__ = {
-    keyword: f.keyword,
-    city: f.city,
-  };
-
   /* ===== 1. FILTER DATA ===== */
-  const hasActiveFilters = f.keyword || f.city || f.areas.length > 0 || 
+  const hasActiveFilters = f.keyword || f.city || f.areas.length > 0 || f.types.length > 0 || 
     (f.minPrice !== 0) || (f.maxPrice !== 20000000000 && f.maxPrice !== Infinity) ||
     (f.minArea > 0) || (f.maxArea < 99999);
 
@@ -127,6 +171,19 @@ export async function applyFilter() {
       if (price < f.minPrice || price > f.maxPrice) return false;
     }
 
+    // TYPE - chỉ filter nếu có loại hình được chọn
+    if (f.types.length) {
+      const type = normalizeText(item.type || "");
+      const title = normalizeText(item.title || "");
+      let ok = false;
+      for (const t of f.types) {
+        if (t === "vanphong" && (type.includes("văn phòng") || type.includes("van phong") || title.includes("văn phòng") || title.includes("van phong") || title.includes("vănphòng"))) ok = true;
+        if (t === "matbang" && (type.includes("mặt bằng") || type.includes("mat bang") || title.includes("mặt bằng") || title.includes("mat bang") || title.includes("mặtbằng"))) ok = true;
+        if (t === "canho" && (type.includes("căn hộ") || type.includes("can ho") || title.includes("căn hộ") || title.includes("can ho") || title.includes("cànhộ"))) ok = true;
+      }
+      if (!ok) return false;
+    }
+
     // AREA (checkbox) - chỉ filter nếu có area được chọn
     if (f.areas.length) {
       const area = item.area_m2 || 0;
@@ -140,8 +197,8 @@ export async function applyFilter() {
       if (!ok) return false;
     }
 
-    // AREA RANGE (từ trang chủ truyền qua URL params)
-    if (f.minArea > 0 || f.maxArea < 99999) {
+    // AREA RANGE (từ trang chủ truyền qua URL params) - chỉ áp dụng nếu KHÔNG có checkbox nào được chọn
+    if (!f.areas.length && (f.minArea > 0 || f.maxArea < 99999)) {
       const area = item.area_m2 || 0;
       if (area < f.minArea || area > f.maxArea) return false;
     }
@@ -207,24 +264,47 @@ window.applyFilter = applyFilter;
 
 /* ================= EVENTS ================= */
 function setupFilterEvents() {
-  document.getElementById("search")?.addEventListener("input", applyFilter);
+  document.getElementById("search")?.addEventListener("input", () => {
+    applyFilter(false);
+  });
+
   document
     .getElementById("applyFilterBtn")
-    ?.addEventListener("click", applyFilter);
+    ?.addEventListener("click", (e) => {
+      e?.preventDefault();
+      applyFilter(true);
+    });
 
   // Auto-trigger filter khi tick checkbox diện tích
   document.querySelectorAll("input[data-area]").forEach(cb => {
-    cb.addEventListener("change", applyFilter);
+    cb.addEventListener("change", () => {
+      applyFilter(false);
+    });
+  });
+
+  // Auto-trigger filter khi tick checkbox loại hình
+  document.querySelectorAll("input[data-type]").forEach(cb => {
+    cb.addEventListener("change", () => {
+      applyFilter(false);
+    });
   });
 
   // Auto-trigger filter khi thay đổi giá
-  document.getElementById("minPrice")?.addEventListener("change", applyFilter);
-  document.getElementById("maxPrice")?.addEventListener("change", applyFilter);
+  document.getElementById("minPrice")?.addEventListener("change", () => {
+    applyFilter(false);
+  });
+  document.getElementById("maxPrice")?.addEventListener("change", () => {
+    applyFilter(false);
+  });
 
   // Nút "Đặt lại" bộ lọc
-  document.getElementById("resetFilterBtn")?.addEventListener("click", () => {
+  document.getElementById("resetFilterBtn")?.addEventListener("click", (e) => {
+    e?.preventDefault();
     // Bỏ tick tất cả checkbox
     document.querySelectorAll("input[data-area]:checked").forEach(cb => {
+      cb.checked = false;
+    });
+    document.querySelectorAll("input[data-type]:checked").forEach(cb => {
       cb.checked = false;
     });
     // Reset giá về mặc định
@@ -232,14 +312,30 @@ function setupFilterEvents() {
     const maxPriceEl = document.getElementById("maxPrice");
     if (minPriceEl) minPriceEl.value = "0";
     if (maxPriceEl) maxPriceEl.value = "20,000,000,000";
+    
+    // Sync price labels and slider handles
+    if (typeof window.updatePriceFilterUI === 'function') {
+      window.updatePriceFilterUI();
+    }
+    
     // Reset ô search
     const searchEl = document.getElementById("search");
     if (searchEl) searchEl.value = "";
-    // Xóa state
-    window.__SEARCH_STATE__ = { keyword: "", city: "" };
+    
+    // Xóa state hoàn toàn
+    window.__SEARCH_STATE__ = {
+      keyword: "",
+      city: "",
+      minPrice: 0,
+      maxPrice: 20000000000,
+      minArea: 0,
+      maxArea: 99999,
+      types: [],
+      areas: []
+    };
     window.currentPage = 1;
-    // Apply lại
-    applyFilter();
+    // Apply lại and refetch
+    applyFilter(true);
   });
 }
 

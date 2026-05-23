@@ -1,5 +1,5 @@
 // controllers/user.controller.js
-import { findOrCreateUser } from "../services/user.service.js";
+import { findOrCreateUser, getUserByUid, updateUserByUid } from "../services/user.service.js";
 
 export async function syncUser(req, res) {
   try {
@@ -19,6 +19,37 @@ export async function syncUser(req, res) {
     });
 
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export async function getUserProfile(req, res) {
+  try {
+    const { uid } = req.user;
+    const user = await getUserByUid(uid);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export async function updateUserProfile(req, res) {
+  try {
+    const { uid } = req.user;
+    const { fullName, name, phone, phone_number, address } = req.body;
+    
+    const updatedFields = {
+      name: fullName || name || null,
+      phone_number: phone || phone_number || null,
+      address: address || null
+    };
+
+    const user = await updateUserByUid(uid, updatedFields);
+    res.json({ success: true, message: "Cập nhật thành công!", user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

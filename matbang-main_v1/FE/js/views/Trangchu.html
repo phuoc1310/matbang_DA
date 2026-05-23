@@ -209,7 +209,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-bold text-lg">Văn phòng</h3>
-                        <p class="text-sm opacity-90">1,240+ địa điểm</p>
+                        <p id="count-van-phong" class="text-sm opacity-90">1,240+ địa điểm</p>
                     </div>
                 </a>
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
@@ -221,7 +221,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-bold text-lg">Cửa hàng</h3>
-                        <p class="text-sm opacity-90">850+ địa điểm</p>
+                        <p id="count-cua-hang" class="text-sm opacity-90">850+ địa điểm</p>
                     </div>
                 </a>
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
@@ -233,11 +233,11 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-bold text-lg">Kho xưởng</h3>
-                        <p class="text-sm opacity-90">420+ địa điểm</p>
+                        <p id="count-kho-xuong" class="text-sm opacity-90">420+ địa điểm</p>
                     </div>
                 </a>
                 <a class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
-                    href="/js/views/timkiem.html">
+                    href="/js/views/timkiem.html?type=Co-working">
                     <img alt="Creative coworking space with people working"
                         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         data-alt="Creative coworking space with people working"
@@ -245,7 +245,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-bold text-lg">Co-working</h3>
-                        <p class="text-sm opacity-90">310+ địa điểm</p>
+                        <p id="count-co-working" class="text-sm opacity-90">310+ địa điểm</p>
                     </div>
                 </a>
             </div>
@@ -268,9 +268,6 @@
                     <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
                 </div>
             </div>
-            </div>
-            <div class="flex justify-center mt-10">
-                <div class="pagination flex gap-2"></div>
             </div>
         </section>
         <section class="py-16 bg-slate-100 dark:bg-slate-900 mt-8">
@@ -369,8 +366,8 @@
             </div>
         </div>
     </footer>
-    <script type="module" src="/js/pages/main.js"></script>
-    <script type="module" src="/js/pages/trangchu.js"></script>
+    <script type="module" src="/js/pages/main.js?v=1.0.1"></script>
+    <script type="module" src="/js/pages/trangchu.js?v=1.0.1"></script>
 
     <!-- ================== CHATBOT AI WIDGET ================== -->
     <script src="/js/modules/chat/chat-widget.js"></script>

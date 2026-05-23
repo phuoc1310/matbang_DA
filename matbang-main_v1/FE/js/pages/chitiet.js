@@ -103,19 +103,19 @@ async function init() {
   // Try to dynamically import dependencies to avoid blocking if one fails
   try {
     console.log('chitiet: importing modules...');
-    const modApi = await import("../services/api.js");
+    const modApi = await import("../services/api.js?v=1.0.5");
     fetchDetail = modApi.fetchDetail;
     console.log('chitiet: imported api');
 
-    const modRender = await import("../components/render.js");
+    const modRender = await import("../components/render.js?v=1.0.1");
     renderImages = modRender.renderImages;
     console.log('chitiet: imported render');
 
-    const modFBService = await import("../services/firebaseService.js");
+    const modFBService = await import("../services/firebaseService.js?v=1.0.1");
     addInterest = modFBService.addInterest;
     console.log('chitiet: imported firebaseService');
 
-    const modCfg = await import("../config/firebase.js");
+    const modCfg = await import("../config/firebase.js?v=1.0.1");
     auth = modCfg.auth;
     console.log('chitiet: imported firebase config');
   } catch (e) {
@@ -144,6 +144,9 @@ async function init() {
         price_string: raw.price ? `${Number(raw.price).toLocaleString('vi-VN')} VNĐ` : (raw.price_string || 'Thỏa thuận'),
         area_m2: Number(raw.area) || Number(raw.size) || raw.area_m2 || 0,
         seller: raw.seller || raw.user_id || 'Chính chủ',
+        seller_name: raw.seller_name || raw.seller || 'Chính chủ',
+        seller_phone: raw.seller_phone || '',
+        seller_email: raw.seller_email || '',
         rating: raw.rating || 0,
         lat: raw.latitude ?? raw.lat,
         lng: raw.longitude ?? raw.lng,
@@ -163,8 +166,22 @@ async function init() {
       document.getElementById("location").textContent = item.address || 'Đang cập nhật vị trí';
       document.getElementById("price").textContent = item.price_string || '—';
       document.getElementById("area").textContent = item.area_m2 ? `${item.area_m2} m²` : '—';
-      document.getElementById("detail-seller").textContent = item.seller;
+      document.getElementById("detail-seller").textContent = item.seller_name || item.seller || "Chính chủ";
       document.getElementById("detail-rating").textContent = item.rating ? `⭐ ${item.rating}` : 'Chưa có đánh giá';
+      
+      const btnContact = document.getElementById("btn-contact-seller");
+      if (btnContact) {
+        if (item.seller_phone) {
+          btnContact.href = `tel:${item.seller_phone}`;
+          btnContact.textContent = `Gọi ${item.seller_phone}`;
+          btnContact.classList.remove("opacity-50", "cursor-not-allowed");
+        } else {
+          btnContact.textContent = "Không có SĐT";
+          btnContact.classList.add("opacity-50", "cursor-not-allowed");
+          btnContact.removeAttribute("href");
+        }
+      }
+
       document.getElementById("description").innerHTML = `<p class="font-bold">Địa chỉ:</p> <p>${item.address}</p>`;
 
       // Map placeholder when coords available
@@ -240,6 +257,7 @@ async function init() {
     if (item.seller_phone) {
       btnContact.href = `tel:${item.seller_phone}`;
       btnContact.textContent = `Gọi ${item.seller_phone}`;
+      btnContact.classList.remove("opacity-50", "cursor-not-allowed");
     } else {
       btnContact.textContent = "Không có SĐT";
       btnContact.classList.add("opacity-50", "cursor-not-allowed");

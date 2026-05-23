@@ -172,7 +172,7 @@
         </div>
     </div>
     
-    <script type="module" src="/js/modules/auth/auth.js"></script>
+    <script type="module" src="/js/modules/auth/auth.js?v=1.0.3"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Đợi auth module load xong
@@ -190,7 +190,16 @@
             }
         });
         
-        function initAccountPage() {
+        async function initAccountPage() {
+            // Đồng bộ profile mới nhất từ PostgreSQL database
+            if (typeof syncUserProfile === 'function') {
+                try {
+                    await syncUserProfile();
+                } catch (e) {
+                    console.warn("Could not sync profile on load:", e);
+                }
+            }
+            
             const user = getCurrentUser();
             const messageContainer = document.getElementById("message-container");
             const logoutBtn = document.getElementById("logout-btn");
@@ -293,7 +302,7 @@
                 });
             });
             // ================== EDIT PROFILE FORM ==================
-            document.getElementById("edit-profile-form").addEventListener("submit", (e) => {
+            document.getElementById("edit-profile-form").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 hideMessage();
                 
@@ -307,11 +316,20 @@
                     return;
                 }
                 
-                const result = updateCurrentUser({
+                // Show loading state in the save button
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalBtnHtml = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>Đang lưu...</span>';
+                
+                const result = await updateCurrentUser({
                     fullName: fullName,
                     phone: phone,
                     address: address
                 });
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
                 
                 if (result.success) {
                     // Update user object

@@ -16,7 +16,7 @@ export async function findOrCreateUser(data) {
            phone_number = COALESCE($4, phone_number),
            avatar_url = COALESCE($5, avatar_url)
        WHERE firebase_uid = $1
-       RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, created_at`,
+       RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, address, created_at`,
       [data.uid, data.email, data.name, data.phone_number, data.avatar_url]
     );
     return updateResult.rows[0];
@@ -26,9 +26,32 @@ export async function findOrCreateUser(data) {
   const result = await db.query(
     `INSERT INTO users (firebase_uid, email, name, phone_number, avatar_url, role)
      VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, created_at`,
+     RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, address, created_at`,
     [data.uid, data.email, data.name || "No Name", data.phone_number, data.avatar_url, "user"]
   );
 
+  return result.rows[0];
+}
+
+export async function getUserByUid(uid) {
+  const result = await db.query(
+    `SELECT id, firebase_uid, email, name, phone_number, avatar_url, role, address, created_at 
+     FROM users 
+     WHERE firebase_uid = $1`,
+    [uid]
+  );
+  return result.rows[0] || null;
+}
+
+export async function updateUserByUid(uid, fields) {
+  const result = await db.query(
+    `UPDATE users 
+     SET name = COALESCE($2, name),
+         phone_number = COALESCE($3, phone_number),
+         address = COALESCE($4, address)
+     WHERE firebase_uid = $1
+     RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, address, created_at`,
+    [uid, fields.name, fields.phone_number, fields.address]
+  );
   return result.rows[0];
 }

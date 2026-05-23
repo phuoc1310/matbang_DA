@@ -12,6 +12,25 @@ function setCurrentUser(user) {
   sessionStorage.setItem("currentUser", JSON.stringify(user));
 }
 
+/* ================== GET VALID FIREBASE TOKEN ================== */
+async function getValidToken() {
+  if (auth.currentUser) {
+    return await auth.currentUser.getIdToken();
+  }
+  return new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      unsubscribe();
+      if (user) {
+        resolve(await user.getIdToken());
+      } else {
+        resolve(null);
+      }
+    });
+    // Timeout after 3000ms
+    setTimeout(() => resolve(null), 3000);
+  });
+}
+
 /* ================== VALIDATION (GIỮ NGUYÊN) ================== */
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -175,12 +194,90 @@ async function updateCurrentUser(updatedData) {
     return { success: false, message: "Bạn chưa đăng nhập." };
   }
 
-  // Chú ý: Bạn đã bỏ Firestore, để cập nhật user bạn cần gọi API Backend (PostgreSQL) ở đây
-  // Tạm thời chỉ cập nhật localStorage
-  const updatedUser = { ...currentUser, ...updatedData };
-  setCurrentUser(updatedUser);
+  try {
+    const token = await getValidToken();
+    if (!token) {
+      return { success: false, message: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." };
+    }
 
-  return { success: true, message: "Cập nhật thành công (Local)!", user: updatedUser };
+    const res = await fetch("/api/users/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        fullName: updatedData.fullName || updatedData.name,
+        phone: updatedData.phone || updatedData.phone_number,
+        address: updatedData.address
+      })
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      return { success: false, message: `Lỗi đồng bộ server: ${errorText}` };
+    }
+
+    const data = await res.json();
+    if (data.success && data.user) {
+      const postgresUser = data.user;
+      const mergedUser = {
+        ...currentUser,
+        postgres_id: postgresUser.id,
+        id: postgresUser.id,
+        fullName: postgresUser.name,
+        name: postgresUser.name,
+        phone: postgresUser.phone_number,
+        phone_number: postgresUser.phone_number,
+        address: postgresUser.address,
+        role: postgresUser.role || currentUser.role
+      };
+      setCurrentUser(mergedUser);
+      return { success: true, message: "Cập nhật thông tin thành công!", user: mergedUser };
+    } else {
+      return { success: false, message: data.message || "Không thể cập nhật thông tin." };
+    }
+  } catch (err) {
+    console.error("Update profile error:", err);
+    return { success: false, message: "Lỗi kết nối máy chủ." };
+  }
+}
+
+/* ================== SYNC USER PROFILE FROM DB ================== */
+async function syncUserProfile() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return null;
+
+  try {
+    const token = await getValidToken();
+    if (!token) return currentUser;
+
+    const res = await fetch("/api/users/profile", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (res.ok) {
+      const postgresUser = await res.json();
+      const mergedUser = {
+        ...currentUser,
+        postgres_id: postgresUser.id,
+        id: postgresUser.id,
+        fullName: postgresUser.name,
+        name: postgresUser.name,
+        phone: postgresUser.phone_number,
+        phone_number: postgresUser.phone_number,
+        address: postgresUser.address,
+        role: postgresUser.role || currentUser.role
+      };
+      setCurrentUser(mergedUser);
+      return mergedUser;
+    }
+  } catch (err) {
+    console.warn("Could not sync user profile from server:", err);
+  }
+  return currentUser;
 }
 
 /* ================== CHANGE PASSWORD ================== */
@@ -226,7 +323,7 @@ async function removeAdminRole(userId) {
   }
 }
 
-export { register, login, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole };
+export { register, login, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole, syncUserProfile, validateEmail, validatePhone, validatePassword };
 /* ================== EXPORT GLOBAL (KHỚP FILE CŨ) ================== */
 window.register = register;
 window.login = login;
@@ -238,3 +335,7 @@ window.updateCurrentUser = updateCurrentUser;
 window.changePassword = changePassword;
 window.setUserAsAdmin = setUserAsAdmin;
 window.removeAdminRole = removeAdminRole;
+window.syncUserProfile = syncUserProfile;
+window.validateEmail = validateEmail;
+window.validatePhone = validatePhone;
+window.validatePassword = validatePassword;
