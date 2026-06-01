@@ -13,7 +13,7 @@ function setCurrentUser(user) {
 }
 
 /* ================== GET VALID FIREBASE TOKEN ================== */
-async function getValidToken() {
+export async function getValidToken() {
   if (auth.currentUser) {
     return await auth.currentUser.getIdToken();
   }
@@ -104,7 +104,15 @@ async function register(userData) {
     }
 
     // Merge PostgreSQL ID (nếu có)
-    const finalUser = { id: postgresUser?.id || uid, postgres_id: postgresUser?.id, email: userData.email.trim().toLowerCase(), role: "user", ...postgresUser };
+    const finalUser = { 
+      id: postgresUser?.id || uid, 
+      postgres_id: postgresUser?.id, 
+      email: userData.email.trim().toLowerCase(), 
+      role: "user", 
+      fullName: postgresUser?.name || userData.fullName,
+      phone: postgresUser?.phone_number || userData.phone,
+      ...postgresUser 
+    };
     setCurrentUser(finalUser);
 
     return {
@@ -148,7 +156,14 @@ async function login(email, password) {
       if (syncRes.ok) {
         const postgresUser = await syncRes.json();
         // Override id với PostgreSQL id và lấy role từ DB
-        user = { ...user, postgres_id: postgresUser.id, id: postgresUser.id || uid, role: postgresUser.role || "user", fullName: postgresUser.name };
+        user = { 
+          ...user, 
+          postgres_id: postgresUser.id, 
+          id: postgresUser.id || uid, 
+          role: postgresUser.role || "user", 
+          fullName: postgresUser.name,
+          phone: postgresUser.phone_number
+        };
       } else {
         console.warn("Backend sync failed", await syncRes.text());
       }

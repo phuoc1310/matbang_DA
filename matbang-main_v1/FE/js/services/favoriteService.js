@@ -1,10 +1,13 @@
+import { getValidToken } from '../modules/auth/auth.js?v=1.0.5';
+
 export const favoriteService = {
   async getFavorites(userId) {
     if (!userId) return [];
     try {
+      const token = await getValidToken();
       const res = await fetch(`/api/favorites/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (!res.ok) return [];
@@ -18,11 +21,12 @@ export const favoriteService = {
   async addFavorite(userId, listingId) {
     if (!userId || !listingId) return false;
     try {
+      const token = await getValidToken();
       const res = await fetch('/api/favorites', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ user_id: userId, listing_id: listingId })
       });
@@ -36,11 +40,12 @@ export const favoriteService = {
   async removeFavorite(userId, listingId) {
     if (!userId || !listingId) return false;
     try {
+      const token = await getValidToken();
       const res = await fetch('/api/favorites', {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ user_id: userId, listing_id: listingId })
       });

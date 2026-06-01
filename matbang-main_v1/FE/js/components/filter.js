@@ -1,4 +1,4 @@
-import { renderPage } from "./render.js";
+import { renderPage } from "./render.js?v=1.0.6";
 import { runBIAnalysis } from "../features/ranking/rankingService.js";
 
 // Interest count map - currently no dedicated API, return empty map
@@ -48,6 +48,7 @@ function collectFilterState() {
   const defaultMaxPrice = 20000000000;
 
   return {
+    rawKeyword,
     keyword,
     city: detectedCity || (rawKeyword ? "" : (state.city || "")),
     minPrice: minPriceInput ? parseMoney(minPriceInput) : defaultMinPrice,
@@ -80,7 +81,7 @@ export async function applyFilter(refetch = false) {
   // Update window.__SEARCH_STATE__ completely to preserve all filters for paging/caching
   window.__SEARCH_STATE__ = {
     ...window.__SEARCH_STATE__,
-    keyword: f.keyword,
+    keyword: f.rawKeyword || f.keyword,
     city: f.city,
     minPrice: f.minPrice,
     maxPrice: f.maxPrice,
@@ -109,7 +110,7 @@ export async function applyFilter(refetch = false) {
       
       console.log("📡 Refetching listings from backend with state:", window.__SEARCH_STATE__);
       await window.apiFetchAllListings({
-        keyword: f.keyword,
+        keyword: f.rawKeyword || f.keyword,
         city: f.city,
         minPrice: f.minPrice,
         maxPrice: f.maxPrice,

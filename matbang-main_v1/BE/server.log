@@ -12,3 +12,30 @@
 2026-05-23T03:03:03.972Z getDbUserId: resolved id = 9
 2026-05-23T03:04:24.421Z getDbUserId: req.user = {"iss":"https://securetoken.google.com/damb-7c12d","aud":"damb-7c12d","auth_time":1779156453,"user_id":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","sub":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1","iat":1779503725,"exp":1779507325,"email":"nn3510585@gmail.com","email_verified":false,"firebase":{"identities":{"email":["nn3510585@gmail.com"]},"sign_in_provider":"password"},"uid":"ZVqhc0Ne7BahnQWhZKDc5njqfIf1"}
 2026-05-23T03:04:24.558Z getDbUserId: resolved id = 9
+2026-06-01T04:08:59.759Z 🚀 Server running http://localhost:3033
+2026-06-01T04:08:59.897Z ✅ PostgreSQL connected
+2026-06-01T04:12:34.337Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T04:12:56.199Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T04:17:45.076Z 🚀 Server running http://localhost:3033
+2026-06-01T04:17:45.115Z ✅ PostgreSQL connected
+2026-06-01T04:18:37.988Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T04:18:46.816Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:01:08.331Z 🚀 Server running http://localhost:3033
+2026-06-01T05:01:08.371Z ✅ PostgreSQL connected
+2026-06-01T05:07:44.913Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:21:02.263Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:21:06.492Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:21:07.238Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:21:10.402Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:22:33.671Z 🚀 Server running http://localhost:3033
+2026-06-01T05:22:33.707Z ✅ PostgreSQL connected
+2026-06-01T05:23:42.103Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:23:56.799Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:23:57.484Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:24:08.255Z ERROR Token verification error: {"code":"auth/argument-error","message":"Decoding Firebase ID token failed. Make sure you passed the entire string JWT which represents an ID token. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."}
+2026-06-01T05:34:30.820Z 🚀 Server running http://localhost:3033
+2026-06-01T05:34:30.865Z ✅ PostgreSQL connected
+2026-06-01T05:51:24.320Z 🚀 Server running http://localhost:3033
+2026-06-01T05:51:24.358Z ✅ PostgreSQL connected
+2026-06-01T05:54:13.684Z 🚀 Server running http://localhost:3033
+2026-06-01T05:54:13.725Z ✅ PostgreSQL connected

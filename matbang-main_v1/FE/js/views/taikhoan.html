@@ -172,9 +172,9 @@
         </div>
     </div>
     
-    <script type="module" src="/js/modules/auth/auth.js?v=1.0.3"></script>
+    <script type="module" src="/js/modules/auth/auth.js?v=1.0.5"></script>
     <script type="module">
-        import { favoriteService } from '/js/services/favoriteService.js';
+        import { favoriteService } from '/js/services/favoriteService.js?v=1.0.2';
         document.addEventListener('DOMContentLoaded', () => {
             // Đợi auth module load xong
             if (typeof getCurrentUser === 'function') {
@@ -352,7 +352,7 @@
             });
             
             // ================== CHANGE PASSWORD FORM ==================
-            document.getElementById("change-password-form").addEventListener("submit", (e) => {
+            document.getElementById("change-password-form").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 hideMessage();
                 
@@ -371,7 +371,7 @@
                     return;
                 }
                 
-                const result = changePassword(oldPassword, newPassword);
+                const result = await changePassword(oldPassword, newPassword);
                 
                 if (result.success) {
                     showMessage(result.message, "success");
@@ -393,8 +393,8 @@
             });
             
             // ================== LOGOUT ==================
-            logoutBtn.addEventListener("click", () => {
-                const result = logout();
+            logoutBtn.addEventListener("click", async () => {
+                const result = await logout();
                 if (result.success) {
                     showMessage("Đăng xuất thành công! Đang chuyển hướng...", "success");
                     logoutBtn.disabled = true;

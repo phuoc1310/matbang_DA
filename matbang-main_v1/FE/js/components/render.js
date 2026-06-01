@@ -95,9 +95,9 @@ function renderPage() {
   if (!window.filteredData || window.filteredData.length === 0) {
     listEl.innerHTML = `
       <div class="col-span-3 text-center py-20">
-        <span class="material-symbols-outlined text-5xl text-gray-400">search_off</span>
-        <p class="mt-4 text-gray-600">Không tìm thấy mặt bằng nào</p>
-        <p class="text-sm text-gray-500 mt-2">Hãy thử điều chỉnh bộ lọc</p>
+        <span class="material-symbols-outlined text-6xl text-gray-400">search_off</span>
+        <p class="mt-4 text-lg font-semibold">Không tìm thấy mặt bằng nào</p>
+        <p class="mt-2 text-gray-500">Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm</p>
       </div>`;
     return;
   }
@@ -239,7 +239,7 @@ window.renderPage = renderPage;
 window.renderPagination = renderPagination;
 
 // ================== FAVORITE ON CARDS ==================
-import { favoriteService } from '../services/favoriteService.js';
+import { favoriteService } from '../services/favoriteService.js?v=1.0.2';
 
 let _userFavorites = new Set(); // cached set of favorited listing IDs
 

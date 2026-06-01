@@ -25,9 +25,9 @@ export async function findOrCreateUser(data) {
   // Nếu chưa có thì Insert
   const result = await db.query(
     `INSERT INTO users (firebase_uid, email, name, phone_number, avatar_url, role)
-     VALUES ($1, $2, $3, $4, $5, $6)
+     VALUES ($1, $2, COALESCE($3, 'No Name'), $4, $5, $6)
      RETURNING id, firebase_uid, email, name, phone_number, avatar_url, role, address, created_at`,
-    [data.uid, data.email, data.name || "No Name", data.phone_number, data.avatar_url, "user"]
+    [data.uid, data.email, data.name, data.phone_number, data.avatar_url, "user"]
   );
 
   return result.rows[0];

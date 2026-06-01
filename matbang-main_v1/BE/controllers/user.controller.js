@@ -3,7 +3,7 @@ import { findOrCreateUser, getUserByUid, updateUserByUid } from "../services/use
 
 export async function syncUser(req, res) {
   const { uid, email, name, picture, phone_number } = req.user;
-  const fallbackName = req.body.fullName || req.body.name || name || "No Name";
+  const fallbackName = req.body.fullName || req.body.name || name || null;
   const fallbackPhone = req.body.phone || phone_number || null;
 
   const user = await findOrCreateUser({

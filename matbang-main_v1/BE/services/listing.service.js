@@ -240,17 +240,23 @@ export async function getListings(rawFilters) {
   if (filters.keyword?.trim()) {
     const parts = filters.keyword.split(',').map(p => p.trim()).filter(Boolean);
     parts.forEach(part => {
+      // Escape special characters for regex
+      const safePart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // If the keyword ends with a digit, append \y (word boundary) 
+      // so "Quận 1" doesn't match "Quận 12"
+      const regexPattern = safePart.match(/\d$/) ? `${safePart}\\y` : safePart;
+
       clauses.push(`
         (
-          LOWER(COALESCE(title, '')) LIKE LOWER($${idx})
-          OR LOWER(COALESCE(description, '')) LIKE LOWER($${idx})
-          OR LOWER(COALESCE(address, '')) LIKE LOWER($${idx})
-          OR LOWER(COALESCE(district, '')) LIKE LOWER($${idx})
-          OR LOWER(COALESCE(ward, '')) LIKE LOWER($${idx})
-          OR LOWER(COALESCE(city, '')) LIKE LOWER($${idx})
+          COALESCE(title, '') ~* $${idx}
+          OR COALESCE(description, '') ~* $${idx}
+          OR COALESCE(address, '') ~* $${idx}
+          OR COALESCE(district, '') ~* $${idx}
+          OR COALESCE(ward, '') ~* $${idx}
+          OR COALESCE(city, '') ~* $${idx}
         )
       `);
-      values.push(`%${part}%`);
+      values.push(regexPattern);
       idx++;
     });
   }

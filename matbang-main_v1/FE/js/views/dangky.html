@@ -132,6 +132,16 @@
                             <input id="fullname" required class="auth-input w-full pl-10 pr-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 transition-all" placeholder="Nhập họ tên" type="text" />
                         </div>
                     </div>
+                    <!-- Phone Field -->
+                    <div class="space-y-1.5">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Số điện thoại</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">phone</span>
+                            </div>
+                            <input id="phone" required class="auth-input w-full pl-10 pr-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 transition-all" placeholder="Nhập số điện thoại" type="tel" />
+                        </div>
+                    </div>
                     <!-- Email Field -->
                     <div class="space-y-1.5">
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Email</label>
@@ -195,7 +205,7 @@
 
     <!-- Scripts -->
     <script type="module">
-        import { register, logout } from "/js/modules/auth/auth.js";
+        import { register, logout } from "/js/modules/auth/auth.js?v=1.0.5";
 
         document.addEventListener("DOMContentLoaded", () => {
             const tabLogin = document.getElementById("tab-login");
@@ -242,6 +252,7 @@
                 hideMessage();
 
                 const fullName = document.getElementById("fullname").value.trim();
+                const phone = document.getElementById("phone").value.trim();
                 const email = document.getElementById("email").value.trim();
                 const password = document.getElementById("password").value;
                 const confirmPassword = document.getElementById("confirm-password").value;
@@ -277,6 +288,7 @@
                 try {
                     const result = await register({
                         fullName,
+                        phone,
                         email,
                         password,
                         role: "user"

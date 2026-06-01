@@ -507,11 +507,12 @@
     });
   </script>
   <script type="module">
-    import { fetchAllListings } from "/js/services/api.js?v=1.0.5";
-    import { applyFilter } from "/js/components/filter.js?v=1.0.5";
+    import { fetchAllListings } from "/js/services/api.js?v=1.0.6";
+    import { applyFilter } from "/js/components/filter.js?v=1.0.6";
+    import { saveSearchHistory, initSearchHistory } from "/js/modules/searchHistory.js";
 
     (async () => {
-
+      initSearchHistory('search');
       console.log("🚀 Timkiem page loaded");
 
       // =====================================
@@ -712,7 +713,7 @@
 
           // Lưu lịch sử tìm kiếm nếu có keyword hoặc city
           if (keyword || city) {
-            saveSearchToHistory(keyword, city);
+            saveSearchHistory(keyword, city);
           }
 
         } else {
@@ -807,6 +808,19 @@
         }
       );
 
+      searchInput.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            clearTimeout(searchTimeout);
+            window.__SEARCH_STATE__.keyword = searchInput.value.trim();
+            window.currentPage = 1;
+            applyFilter(true);
+          }
+        }
+      );
+
       clearSearchBtn.addEventListener(
         "click",
         () => {
@@ -818,7 +832,7 @@
 
           toggleClearButton();
 
-          applyFilter();
+          applyFilter(true);
         }
       );
 
