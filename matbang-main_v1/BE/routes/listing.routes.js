@@ -1,5 +1,6 @@
 import { verifyToken } from "../middlewares/auth.js";
 import express from "express";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import {
   getListingsController,
   compareListingsController,
@@ -13,27 +14,13 @@ import {
 
 const router = express.Router();
 
-router.post("/", verifyToken, createListingController);
-
-// GET listings
-router.get("/", getListingsController);
-
-// COMPARE listings
-router.get("/compare", compareListingsController);
-
-// GET single listing by id
-router.get("/:id", getListingController);
-
-// UPDATE listing
-router.put("/:id", verifyToken, updateListingController);
-
-// DELETE listing
-router.delete("/:id", verifyToken, deleteListingController);
-
-// UPDATE status
-router.patch("/:id/status", verifyToken, updateListingStatusController);
-
-// TOGGLE visibility
-router.patch("/:id/visibility", verifyToken, toggleListingVisibilityController);
+router.post("/", verifyToken, asyncHandler(createListingController));
+router.get("/", asyncHandler(getListingsController));
+router.get("/compare", asyncHandler(compareListingsController));
+router.get("/:id", asyncHandler(getListingController));
+router.put("/:id", verifyToken, asyncHandler(updateListingController));
+router.delete("/:id", verifyToken, asyncHandler(deleteListingController));
+router.patch("/:id/status", verifyToken, asyncHandler(updateListingStatusController));
+router.patch("/:id/visibility", verifyToken, asyncHandler(toggleListingVisibilityController));
 
 export default router;

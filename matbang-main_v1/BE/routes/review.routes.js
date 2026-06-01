@@ -1,4 +1,5 @@
 import express from "express";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import {
   createReviewController,
   getReviewsByListingController
@@ -7,10 +8,7 @@ import { verifyToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-// POST (cần login)
-router.post("/", verifyToken, createReviewController);
-
-// GET (không cần login)
-router.get("/:listing_id", getReviewsByListingController);
+router.post("/", verifyToken, asyncHandler(createReviewController));
+router.get("/:listing_id", asyncHandler(getReviewsByListingController));
 
 export default router;

@@ -102,7 +102,8 @@
     </main>
 
     <script type="module">
-        import { fetchAllData } from "../services/api.js";
+        import { fetchAllListings } from "../services/api.js";
+        import { interactionService } from "../services/interactionService.js";
 
         function getClientUserId() {
             let uid = localStorage.getItem("client_user_id");
@@ -119,13 +120,9 @@
             const containerEl = document.getElementById("compare-container");
             
             const userId = getClientUserId();
-            let listIds = [];
-            try {
-                const res = await fetch(`/api/interactions/compare?userId=${userId}`);
-                if (res.ok) listIds = await res.json();
-            } catch(err) {
-                console.error("Lỗi fetch compare_list:", err);
-            }
+            let listIds = await interactionService.getCompareList(userId);
+            // Handle array of objects if needed
+            listIds = listIds.map(item => typeof item === 'object' ? item.listingId : item);
 
             if (listIds.length === 0) {
                 loadingEl.classList.add("hidden");
@@ -135,7 +132,7 @@
 
             try {
                 // Tạm thời fetch tất cả và filter, nếu API có hỗ trợ fetch by ids thì tốt hơn
-                const allData = await fetchAllData(20, "");
+                const allData = await fetchAllListings({ limit: 100 });
                 const itemsToCompare = allData.filter(item => listIds.includes(item.id.toString()) || listIds.includes(item.id));
 
                 if (itemsToCompare.length === 0) {
@@ -201,11 +198,7 @@
         window.removeItem = async function(id) {
             const userId = getClientUserId();
             try {
-                await fetch("/api/interactions/compare", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId, propertyId: id })
-                });
+                await interactionService.toggleCompare(userId, id);
                 location.reload();
             } catch(err){
                 console.error(err);

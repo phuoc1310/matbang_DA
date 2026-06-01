@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import db from "./config/db.js";
 
-import testRoutes from "./routes/test.js";
 import userRoutes from "./routes/user.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
@@ -57,7 +56,6 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "../FE")));
 
 // ===== Routes =====
-app.use("/api", testRoutes); // test
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
@@ -66,22 +64,10 @@ app.use("/api/interactions", interactionRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);
 
-// ===== Chotot API =====
-app.get("/api/ads", async (req, res) => {
-  try {
-    const page = Number(req.query.page || 1);
-    const limit = 20;
-    const offset = (page - 1) * limit;
-
-    const url = `https://gateway.chotot.com/v1/public/ad-listing?cg=1000&limit=${limit}&offset=${offset}`;
-
-    const r = await fetch(url);
-    const json = await r.json();
-
-    res.json({ ads: json.ads || [] });
-  } catch (err) {
-    res.status(500).json({ error: "Fetch API error" });
-  }
+// Global Error Handler for asyncHandler
+app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+  res.status(500).json({ success: false, error: err.message || "Internal Server Error" });
 });
 
 // ===== START =====

@@ -1,4 +1,5 @@
 import express from "express";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import {
   addFavoriteController,
   getFavoritesController,
@@ -8,13 +9,8 @@ import { verifyToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-// ADD FAVORITE
-router.post("/", verifyToken, addFavoriteController);
-
-// GET FAVORITES BY USER
-router.get("/:user_id", verifyToken, getFavoritesController);
-
-// DELETE FAVORITE
-router.delete("/", verifyToken, deleteFavoriteController);
+router.post("/", verifyToken, asyncHandler(addFavoriteController));
+router.get("/:user_id", verifyToken, asyncHandler(getFavoritesController));
+router.delete("/", verifyToken, asyncHandler(deleteFavoriteController));
 
 export default router;

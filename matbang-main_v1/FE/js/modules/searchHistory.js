@@ -1,11 +1,7 @@
 // modules/searchHistory.js
 // Dropdown lịch sử tìm kiếm — dùng chung cho Trangchu.html & timkiem.html
+import { interactionService } from '../services/interactionService.js';
 
-/**
- * Khởi tạo dropdown lịch sử tìm kiếm cho ô input
- * @param {string} inputId - ID của input tìm kiếm
- * @param {Function} onSelect - callback khi user click 1 mục lịch sử (nhận object {keyword, city})
- */
 export function initSearchHistory(inputId, onSelect) {
   const input = document.getElementById(inputId);
   if (!input) return;
@@ -122,40 +118,39 @@ export function initSearchHistory(inputId, onSelect) {
     document.head.appendChild(style);
   }
 
-  // Lấy userId từ session
   function getUserId() {
     try {
       const raw = sessionStorage.getItem('currentUser');
       if (raw) {
         const u = JSON.parse(raw);
-        return u.id || u.postgres_id || null;
+        if (u.id || u.postgres_id) return u.id || u.postgres_id;
       }
     } catch (e) {}
-    return null;
+    let uid = localStorage.getItem("client_user_id");
+    if (!uid) {
+      uid = "guest_" + Math.random().toString(36).substr(2, 9) + Date.now();
+      localStorage.setItem("client_user_id", uid);
+    }
+    return uid;
   }
 
   // Fetch lịch sử từ API
   async function fetchHistory() {
     const userId = getUserId();
-    if (!userId) return [];
-    try {
-      const res = await fetch(`/api/interactions/history?userId=${userId}`);
-      if (!res.ok) return [];
-      return await res.json();
-    } catch (e) {
-      console.warn('Lỗi fetch lịch sử tìm kiếm:', e);
-      return [];
-    }
+    return await interactionService.getSearchHistory(userId);
   }
 
   // Xóa lịch sử
   async function clearHistory() {
     const userId = getUserId();
-    if (!userId) return;
-    try {
-      await fetch(`/api/interactions/history?userId=${userId}`, { method: 'DELETE' });
-    } catch (e) {}
+    await interactionService.clearSearchHistory(userId);
   }
+  
+  // Gắn ra window để phòng hờ click HTML
+  window.clearHistory = async function() {
+    await clearHistory();
+    await renderDropdown();
+  };
 
   // Render dropdown
   async function renderDropdown() {
@@ -174,7 +169,7 @@ export function initSearchHistory(inputId, onSelect) {
     let html = `
       <div class="sh-header">
         <span>Lịch sử tìm kiếm</span>
-        <span class="sh-clear" id="sh-clear-btn">Xóa tất cả</span>
+        <span class="sh-clear" id="sh-clear-btn" onclick="window.clearHistory()">Xóa tất cả</span>
       </div>`;
 
     items.forEach(item => {
@@ -199,18 +194,19 @@ export function initSearchHistory(inputId, onSelect) {
         const city = el.dataset.city;
         input.value = keyword || city || '';
         hideDropdown();
-        if (onSelect) onSelect({ keyword, city });
+        if (onSelect) {
+          onSelect({ keyword, city });
+        } else {
+          // Fallback if onSelect not provided
+          const url = new URL(window.location);
+          if (keyword) url.searchParams.set("keyword", keyword);
+          else url.searchParams.delete("keyword");
+          if (city) url.searchParams.set("city", city);
+          else url.searchParams.delete("city");
+          window.location.href = url.toString();
+        }
       });
     });
-
-    const clearBtn = dropdown.querySelector('#sh-clear-btn');
-    if (clearBtn) {
-      clearBtn.addEventListener('mousedown', async (e) => {
-        e.preventDefault();
-        await clearHistory();
-        await renderDropdown();
-      });
-    }
   }
 
   function showDropdown() {
@@ -249,20 +245,18 @@ export function initSearchHistory(inputId, onSelect) {
  * @param {string} city
  */
 export async function saveSearchHistory(keyword, city) {
+  let userId;
   try {
     const raw = sessionStorage.getItem('currentUser');
-    if (!raw) return;
-    const user = JSON.parse(raw);
-    const userId = user.id || user.postgres_id;
-    if (!userId) return;
-    if (!keyword && !city) return;
-
-    await fetch('/api/interactions/history', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, keyword: keyword || null, city: city || null })
-    });
-  } catch (e) {
-    console.warn('Lỗi lưu lịch sử tìm kiếm:', e);
+    if (raw) {
+      const user = JSON.parse(raw);
+      userId = user.id || user.postgres_id;
+    }
+  } catch (e) {}
+  
+  if (!userId) {
+    userId = localStorage.getItem("client_user_id");
   }
+  
+  await interactionService.saveSearchHistory(userId, keyword, city);
 }

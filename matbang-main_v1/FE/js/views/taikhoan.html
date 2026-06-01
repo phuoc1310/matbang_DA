@@ -173,7 +173,8 @@
     </div>
     
     <script type="module" src="/js/modules/auth/auth.js?v=1.0.3"></script>
-    <script>
+    <script type="module">
+        import { favoriteService } from '/js/services/favoriteService.js';
         document.addEventListener('DOMContentLoaded', () => {
             // Đợi auth module load xong
             if (typeof getCurrentUser === 'function') {
@@ -425,19 +426,13 @@
                 emptyEl?.classList.add('hidden');
                 
                 try {
-                    // Get Firebase token
-                    const { auth } = await import('/js/config/firebase.js');
-                    const token = await auth.currentUser?.getIdToken();
-                    if (!token || !user.id) {
+                    if (!user.id) {
                         loadingEl?.classList.add('hidden');
                         emptyEl?.classList.remove('hidden');
                         return;
                     }
                     
-                    const res = await fetch(`/api/favorites/${user.id}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const favorites = await res.json();
+                    const favorites = await favoriteService.getFavorites(user.id);
                     
                     loadingEl?.classList.add('hidden');
                     
@@ -479,15 +474,7 @@
             // Remove favorite
             window.removeFavorite = async function(listingId, btnEl) {
                 try {
-                    const { auth } = await import('/js/config/firebase.js');
-                    const token = await auth.currentUser?.getIdToken();
-                    if (!token) return;
-                    
-                    await fetch('/api/favorites', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ user_id: user.id, listing_id: listingId })
-                    });
+                    await favoriteService.removeFavorite(user.id, listingId);
                     
                     // Remove card with animation
                     const card = btnEl.closest('[data-fav-listing]');

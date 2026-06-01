@@ -435,136 +435,16 @@
     </script>
 
     <!-- ================== SEARCH HISTORY DROPDOWN ================== -->
-    <script>
-        (function() {
-            // User ID helper — ưu tiên user thực từ session
-            function getClientUserId() {
-                try {
-                    const raw = sessionStorage.getItem('currentUser');
-                    if (raw) {
-                        const u = JSON.parse(raw);
-                        if (u.id || u.postgres_id) return u.id || u.postgres_id;
-                    }
-                } catch (e) {}
-                let uid = localStorage.getItem("client_user_id");
-                if (!uid) {
-                    uid = "guest_" + Math.random().toString(36).substr(2, 9) + Date.now();
-                    localStorage.setItem("client_user_id", uid);
-                }
-                return uid;
-            }
-
-            // Inject CSS
-            if (!document.getElementById('sh-dropdown-styles')) {
-                const style = document.createElement('style');
-                style.id = 'sh-dropdown-styles';
-                style.textContent = `
-                    .sh-dropdown{display:none;position:absolute;top:100%;left:0;right:0;z-index:999;margin-top:6px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06);overflow:hidden;animation:shSlideIn .22s cubic-bezier(.4,0,.2,1)}
-                    .dark .sh-dropdown{background:#1e293b;border-color:#334155;box-shadow:0 12px 40px rgba(0,0,0,.35)}
-                    @keyframes shSlideIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-                    .sh-dropdown.show{display:block}
-                    .sh-dropdown-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;border-bottom:1px solid #f1f5f9}
-                    .dark .sh-dropdown-header{border-color:#334155}
-                    .sh-dropdown-header .sh-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;display:flex;align-items:center;gap:6px}
-                    .sh-dropdown-header .sh-title .material-symbols-outlined{font-size:16px}
-                    .sh-dropdown-clear{font-size:12px;color:#ef4444;cursor:pointer;font-weight:600;padding:3px 10px;border-radius:8px;border:none;background:0 0;transition:all .15s}
-                    .sh-dropdown-clear:hover{background:#fef2f2;color:#dc2626}
-                    .dark .sh-dropdown-clear:hover{background:rgba(127,29,29,.2)}
-                    .sh-dropdown-item{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;transition:all .15s;font-size:14px;color:#334155;border-left:3px solid transparent}
-                    .dark .sh-dropdown-item{color:#e2e8f0}
-                    .sh-dropdown-item:hover{background:#f8fafc;border-left-color:#137fec}
-                    .dark .sh-dropdown-item:hover{background:#334155;border-left-color:#137fec}
-                    .sh-dropdown-item:last-child{border-radius:0 0 16px 16px}
-                    .sh-dropdown-item .sh-icon-wrap{width:32px;height:32px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-                    .dark .sh-dropdown-item .sh-icon-wrap{background:#334155}
-                    .sh-dropdown-item .sh-icon-wrap .material-symbols-outlined{font-size:18px;color:#94a3b8}
-                    .sh-dropdown-item:hover .sh-icon-wrap{background:#dbeafe}
-                    .sh-dropdown-item:hover .sh-icon-wrap .material-symbols-outlined{color:#137fec}
-                    .dark .sh-dropdown-item:hover .sh-icon-wrap{background:#1e3a5f}
-                    .sh-dropdown-item .sh-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-                    .sh-dropdown-item .sh-badge{font-size:11px;color:#64748b;background:#f1f5f9;padding:2px 10px;border-radius:20px;flex-shrink:0;font-weight:600}
-                    .dark .sh-dropdown-item .sh-badge{background:#334155;color:#94a3b8}
-                    .sh-dropdown-empty{padding:24px 16px;text-align:center;color:#94a3b8;font-size:13px}
-                    .sh-dropdown-empty .material-symbols-outlined{font-size:32px;display:block;margin-bottom:6px;opacity:.5}
-                `;
-                document.head.appendChild(style);
-            }
-
-            async function showSearchHistory() {
-                const searchInput = document.getElementById("search");
-                if (!searchInput) return;
-                let dropdown = document.getElementById("searchHistoryDropdown");
-                if (!dropdown) {
-                    dropdown = document.createElement("div");
-                    dropdown.id = "searchHistoryDropdown";
-                    dropdown.className = "sh-dropdown";
-                    const container = searchInput.closest('.relative') || searchInput.parentElement;
-                    container.style.position = "relative";
-                    container.appendChild(dropdown);
-                }
-                const userId = getClientUserId();
-                let history = [];
-                try {
-                    const res = await fetch(`/api/interactions/history?userId=${userId}`);
-                    if (res.ok) history = await res.json();
-                } catch(e) {}
-
-                if (history.length === 0) {
-                    dropdown.innerHTML = `<div class="sh-dropdown-header"><span class="sh-title"><span class="material-symbols-outlined">history</span>Tìm kiếm gần đây</span></div><div class="sh-dropdown-empty"><span class="material-symbols-outlined">manage_search</span>Chưa có lịch sử tìm kiếm</div>`;
-                    dropdown.classList.add("show");
-                    return;
-                }
-
-                let html = `<div class="sh-dropdown-header"><span class="sh-title"><span class="material-symbols-outlined">history</span>Tìm kiếm gần đây</span><button type="button" class="sh-dropdown-clear" id="sh-clear-all">Xóa tất cả</button></div>`;
-                history.forEach(item => {
-                    const kw = item.keyword || '', ct = item.city || '', display = kw || 'Tất cả';
-                    html += `<div class="sh-dropdown-item" data-keyword="${kw}" data-city="${ct}"><div class="sh-icon-wrap"><span class="material-symbols-outlined">history</span></div><span class="sh-text">${display}</span>${ct ? `<span class="sh-badge">${ct}</span>` : ''}</div>`;
-                });
-                dropdown.innerHTML = html;
-
-                // Click on history item → navigate to search page
-                dropdown.querySelectorAll('.sh-dropdown-item').forEach(el => {
-                    el.addEventListener('mousedown', (e) => {
-                        e.preventDefault();
-                        const keyword = el.dataset.keyword || '';
-                        const city = el.dataset.city || '';
-                        searchInput.value = keyword;
-                        hideSearchHistory();
-                        const params = new URLSearchParams();
-                        if (keyword) params.set('keyword', keyword);
-                        if (city) params.set('city', city);
-                        window.location.href = `/js/views/timkiem.html?${params.toString()}`;
-                    });
-                });
-
-                // Clear all button
-                const clearBtn = dropdown.querySelector('#sh-clear-all');
-                if (clearBtn) {
-                    clearBtn.addEventListener('mousedown', async (e) => {
-                        e.preventDefault();
-                        try { await fetch(`/api/interactions/history?userId=${userId}`, { method: "DELETE" }); } catch(e) {}
-                        showSearchHistory();
-                    });
-                }
-
-                dropdown.classList.add("show");
-            }
-
-            function hideSearchHistory() {
-                const d = document.getElementById("searchHistoryDropdown");
-                if (d) d.classList.remove("show");
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const searchInput = document.getElementById("search");
-                if (!searchInput) return;
-                searchInput.addEventListener("focus", showSearchHistory);
-                searchInput.addEventListener("blur", () => setTimeout(hideSearchHistory, 200));
-                searchInput.addEventListener("input", () => {
-                    searchInput.value.trim() ? hideSearchHistory() : showSearchHistory();
-                });
+    <script type="module">
+        import { initSearchHistory } from "/js/modules/searchHistory.js";
+        document.addEventListener("DOMContentLoaded", () => {
+            initSearchHistory("search", (item) => {
+                const url = new URL("/js/views/timkiem.html", window.location.origin);
+                if (item.keyword) url.searchParams.set("keyword", item.keyword);
+                if (item.city) url.searchParams.set("city", item.city);
+                window.location.href = url.toString();
             });
-        })();
+        });
     </script>
     <!-- ================== END SEARCH HISTORY ================== -->
 

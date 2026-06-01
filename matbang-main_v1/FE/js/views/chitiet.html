@@ -344,7 +344,7 @@
               Tư vấn AI
             </h4>
 
-            <button onclick="askAIAdvisor()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600
+            <button onclick="window.askAIAdvisor()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600
                                text-white text-sm font-bold py-2.5 rounded-lg">
               🤖 Hỏi AI: Mặt bằng này có phù hợp không?
             </button>
@@ -405,42 +405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 </script> -->
 
-  <script>
-    async function askAIAdvisor() {
-      const box = document.getElementById("ai-result");
 
-      if (!window.currentListing) {
-        box.innerText = "Không có dữ liệu mặt bằng.";
-        return;
-      }
-
-      box.innerText = "🤖 AI đang phân tích mặt bằng...";
-
-      try {
-        // ================= N8N → DIFY (PLACEHOLDER) =================
-        const res = await fetch("https://n8n.your-domain/webhook/ask-ai", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            question: "Mặt bằng này có phù hợp để kinh doanh không?",
-            listing: window.currentListing
-          })
-        });
-
-        const data = await res.json();
-
-        box.innerText =
-          data.answer ||
-          "AI sẽ đánh giá dựa trên vị trí, giá và tiềm năng kinh doanh.";
-
-      } catch (e) {
-        box.innerText =
-          "⚠️ AI chưa được cấu hình (demo tích hợp n8n + Dify).";
-      }
-    }
-
-
-  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const guestUI = document.getElementById("guest-actions");
@@ -469,38 +434,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   </script>
   <!-- ================== FAVORITE LOGIC ================== -->
   <script type="module">
-    import { auth } from "/js/config/firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { favoriteService } from "/js/services/favoriteService.js";
 
     let isFavorited = false;
-    const BACKEND = '';
-    let _fbUser = null;
-
-    async function getToken() {
-      try {
-        if (_fbUser) return await _fbUser.getIdToken();
-        if (auth.currentUser) {
-          _fbUser = auth.currentUser;
-          return await auth.currentUser.getIdToken();
-        }
-        // Wait for auth
-        return new Promise((resolve) => {
-          const unsub = onAuthStateChanged(auth, (user) => {
-            unsub();
-            if (user) {
-              _fbUser = user;
-              user.getIdToken().then(resolve).catch(() => resolve(null));
-            } else { resolve(null); }
-          });
-          setTimeout(() => resolve(null), 3000);
-        });
-      } catch { return null; }
-    }
 
     function getUserId() {
       try {
         const raw = sessionStorage.getItem('currentUser');
-        if (raw) return JSON.parse(raw).id;
+        if (raw) return JSON.parse(raw).id || JSON.parse(raw).postgres_id;
       } catch {}
       return null;
     }
@@ -528,18 +469,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check if listing is already favorited
     async function checkFavorite() {
       const userId = getUserId();
-      const token = await getToken();
-      if (!userId || !token) return;
+      if (!userId) return;
 
       try {
-        const res = await fetch(`${BACKEND}/api/favorites/${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const favorites = await res.json();
+        const favorites = await favoriteService.getFavorites(userId);
         if (Array.isArray(favorites)) {
           const params = new URLSearchParams(window.location.search);
           const listingId = params.get('id');
-          const found = favorites.some(f => String(f.listing_id) === String(listingId));
+          const found = favorites.some(f => String(f.listing_id || f.id) === String(listingId));
           updateFavIcon(found);
         }
       } catch (e) {
@@ -550,8 +487,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Toggle favorite
     window.toggleFavoriteDetail = async function() {
       const userId = getUserId();
-      const token = await getToken();
-      if (!userId || !token) {
+      if (!userId) {
         alert('Vui lòng đăng nhập để lưu yêu thích!');
         return;
       }
@@ -562,18 +498,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         if (isFavorited) {
-          await fetch(`${BACKEND}/api/favorites`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
-          });
+          await favoriteService.removeFavorite(userId, listingId);
           updateFavIcon(false);
         } else {
-          await fetch(`${BACKEND}/api/favorites`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ user_id: userId, listing_id: parseInt(listingId) })
-          });
+          await favoriteService.addFavorite(userId, listingId);
           updateFavIcon(true);
         }
       } catch (e) {

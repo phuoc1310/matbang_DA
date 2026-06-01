@@ -1,4 +1,5 @@
 import express from "express";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import {
   getSearchHistory,
   addSearchHistory,
@@ -11,13 +12,13 @@ import {
 const router = express.Router();
 
 // Lịch sử tìm kiếm
-router.get("/history", getSearchHistory);
-router.post("/history", addSearchHistory);
-router.delete("/history", clearSearchHistory);
+router.get("/history", asyncHandler(getSearchHistory));
+router.post("/history", asyncHandler(addSearchHistory));
+router.delete("/history", asyncHandler(clearSearchHistory));
 
 // So sánh mặt bằng
-router.get("/compare", getCompareList);
-router.post("/compare", toggleCompare);
-router.delete("/compare", clearCompareList);
+router.get("/compare", asyncHandler(getCompareList));
+router.post("/compare", asyncHandler(toggleCompare));
+router.delete("/compare", asyncHandler(clearCompareList));
 
 export default router;

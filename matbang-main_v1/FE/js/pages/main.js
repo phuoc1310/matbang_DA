@@ -1,4 +1,7 @@
 // public/js/pages/main.js
+import { initSearchHistory, saveSearchHistory } from '../modules/searchHistory.js';
+import { interactionService } from '../services/interactionService.js';
+
 window.PAGE_SIZE = 12;
 window.currentPage = 1;
 
@@ -11,276 +14,6 @@ function getClientUserId() {
   }
   return uid;
 }
-
-// --- FEATURE 1: Lịch sử tìm kiếm ---
-async function saveSearchHistory(paramsObj) {
-  if (!paramsObj.keyword && !paramsObj.city) return;
-  const userId = getClientUserId();
-  try {
-    await fetch("/api/interactions/history", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, ...paramsObj })
-    });
-  } catch(err) {
-    console.error("Lỗi save history:", err);
-  }
-}
-
-// --- Inject CSS cho Search History Dropdown ---
-(function injectSearchHistoryCSS() {
-  if (document.getElementById('sh-dropdown-styles')) return;
-  const style = document.createElement('style');
-  style.id = 'sh-dropdown-styles';
-  style.textContent = `
-    .sh-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      z-index: 999;
-      margin-top: 6px;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
-      overflow: hidden;
-      animation: shSlideIn 0.22s cubic-bezier(.4,0,.2,1);
-    }
-    .dark .sh-dropdown {
-      background: #1e293b;
-      border-color: #334155;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-    }
-    @keyframes shSlideIn {
-      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    .sh-dropdown.show { display: block; }
-
-    .sh-dropdown-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px 8px 16px;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .dark .sh-dropdown-header { border-color: #334155; }
-    .sh-dropdown-header .sh-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .sh-dropdown-header .sh-title .material-symbols-outlined { font-size: 16px; }
-    .sh-dropdown-clear {
-      font-size: 12px;
-      color: #ef4444;
-      cursor: pointer;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      transition: all 0.15s;
-    }
-    .sh-dropdown-clear:hover { background: #fef2f2; color: #dc2626; }
-    .dark .sh-dropdown-clear:hover { background: rgba(127,29,29,0.2); }
-
-    .sh-dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 16px;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-size: 14px;
-      color: #334155;
-      border-left: 3px solid transparent;
-    }
-    .dark .sh-dropdown-item { color: #e2e8f0; }
-    .sh-dropdown-item:hover {
-      background: #f8fafc;
-      border-left-color: #137fec;
-    }
-    .dark .sh-dropdown-item:hover {
-      background: #334155;
-      border-left-color: #137fec;
-    }
-    .sh-dropdown-item:last-child { border-radius: 0 0 16px 16px; }
-    .sh-dropdown-item .sh-icon-wrap {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .dark .sh-dropdown-item .sh-icon-wrap { background: #334155; }
-    .sh-dropdown-item .sh-icon-wrap .material-symbols-outlined {
-      font-size: 18px;
-      color: #94a3b8;
-    }
-    .sh-dropdown-item:hover .sh-icon-wrap {
-      background: #dbeafe;
-    }
-    .sh-dropdown-item:hover .sh-icon-wrap .material-symbols-outlined {
-      color: #137fec;
-    }
-    .dark .sh-dropdown-item:hover .sh-icon-wrap { background: #1e3a5f; }
-    .sh-dropdown-item .sh-text {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-weight: 500;
-    }
-    .sh-dropdown-item .sh-badge {
-      font-size: 11px;
-      color: #64748b;
-      background: #f1f5f9;
-      padding: 2px 10px;
-      border-radius: 20px;
-      flex-shrink: 0;
-      font-weight: 600;
-    }
-    .dark .sh-dropdown-item .sh-badge { background: #334155; color: #94a3b8; }
-
-    .sh-dropdown-empty {
-      padding: 24px 16px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-    .sh-dropdown-empty .material-symbols-outlined {
-      font-size: 32px;
-      display: block;
-      margin-bottom: 6px;
-      opacity: 0.5;
-    }
-  `;
-  document.head.appendChild(style);
-})();
-
-async function showSearchHistory() {
-  const searchInput = document.querySelector("#search");
-  if (!searchInput) return;
-
-  let dropdown = document.getElementById("searchHistoryDropdown");
-  if (!dropdown) {
-    dropdown = document.createElement("div");
-    dropdown.id = "searchHistoryDropdown";
-    dropdown.className = "sh-dropdown";
-    const container = searchInput.closest('.relative') || searchInput.parentElement;
-    container.style.position = "relative";
-    container.appendChild(dropdown);
-  }
-
-  const userId = getClientUserId();
-  let history = [];
-  try {
-    const res = await fetch(`/api/interactions/history?userId=${userId}`);
-    if (res.ok) history = await res.json();
-  } catch(err) {}
-
-  if (history.length === 0) {
-    dropdown.innerHTML = `
-      <div class="sh-dropdown-header">
-        <span class="sh-title">
-          <span class="material-symbols-outlined">history</span>
-          Tìm kiếm gần đây
-        </span>
-      </div>
-      <div class="sh-dropdown-empty">
-        <span class="material-symbols-outlined">manage_search</span>
-        Chưa có lịch sử tìm kiếm
-      </div>`;
-    dropdown.classList.add("show");
-    return;
-  }
-
-  let html = `
-    <div class="sh-dropdown-header">
-      <span class="sh-title">
-        <span class="material-symbols-outlined">history</span>
-        Tìm kiếm gần đây
-      </span>
-      <button type="button" class="sh-dropdown-clear" onclick="window.clearHistory()">Xóa tất cả</button>
-    </div>`;
-
-  history.forEach(item => {
-    const keyword = item.keyword || '';
-    const city = item.city || '';
-    const display = keyword || 'Tất cả';
-    html += `
-      <div class="sh-dropdown-item" data-keyword="${keyword}" data-city="${city}">
-        <div class="sh-icon-wrap">
-          <span class="material-symbols-outlined">history</span>
-        </div>
-        <span class="sh-text">${display}</span>
-        ${city ? `<span class="sh-badge">${city}</span>` : ''}
-      </div>`;
-  });
-
-  dropdown.innerHTML = html;
-
-  // Bind click events
-  dropdown.querySelectorAll('.sh-dropdown-item').forEach(el => {
-    el.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      searchInput.value = el.dataset.keyword || '';
-      const citySelect = document.getElementById("citySelect");
-      if (citySelect) citySelect.value = el.dataset.city || '';
-      hideSearchHistory();
-      document.querySelector("#btnSearch")?.click();
-    });
-  });
-
-  dropdown.classList.add("show");
-}
-
-function hideSearchHistory() {
-  const dropdown = document.getElementById("searchHistoryDropdown");
-  if (dropdown) dropdown.classList.remove("show");
-}
-
-window.clearHistory = async function() {
-  const userId = getClientUserId();
-  try {
-    await fetch(`/api/interactions/history?userId=${userId}`, { method: "DELETE" });
-    // Re-render dropdown empty state
-    showSearchHistory();
-  } catch(err){}
-};
-
-// Tự động hiện dropdown khi focus ô search
-document.addEventListener("DOMContentLoaded", () => {
-  const searchInput = document.querySelector("#search");
-  if (!searchInput) return;
-
-  searchInput.addEventListener("focus", () => {
-    showSearchHistory();
-  });
-
-  searchInput.addEventListener("blur", () => {
-    setTimeout(hideSearchHistory, 200);
-  });
-
-  searchInput.addEventListener("input", () => {
-    if (searchInput.value.trim().length > 0) {
-      hideSearchHistory();
-    } else {
-      showSearchHistory();
-    }
-  });
-});
 
 // --- FEATURE 2: So sánh mặt bằng ---
 async function initCompare() {
@@ -311,13 +44,8 @@ async function initCompare() {
   }
 
   const userId = getClientUserId();
-  try {
-    const res = await fetch(`/api/interactions/compare?userId=${userId}`);
-    if (res.ok) {
-      const list = await res.json();
-      updateCompareUI(list);
-    }
-  } catch(err){}
+  const list = await interactionService.getCompareList(userId);
+  updateCompareUI(list);
 }
 
 function updateCompareUI(list) {
@@ -337,7 +65,9 @@ function updateCompareUI(list) {
     btn.classList.add("text-gray-700", "bg-white/90");
   });
   
-  list.forEach(id => {
+  list.forEach(item => {
+    // API returns objects like { listingId: ... }, so handle both string IDs or objects
+    const id = typeof item === 'object' ? item.listingId : item;
     document.querySelectorAll(`.compare-btn-${id}`).forEach(btn => {
       btn.classList.add("text-primary", "bg-blue-50");
       btn.classList.remove("text-gray-700", "bg-white/90");
@@ -347,28 +77,26 @@ function updateCompareUI(list) {
 
 window.toggleCompare = async function(id) {
   const userId = getClientUserId();
-  try {
-    const res = await fetch("/api/interactions/compare", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, propertyId: id })
-    });
-    const data = await res.json();
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
-    // Lấy lại danh sách sau khi toggle
-    initCompare();
-  } catch(err){}
+  
+  // Kiểm tra xem đã trong danh sách chưa
+  const list = await interactionService.getCompareList(userId);
+  const exists = list.some(item => (typeof item === 'object' ? item.listingId : item) === id);
+  
+  if (!exists && list.length >= 4) {
+    alert('Bạn chỉ có thể so sánh tối đa 4 mặt bằng.');
+    return;
+  }
+  
+  await interactionService.toggleCompare(userId, id);
+  
+  // Lấy lại danh sách sau khi toggle
+  initCompare();
 };
 
 window.clearCompare = async function() {
   const userId = getClientUserId();
-  try {
-    await fetch(`/api/interactions/compare?userId=${userId}`, { method: "DELETE" });
-    updateCompareUI([]);
-  } catch(err){}
+  await interactionService.clearCompare(userId);
+  updateCompareUI([]);
 };
 
 // --- DOM READY ---
@@ -377,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const searchInput = document.querySelector("#search");
   if (searchInput) {
-    searchInput.addEventListener("focus", showSearchHistory);
+    initSearchHistory("search");
     // Ẩn dropdown khi click ngoài
     document.addEventListener("click", (e) => {
       if (!e.target.closest("#search") && !e.target.closest("#searchHistoryDropdown")) {
@@ -393,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const price = document.getElementById("price")?.value || ""; // format min-max in VND
     const area = document.getElementById("area")?.value || ""; // format min-max in m2
 
-    await saveSearchHistory({ keyword, city });
+    await saveSearchHistory(keyword, city);
 
     let minPrice = "";
     let maxPrice = "";
