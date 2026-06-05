@@ -39,3 +39,48 @@
 2026-06-01T05:51:24.358Z ✅ PostgreSQL connected
 2026-06-01T05:54:13.684Z 🚀 Server running http://localhost:3033
 2026-06-01T05:54:13.725Z ✅ PostgreSQL connected
+2026-06-02T01:35:30.049Z 🚀 Server running http://localhost:3033
+2026-06-02T01:35:30.124Z ✅ PostgreSQL connected
+2026-06-02T02:02:34.745Z 🚀 Server running http://localhost:3033
+2026-06-02T02:02:34.793Z ✅ PostgreSQL connected
+2026-06-02T02:26:57.525Z ERROR Global error handler: {"length":171,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $2 = '...'","file":"numutils.c","line":"618","routine":"pg_strtoint32_safe"}
+2026-06-02T02:26:58.430Z ERROR Global error handler: {"length":171,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $2 = '...'","file":"numutils.c","line":"618","routine":"pg_strtoint32_safe"}
+2026-06-02T02:26:58.811Z ERROR Global error handler: {"length":171,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $2 = '...'","file":"numutils.c","line":"618","routine":"pg_strtoint32_safe"}
+2026-06-02T02:26:58.974Z ERROR Global error handler: {"length":171,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $2 = '...'","file":"numutils.c","line":"618","routine":"pg_strtoint32_safe"}
+2026-06-02T02:35:25.053Z ERROR Global error handler: {"length":171,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $2 = '...'","file":"numutils.c","line":"618","routine":"pg_strtoint32_safe"}
+2026-06-04T01:05:02.500Z 🚀 Server running http://localhost:3033
+2026-06-04T01:05:02.675Z ✅ PostgreSQL connected
+2026-06-04T01:05:04.954Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:05.943Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:16.180Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:25.883Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:34.838Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:35.858Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:40.078Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:05:41.101Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:07:43.078Z 🚀 Server running http://localhost:3033
+2026-06-04T01:07:43.120Z ✅ PostgreSQL connected
+2026-06-04T01:07:44.474Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:08:17.591Z ERROR Global error handler: {"length":212,"name":"error","severity":"ERROR","code":"42883","hint":"No operator matches the given name and argument types. You might need to add explicit type casts.","position":"81","file":"parse_oper.c","line":"644","routine":"op_error"}
+2026-06-04T01:08:48.380Z 🚀 Server running http://localhost:3033
+2026-06-04T01:08:48.423Z ✅ PostgreSQL connected
+2026-06-04T01:11:28.461Z 🚀 Server running http://localhost:3033
+2026-06-04T01:11:28.610Z ✅ PostgreSQL connected
+2026-06-04T01:21:17.678Z 🚀 Server running http://localhost:3033
+2026-06-04T01:21:17.720Z ✅ PostgreSQL connected
+2026-06-04T01:32:54.928Z 🚀 Server running http://localhost:3033
+2026-06-04T01:32:54.982Z ✅ PostgreSQL connected
+2026-06-05T08:38:13.868Z 🚀 Server running http://localhost:3033
+2026-06-05T08:38:14.043Z ✅ PostgreSQL connected
+2026-06-05T08:50:04.550Z 🚀 Server running http://localhost:3033
+2026-06-05T08:50:04.589Z ✅ PostgreSQL connected
+2026-06-05T09:04:08.688Z 🚀 Server running http://localhost:3033
+2026-06-05T09:04:08.734Z ✅ PostgreSQL connected
+2026-06-05T14:37:55.672Z 🚀 Server running http://localhost:3033
+2026-06-05T14:37:55.767Z ✅ PostgreSQL connected
+2026-06-05T14:57:51.631Z 🚀 Server running http://localhost:3033
+2026-06-05T14:57:51.669Z ✅ PostgreSQL connected
+2026-06-05T15:02:11.303Z 🚀 Server running http://localhost:3033
+2026-06-05T15:02:11.348Z ✅ PostgreSQL connected
+2026-06-05T15:04:49.918Z 🚀 Server running http://localhost:3033
+2026-06-05T15:04:49.973Z ✅ PostgreSQL connected

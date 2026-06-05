@@ -178,3 +178,21 @@ export async function deleteFeedback(id) {
   const result = await db.query(`DELETE FROM feedbacks WHERE id = $1 RETURNING id`, [id]);
   return result.rows.length > 0;
 }
+
+export async function getReviews() {
+  const result = await db.query(`
+    SELECT r.id, r.rating, r.comment, r.created_at AS "createdAt", 
+           u.email, u.name AS "userName",
+           l.title AS "listingTitle"
+    FROM reviews r
+    LEFT JOIN users u ON r.user_id = u.id
+    LEFT JOIN listings l ON r.listing_id = l.id
+    ORDER BY r.created_at DESC
+  `);
+  return result.rows;
+}
+
+export async function deleteReview(id) {
+  const result = await db.query(`DELETE FROM reviews WHERE id = $1 RETURNING id`, [id]);
+  return result.rows.length > 0;
+}

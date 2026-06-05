@@ -30,14 +30,14 @@ router.get("/listings/stats", asyncHandler(AdminController.getListingStats));
 router.patch("/listings/:id/status", asyncHandler(AdminController.updateListingStatus));
 router.delete("/listings/:id", asyncHandler(AdminController.deleteListing));
 
-router.get("/contacts", asyncHandler(AdminController.getContacts));
-router.get("/contacts/:id", asyncHandler(AdminController.getContactById));
-router.patch("/contacts/:id/status", asyncHandler(AdminController.updateContactStatus));
-router.delete("/contacts/:id", asyncHandler(AdminController.deleteContact));
+
 
 router.get("/feedbacks", asyncHandler(AdminController.getFeedbacks));
 router.get("/feedbacks/:id", asyncHandler(AdminController.getFeedbackById));
 router.patch("/feedbacks/:id/status", asyncHandler(AdminController.updateFeedbackStatus));
 router.delete("/feedbacks/:id", asyncHandler(AdminController.deleteFeedback));
+
+router.get("/reviews", asyncHandler(AdminController.getReviews));
+router.delete("/reviews/:id", asyncHandler(AdminController.deleteReview));
 
 export default router;

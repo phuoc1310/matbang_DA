@@ -99,9 +99,16 @@ function fillForm(data) {
   document.getElementById('district').value = data.district || '';
   document.getElementById('ward').value = data.ward || '';
   document.getElementById('region').value = data.region || '';
-  
+  let imagesToPreview = [];
   if (data.images && data.images.length > 0) {
-    displayPreviewImages(data.images);
+    imagesToPreview = data.images;
+  } else if (data.image && !data.image.includes('placehold.co')) {
+    imagesToPreview = [data.image];
+  }
+  
+  if (imagesToPreview.length > 0) {
+    document.getElementById('imageUrls').value = imagesToPreview.join(', ');
+    displayPreviewImages(imagesToPreview);
   }
 }
 
@@ -474,13 +481,16 @@ async function handleFormSubmit(e) {
       title,
       description,
       businessType,
+      type: businessType,
       area,
       price,
       address,
       district,
       ward,
       region,
-      images: images.length > 0 ? images : []
+      city: region,
+      images: images.length > 0 ? images : [],
+      image: images.length > 0 ? images[0] : null
     };
 
     console.log('Submitting listing data:', listingData);

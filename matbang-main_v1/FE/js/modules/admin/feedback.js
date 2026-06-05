@@ -6,16 +6,16 @@ function getBackendUrl() {
 
 async function getFeedbacks() {
     try {
-        const response = await fetch(`${getBackendUrl()}/api/admin/feedbacks`);
+        const response = await fetch(`${getBackendUrl()}/api/admin/reviews`);
         const result = await response.json();
         if (result.success) {
-            return result.feedbacks;
+            return result.reviews;
         } else {
-            console.error('Lỗi lấy danh sách phản hồi:', result.error || result.message);
+            console.error('Lỗi lấy danh sách đánh giá:', result.error || result.message);
             return [];
         }
     } catch (err) {
-        console.error('Lỗi fetch feedbacks:', err);
+        console.error('Lỗi fetch reviews:', err);
         return [];
     }
 }
@@ -51,13 +51,13 @@ async function updateFeedbackStatus(id, status, byEmail) {
 
 async function deleteFeedback(id) {
     try {
-        const response = await fetch(`${getBackendUrl()}/api/admin/feedbacks/${id}`, {
+        const response = await fetch(`${getBackendUrl()}/api/admin/reviews/${id}`, {
             method: 'DELETE'
         });
         const result = await response.json();
         return result.success;
     } catch (err) {
-        console.error('Lỗi delete feedback:', err);
+        console.error('Lỗi delete review:', err);
         return false;
     }
 }

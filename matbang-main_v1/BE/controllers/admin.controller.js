@@ -96,8 +96,19 @@ export const updateFeedbackStatus = async (req, res) => {
   res.json({ success: true, feedback });
 };
 
-export const deleteFeedback = async (req, res) => {
+export async function deleteFeedback(req, res) {
   const deleted = await AdminService.deleteFeedback(req.params.id);
   if (!deleted) return res.status(404).json({ success: false, message: "Không tìm thấy phản hồi" });
   res.json({ success: true, message: "Đã xóa phản hồi" });
+}
+
+export const getReviews = async (req, res) => {
+  const reviews = await AdminService.getReviews();
+  res.json({ success: true, reviews });
+};
+
+export const deleteReview = async (req, res) => {
+  const deleted = await AdminService.deleteReview(req.params.id);
+  if (!deleted) return res.status(404).json({ success: false, message: "Không tìm thấy đánh giá" });
+  res.json({ success: true, message: "Đã xóa đánh giá" });
 };

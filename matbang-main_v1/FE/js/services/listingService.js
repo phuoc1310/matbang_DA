@@ -84,6 +84,8 @@ export async function deleteListing(id) {
 export function normalizeListing(listing) {
     return {
         ...listing,
+        area_m2: listing.area_m2 || listing.area || 0,
+        businessType: listing.businessType || listing.type || 'N/A',
         price_string: listing.price ? `${Number(listing.price).toLocaleString('vi-VN')} VNĐ` : 'Thỏa thuận',
     };
 }

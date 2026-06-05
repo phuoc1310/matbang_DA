@@ -689,12 +689,15 @@
       // =====================================
       try {
 
-        // send the short city code (e.g. 'hcm', 'hn') or empty string for "Toàn quốc"
         const data =
           await fetchAllListings({
             keyword,
             type: typeParam,
             city: city || "",
+            minPrice: window.__SEARCH_STATE__.minPrice !== 0 ? window.__SEARCH_STATE__.minPrice : undefined,
+            maxPrice: window.__SEARCH_STATE__.maxPrice !== 20000000000 ? window.__SEARCH_STATE__.maxPrice : undefined,
+            minArea: window.__SEARCH_STATE__.minArea !== 0 ? window.__SEARCH_STATE__.minArea : undefined,
+            maxArea: window.__SEARCH_STATE__.maxArea !== 99999 ? window.__SEARCH_STATE__.maxArea : undefined,
             limit: 100,
             maxPages: 5,
           });
@@ -1197,7 +1200,7 @@
       });
     });
   </script>
-
+  <script type="module" src="/js/components/compareUI.js?v=1.0.0"></script>
 </body>
 
 </html>

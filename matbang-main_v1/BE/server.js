@@ -9,7 +9,6 @@ import db from "./config/db.js";
 import userRoutes from "./routes/user.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import listingRoutes from "./routes/listing.routes.js";
-import favoriteRoutes from "./routes/favorite.routes.js";
 import interactionRoutes from "./routes/interaction.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
@@ -55,14 +54,18 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "../FE")));
 
+import uploadRoutes from "./routes/upload.routes.js";
+
 // ===== Routes =====
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/listings", listingRoutes); // 🔥 sửa ở đây
-app.use("/api/favorites", favoriteRoutes);
 app.use("/api/interactions", interactionRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/upload", uploadRoutes);
+
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Global Error Handler for asyncHandler
 app.use((err, req, res, next) => {

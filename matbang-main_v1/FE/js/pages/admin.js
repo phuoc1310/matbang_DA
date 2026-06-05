@@ -1,7 +1,7 @@
 // ================== ADMIN MODULE ==================
 // Quản lý tài khoản người dùng cho admin
 
-import { setUserAsAdmin, removeAdminRole, logout } from "/js/modules/auth/auth.js?v=1.0.5";
+import { setUserAsAdmin, removeAdminRole, logout } from "/js/modules/auth/auth.js?v=1.0.6";
 
 // Helper function for phone validation
 function validatePhone(phone) {
@@ -585,14 +585,7 @@ function setupEventListeners() {
     
     // This is now handled in setupNavigation()
     
-    // Contact filter
-    const filterContactStatus = document.getElementById('filter-contact-status');
-    if (filterContactStatus) {
-        filterContactStatus.addEventListener('change', () => {
-            loadContacts();
-        });
-    }
-    
+
     // Feedback filter
     const filterFeedbackStatus = document.getElementById('filter-feedback-status');
     if (filterFeedbackStatus) {
@@ -651,7 +644,6 @@ async function navigateTo(sectionName) {
     const titles = {
         dashboard: { title: 'Dashboard', subtitle: 'Tổng quan hệ thống' },
         users: { title: 'Quản lý người dùng', subtitle: 'Danh sách và thông tin người dùng' },
-        contacts: { title: 'Quản lý liên hệ', subtitle: 'Tin nhắn từ khách hàng' },
         feedbacks: { title: 'Quản lý phản hồi', subtitle: 'Đánh giá và góp ý từ người dùng' },
         listings: { title: 'Quản lý tin đăng', subtitle: 'Duyệt, từ chối và quản lý tất cả tin đăng' }
     };
@@ -681,8 +673,6 @@ async function navigateTo(sectionName) {
         }
     } else if (sectionName === 'users') {
         await loadUsers();
-    } else if (sectionName === 'contacts') {
-        await loadContacts();
     } else if (sectionName === 'feedbacks') {
         await loadFeedbacks();
     } else if (sectionName === 'listings') {
@@ -705,12 +695,8 @@ window.confirmSetAdmin = confirmSetAdmin;
 window.confirmRemoveAdmin = confirmRemoveAdmin;
 window.saveEditedUser = saveEditedUser;
 window.deleteUser = deleteUser;
-window.viewContact = viewContact;
-window.markContactProcessed = markContactProcessed;
-window.deleteContactAdmin = deleteContactAdmin;
-window.analyzeContactSentiment = analyzeContactSentiment;
+
 window.viewFeedback = viewFeedback;
-window.markFeedbackReviewed = markFeedbackReviewed;
 window.deleteFeedbackAdmin = deleteFeedbackAdmin;
 window.analyzeFeedbackSentiment = analyzeFeedbackSentiment;
 window.adminApproveListing = adminApproveListing;
@@ -744,214 +730,7 @@ function switchTab(tabName) {
     navigateTo(tabName);
 }
 
-// ================== CONTACTS MANAGEMENT ==================
-async function loadContacts() {
-    if (typeof getContacts !== 'function') {
-        console.error('contact.js chưa được load');
-        return;
-    }
-    
-    const contacts = await getContacts();
-    const filterStatus = document.getElementById('filter-contact-status')?.value || 'all';
-    
-    let filteredContacts = contacts;
-    if (filterStatus !== 'all') {
-        filteredContacts = contacts.filter(c => c.status === filterStatus);
-    }
-    
-    // Sort by date (newest first)
-    filteredContacts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    renderContacts(filteredContacts);
-}
 
-function renderContacts(contacts) {
-    const tbody = document.getElementById('contacts-table-body');
-    if (!tbody) return;
-    
-    if (contacts.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                    <span class="material-symbols-outlined text-4xl mb-2 block">inbox</span>
-                    Chưa có liên hệ nào
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    tbody.innerHTML = contacts.map(contact => {
-        const date = new Date(contact.createdAt).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        const statusColors = {
-            pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-            processed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-            resolved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-        };
-        
-        const statusTexts = {
-            pending: 'Chưa xử lý',
-            processed: 'Đã xử lý',
-            resolved: 'Đã giải quyết'
-        };
-        
-        const subjectTexts = {
-            tuvan: 'Tư vấn tìm mặt bằng',
-            dangtin: 'Hỗ trợ đăng tin',
-            vip: 'Gói VIP',
-            kythuat: 'Hỗ trợ kỹ thuật',
-            khac: 'Khác'
-        };
-        
-        return `
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <td class="px-6 py-4 text-sm">${escapeHtml(contact.fullName)}</td>
-                <td class="px-6 py-4 text-sm">${escapeHtml(contact.email)}</td>
-                <td class="px-6 py-4 text-sm">${contact.phone || '-'}</td>
-                <td class="px-6 py-4 text-sm">${subjectTexts[contact.subject] || contact.subject}</td>
-                <td class="px-6 py-4">
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusColors[contact.status] || statusColors.pending}">
-                        ${statusTexts[contact.status] || 'Chưa xử lý'}
-                    </span>
-                </td>
-                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">${date}</td>
-                <td class="px-6 py-4 text-sm">
-                    <div class="flex gap-2">
-                        <button onclick="viewContact('${contact.id}')" class="text-primary hover:text-primary-dark transition-colors" title="Xem chi tiết">
-                            <span class="material-symbols-outlined">visibility</span>
-                        </button>
-                        ${contact.status !== 'resolved' ? `
-                            <button onclick="markContactProcessed('${contact.id}')" class="text-blue-600 hover:text-blue-700 transition-colors" title="Đánh dấu đã xử lý">
-                                <span class="material-symbols-outlined">check_circle</span>
-                            </button>
-                        ` : ''}
-                        <button onclick="deleteContactAdmin('${contact.id}')" class="text-red-600 hover:text-red-700 transition-colors" title="Xóa">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-async function viewContact(id) {
-    if (typeof getContactById !== 'function') return;
-    
-    const contact = await getContactById(id);
-    if (!contact) {
-        showMessage('Không tìm thấy liên hệ', 'error');
-        return;
-    }
-    
-    const modalContent = document.getElementById('contact-modal-content');
-    const date = new Date(contact.createdAt).toLocaleString('vi-VN');
-    const processedDate = contact.processedAt ? new Date(contact.processedAt).toLocaleString('vi-VN') : '-';
-    
-    const subjectTexts = {
-        tuvan: 'Tư vấn tìm mặt bằng',
-        dangtin: 'Hỗ trợ đăng tin',
-        vip: 'Gói VIP',
-        kythuat: 'Hỗ trợ kỹ thuật',
-        khac: 'Khác'
-    };
-    
-    modalContent.innerHTML = `
-        <div class="space-y-4">
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Họ và tên</label>
-                <p class="text-slate-900 dark:text-white">${escapeHtml(contact.fullName)}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
-                <p class="text-slate-900 dark:text-white">${escapeHtml(contact.email)}</p>
-            </div>
-            ${contact.phone ? `
-                <div>
-                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Số điện thoại</label>
-                    <p class="text-slate-900 dark:text-white">${escapeHtml(contact.phone)}</p>
-                </div>
-            ` : ''}
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Chủ đề</label>
-                <p class="text-slate-900 dark:text-white">${subjectTexts[contact.subject] || contact.subject}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Nội dung</label>
-                <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(contact.content)}</p>
-            </div>
-            
-            <!-- AI Sentiment Analysis -->
-            <div class="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div class="flex items-center justify-between mb-3">
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-blue-600">psychology</span>
-                        Phân tích AI (Sentiment)
-                    </label>
-                    <button onclick="analyzeContactSentiment('${id}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">refresh</span>
-                        Phân tích
-                    </button>
-                </div>
-                <div id="sentiment-result-${id}" class="text-sm text-slate-600 dark:text-slate-400">
-                    Nhấn "Phân tích" để xem phân tích cảm xúc AI...
-                </div>
-            </div>
-            
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Trạng thái</label>
-                <p class="text-slate-900 dark:text-white">${contact.status === 'pending' ? 'Chưa xử lý' : contact.status === 'processed' ? 'Đã xử lý' : 'Đã giải quyết'}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày gửi</label>
-                <p class="text-slate-900 dark:text-white">${date}</p>
-            </div>
-            ${contact.processedAt ? `
-                <div>
-                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày xử lý</label>
-                    <p class="text-slate-900 dark:text-white">${processedDate}</p>
-                </div>
-            ` : ''}
-        </div>
-    `;
-    
-    document.getElementById('contact-modal').classList.remove('hidden');
-}
-
-async function markContactProcessed(id) {
-    if (typeof updateContactStatus !== 'function') return;
-    
-    const currentUser = getCurrentUser();
-    const result = await updateContactStatus(id, 'processed', currentUser?.email || 'admin');
-    
-    if (result) {
-        showMessage('Đã đánh dấu liên hệ là đã xử lý', 'success');
-        await loadContacts();
-    } else {
-        showMessage('Có lỗi xảy ra', 'error');
-    }
-}
-
-async function deleteContactAdmin(id) {
-    if (confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) {
-        if (typeof deleteContact !== 'function') return;
-        
-        const result = await deleteContact(id);
-        if (result) {
-            showMessage('Đã xóa liên hệ thành công', 'success');
-            await loadContacts();
-        } else {
-            showMessage('Có lỗi xảy ra khi xóa', 'error');
-        }
-    }
-}
 
 // ================== FEEDBACKS MANAGEMENT ==================
 async function loadFeedbacks() {
@@ -999,24 +778,30 @@ function renderFeedbacks(feedbacks) {
             minute: '2-digit'
         });
         
-        const stars = '⭐'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating);
-        const commentPreview = feedback.comment.length > 50 
-            ? feedback.comment.substring(0, 50) + '...' 
-            : feedback.comment;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= feedback.rating) {
+                stars += '<span class="material-symbols-outlined text-yellow-400 text-sm">star</span>';
+            } else {
+                stars += '<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm">star</span>';
+            }
+        }
         
         return `
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <td class="px-6 py-4 text-sm">
-                    <span class="text-lg">${stars}</span>
-                    <span class="text-xs text-slate-600 dark:text-slate-400 ml-2">(${feedback.rating}/5)</span>
-                </td>
-                <td class="px-6 py-4 text-sm">${escapeHtml(commentPreview)}</td>
-                <td class="px-6 py-4 text-sm">${feedback.suggestion ? escapeHtml(feedback.suggestion.substring(0, 30) + (feedback.suggestion.length > 30 ? '...' : '')) : '-'}</td>
-                <td class="px-6 py-4 text-sm">${feedback.email || '-'}</td>
                 <td class="px-6 py-4">
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${feedback.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'}">
-                        ${feedback.status === 'pending' ? 'Chưa xem' : 'Đã xem'}
-                    </span>
+                    <div class="flex items-center gap-1 mb-1">${stars}</div>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">(${feedback.rating}/5)</span>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="text-sm text-slate-900 dark:text-white line-clamp-2" title="${escapeHtml(feedback.comment || '')}">${escapeHtml(feedback.comment || 'Không có nhận xét')}</p>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-slate-900 dark:text-white">${escapeHtml(feedback.userName || 'Người dùng')}</div>
+                    <div class="text-xs text-slate-500">${escapeHtml(feedback.email || '')}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="text-sm font-medium text-slate-900 dark:text-white line-clamp-2" title="${escapeHtml(feedback.listingTitle || '')}">${escapeHtml(feedback.listingTitle || 'Mặt bằng đã xóa')}</p>
                 </td>
                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">${date}</td>
                 <td class="px-6 py-4 text-sm">
@@ -1060,14 +845,8 @@ async function viewFeedback(id) {
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Nhận xét</label>
-                <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.comment)}</p>
+                <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.comment || 'Không có nhận xét')}</p>
             </div>
-            ${feedback.suggestion ? `
-                <div>
-                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Gợi ý cải thiện</label>
-                    <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.suggestion)}</p>
-                </div>
-            ` : ''}
             
             <!-- AI Sentiment Analysis -->
             <div class="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-200 dark:border-green-800">
@@ -1086,15 +865,17 @@ async function viewFeedback(id) {
                 </div>
             </div>
             
-            ${feedback.email ? `
-                <div>
-                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
-                    <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.email)}</p>
-                </div>
-            ` : ''}
             <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Trạng thái</label>
-                <p class="text-slate-900 dark:text-white">${feedback.status === 'pending' ? 'Chưa xem' : 'Đã xem'}</p>
+                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Người dùng</label>
+                <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.userName || 'Người dùng')}</p>
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
+                <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.email || 'Không có')}</p>
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Mặt bằng</label>
+                <p class="text-slate-900 dark:text-white font-medium">${escapeHtml(feedback.listingTitle || 'Mặt bằng đã xóa')}</p>
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày gửi</label>
@@ -1467,7 +1248,7 @@ function renderAdminListings(listings) {
                     <span class="text-sm text-slate-900 dark:text-white font-mono">${listing.id}</span>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="text-sm font-medium text-slate-900 dark:text-white max-w-[250px] truncate" title="${(listing.title || '').replace(/"/g, '&quot;')}">${listing.title || 'Không có tiêu đề'}</div>
+                    <div class="text-sm font-medium text-slate-900 dark:text-white max-w-[250px] truncate" title="${String(listing.title || '').replace(/"/g, '&quot;')}">${listing.title || 'Không có tiêu đề'}</div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[250px]">${listing.address || ''}</div>
                 </td>
                 <td class="px-6 py-4">

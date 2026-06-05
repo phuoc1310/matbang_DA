@@ -3,8 +3,12 @@ import { auth } from "../../config/firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const googleProvider = new GoogleAuthProvider();
 
 /* ================== INTERNAL CACHE ================== */
 // giữ API cũ nhưng cache bằng sessionStorage
@@ -179,6 +183,54 @@ async function login(email, password) {
   }
 }
 
+/* ================== GOOGLE LOGIN ================== */
+async function loginWithGoogle() {
+  try {
+    const cred = await signInWithPopup(auth, googleProvider);
+    const uid = cred.user.uid;
+    const email = cred.user.email;
+    const token = await cred.user.getIdToken(); // Lấy token JWT
+    const displayName = cred.user.displayName;
+
+    let user = { id: uid, email: email, role: "user" };
+
+    // 🔥 SYNC WITH POSTGRESQL BACKEND
+    try {
+      const syncRes = await fetch("/api/users/auth/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ fullName: displayName })
+      });
+      if (syncRes.ok) {
+        const postgresUser = await syncRes.json();
+        // Override id với PostgreSQL id và lấy role từ DB
+        user = { 
+          ...user, 
+          postgres_id: postgresUser.id, 
+          id: postgresUser.id || uid, 
+          role: postgresUser.role || "user", 
+          fullName: postgresUser.name || displayName,
+          phone: postgresUser.phone_number
+        };
+      } else {
+        console.warn("Backend sync failed", await syncRes.text());
+      }
+    } catch (e) {
+      console.warn("Could not reach backend sync", e);
+    }
+
+    setCurrentUser(user);
+
+    return { success: true, message: "Đăng nhập Google thành công!", user };
+  } catch (err) {
+    console.error("Lỗi đăng nhập Google:", err);
+    return { success: false, message: "Đăng nhập Google thất bại hoặc bị hủy." };
+  }
+}
+
 /* ================== LOGOUT ================== */
 async function logout() {
   await signOut(auth);
@@ -338,10 +390,11 @@ async function removeAdminRole(userId) {
   }
 }
 
-export { register, login, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole, syncUserProfile, validateEmail, validatePhone, validatePassword };
+export { register, login, loginWithGoogle, logout, getCurrentUser, isLoggedIn, isAdmin, updateCurrentUser, changePassword, setUserAsAdmin, removeAdminRole, syncUserProfile, validateEmail, validatePhone, validatePassword };
 /* ================== EXPORT GLOBAL (KHỚP FILE CŨ) ================== */
 window.register = register;
 window.login = login;
+window.loginWithGoogle = loginWithGoogle;
 window.logout = logout;
 window.getCurrentUser = getCurrentUser;
 window.isLoggedIn = isLoggedIn;

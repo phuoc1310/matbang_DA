@@ -44,16 +44,14 @@ async function loadDashboardCharts() {
     }
 
     // Fetch all data in parallel
-    const [listingStats, users, contacts, feedbacks] = await Promise.all([
+    const [listingStats, users, feedbacks] = await Promise.all([
         fetchJSON(`${BACKEND_URL}/api/admin/listings/stats`),
         fetchJSON(`${BACKEND_URL}/api/admin/users`),
-        fetchJSON(`${BACKEND_URL}/api/admin/contacts`),
         fetchJSON(`${BACKEND_URL}/api/admin/feedbacks`)
     ]);
 
     renderListingStatusChart(listingStats);
     renderUserRolesChart(users);
-    renderContactStatusChart(contacts);
     renderFeedbackRatingsChart(feedbacks);
 }
 

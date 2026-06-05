@@ -376,7 +376,7 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { auth, firestore } from "/js/config/firebase.js";
-        import { logout } from "/js/modules/auth/auth.js?v=1.0.5";
+        import { logout } from "/js/modules/auth/auth.js?v=1.0.6";
 
         document.addEventListener("DOMContentLoaded", () => {
             const adminLink = document.getElementById("admin-link");
@@ -447,7 +447,7 @@
         });
     </script>
     <!-- ================== END SEARCH HISTORY ================== -->
-
+    <script type="module" src="/js/components/compareUI.js?v=1.0.0"></script>
 </body>
 
 </html>

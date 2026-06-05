@@ -387,3 +387,171 @@ Hãy trả lời ngắn gọn trong 3-4 câu.`;
     box.innerHTML = `<b>AI:</b> Xin lỗi, không thể kết nối với AI lúc này. Vui lòng thử lại sau.`;
   }
 };
+
+// ================== REVIEW LOGIC ==================
+let currentRating = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const stars = document.querySelectorAll(".star-item");
+  
+  stars.forEach(star => {
+    star.addEventListener("click", function() {
+      currentRating = parseInt(this.getAttribute("data-val"));
+      updateStarUI(currentRating);
+    });
+    
+    star.addEventListener("mouseover", function() {
+      const val = parseInt(this.getAttribute("data-val"));
+      updateStarUI(val);
+    });
+    
+    star.addEventListener("mouseout", function() {
+      updateStarUI(currentRating);
+    });
+  });
+
+  function updateStarUI(val) {
+    stars.forEach(s => {
+      const sVal = parseInt(s.getAttribute("data-val"));
+      if (sVal <= val) {
+        s.classList.remove("text-gray-300");
+        s.classList.add("text-yellow-400");
+      } else {
+        s.classList.remove("text-yellow-400");
+        s.classList.add("text-gray-300");
+      }
+    });
+  }
+
+  // Load reviews after a short delay
+  setTimeout(loadReviews, 1000);
+});
+
+async function loadReviews() {
+  const listingId = new URLSearchParams(window.location.search).get("id");
+  if (!listingId) return;
+
+  const listEl = document.getElementById("review-list");
+  if (!listEl) return;
+
+  try {
+    const res = await fetch(`/api/reviews/${listingId}`);
+    const data = await res.json();
+    
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<div class="text-gray-500 italic">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</div>';
+      return;
+    }
+
+    let html = '';
+    data.forEach(rv => {
+      const dateStr = new Date(rv.created_at).toLocaleDateString('vi-VN');
+      const starsHtml = '⭐'.repeat(rv.rating) + '☆'.repeat(5 - rv.rating);
+      
+      html += `
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-bold text-gray-800">Khách hàng ẩn danh</div>
+            <div class="text-xs text-gray-400">${dateStr}</div>
+          </div>
+          <div class="text-yellow-500 text-sm mb-2">${starsHtml}</div>
+          <div class="text-gray-600 text-sm">${rv.comment || ''}</div>
+        </div>
+      `;
+    });
+    listEl.innerHTML = html;
+  } catch (err) {
+    console.error("Load reviews error:", err);
+    listEl.innerHTML = '<div class="text-red-500 text-sm">Không thể tải đánh giá.</div>';
+  }
+}
+
+window.submitReview = async function() {
+  const listingId = new URLSearchParams(window.location.search).get("id");
+  if (!listingId) return;
+
+  const commentEl = document.getElementById("review-comment");
+  const msgEl = document.getElementById("review-msg");
+  const btn = document.getElementById("btn-submit-review");
+  
+  if (currentRating === 0) {
+    msgEl.textContent = "Vui lòng chọn số sao.";
+    msgEl.className = "text-sm mt-2 font-medium text-red-500";
+    msgEl.classList.remove("hidden");
+    return;
+  }
+  
+  const comment = commentEl.value.trim();
+
+  // Get User ID from session storage
+  let userId = null;
+  let token = null;
+  try {
+    const raw = sessionStorage.getItem('currentUser');
+    if (raw) {
+      const u = JSON.parse(raw);
+      userId = u.id || u.postgres_id;
+    }
+    
+    // Import auth module dynamically to get a valid token (waits for Firebase to init)
+    const modAuth = await import("../modules/auth/auth.js?v=1.0.6");
+    token = await modAuth.getValidToken();
+    
+  } catch (e) {
+    console.error("Lỗi xác thực:", e);
+  }
+
+  if (!userId || !token) {
+    msgEl.textContent = "Vui lòng đăng nhập để đánh giá.";
+    msgEl.className = "text-sm mt-2 font-medium text-red-500";
+    msgEl.classList.remove("hidden");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Đang gửi...";
+
+  try {
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        listing_id: listingId,
+        user_id: userId,
+        rating: currentRating,
+        comment: comment
+      })
+    });
+
+    const result = await res.json();
+    
+    if (res.ok) {
+      msgEl.textContent = "Cảm ơn bạn đã đánh giá!";
+      msgEl.className = "text-sm mt-2 font-medium text-green-600";
+      msgEl.classList.remove("hidden");
+      commentEl.value = "";
+      currentRating = 0;
+      
+      document.querySelectorAll(".star-item").forEach(s => {
+        s.classList.remove("text-yellow-400");
+        s.classList.add("text-gray-300");
+      });
+      
+      loadReviews();
+    } else {
+      msgEl.textContent = result.message || "Đã xảy ra lỗi khi gửi.";
+      msgEl.className = "text-sm mt-2 font-medium text-red-500";
+      msgEl.classList.remove("hidden");
+    }
+  } catch (err) {
+    msgEl.textContent = "Lỗi kết nối máy chủ.";
+    msgEl.className = "text-sm mt-2 font-medium text-red-500";
+    msgEl.classList.remove("hidden");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Gửi đánh giá";
+  }
+};

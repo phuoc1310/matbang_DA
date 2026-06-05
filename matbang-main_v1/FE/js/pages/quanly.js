@@ -292,14 +292,9 @@ function renderListings() {
             </div>
             <div class="flex gap-2">
               <button onclick="toggleVisibility('${listing.id}', ${listing.isVisible})" 
-                      class="flex-1 px-3 py-2 ${listing.isVisible ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600'} text-white text-sm font-semibold rounded-lg transition-colors">
+                      class="w-full px-3 py-2 ${listing.isVisible ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600'} text-white text-sm font-semibold rounded-lg transition-colors">
                 <span class="material-symbols-outlined text-[16px] align-middle">${listing.isVisible ? 'visibility_off' : 'visibility'}</span>
                 ${listing.isVisible ? 'Ẩn' : 'Hiện'}
-              </button>
-              <button onclick="viewHistory('${listing.id}')" 
-                      class="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition-colors">
-                <span class="material-symbols-outlined text-[16px] align-middle">history</span>
-                Lịch sử
               </button>
             </div>
             ${listing.status === 'pending' ? `

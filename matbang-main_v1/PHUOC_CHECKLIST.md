@@ -17,7 +17,6 @@
 - [x] Trang chủ `Trangchu.html` có giao diện tìm kiếm chuyên nghiệp với bộ lọc đa dạng.
 - [x] Trang kết quả tìm kiếm `timkiem.html` tích hợp MapLibre hiển thị bản đồ, bộ lọc chi tiết, sắp xếp và lịch sử tìm kiếm.
 - [x] Chức năng so sánh mặt bằng tại `sosanh.html`.
-- [x] Chức năng yêu thích (Favorites) hiển thị ở trang `taikhoan.html`.
 - [x] Xác thực người dùng (Firebase Auth + đồng bộ PostgreSQL).
 - [x] Giao diện quản lý tin đăng tại `quanly.html` đã đồng bộ với PostgreSQL.
 - [x] Chatbot hỗ trợ tìm kiếm (tích hợp Dify AI).
@@ -28,16 +27,16 @@
 ### 2.2 Backend
 
 - [x] Server Node.js + Express.
-- [x] Kết nối CSDL PostgreSQL đầy đủ các bảng (`listings`, `users`, `reviews`, `favorites`, `search_history`, `compare_list`, `contacts`, `feedbacks`...).
+- [x] Kết nối CSDL PostgreSQL đầy đủ các bảng (`listings`, `users`, `reviews`, `search_history`, `compare_list`, `contacts`, `feedbacks`...).
 - [x] API danh sách và CRUD listing hoàn chỉnh.
-- [x] API lịch sử tìm kiếm, so sánh và yêu thích.
+- [x] API lịch sử tìm kiếm và so sánh.
 - [x] API đánh giá (review), liên hệ, phản hồi.
 - [x] API cho Admin Dashboard (phân tích cảm xúc AI, duyệt/từ chối bài đăng, thống kê).
 - [x] Đồng bộ user Firebase lên PostgreSQL và middleware xác thực bằng JWT (phân quyền 3 cấp).
 
 ## 3. Chưa xong / cần hoàn thiện (Chuẩn bị bảo vệ)
 
-- [ ] Bổ sung các tính năng nâng cao (AI Advisor, Sentiment Analysis, Chatbot Dify, Favorites, Admin Dashboard...) vào báo cáo để lấy điểm cộng.
+- [ ] Bổ sung các tính năng nâng cao (AI Advisor, Sentiment Analysis, Chatbot Dify, Admin Dashboard...) vào báo cáo để lấy điểm cộng.
 - [ ] Hoàn tất tài liệu ERD/UML phù hợp với cơ sở dữ liệu hiện tại.
 - [ ] Chuẩn bị slide bảo vệ và kịch bản demo (nhấn mạnh các luồng chính: Tìm kiếm, Bản đồ, So sánh, Đăng tin, AI, Admin).
 
