@@ -249,6 +249,7 @@ function renderListings() {
         <div class="relative h-48 bg-gray-200 dark:bg-gray-700">
           <img src="${listing.image || 'https://placehold.co/600x400?text=No+Image'}" 
                alt="${listing.title}" 
+               referrerpolicy="no-referrer"
                class="w-full h-full object-cover"
                onerror="this.src='https://placehold.co/600x400?text=No+Image'">
           <div class="absolute top-2 right-2 flex gap-2">

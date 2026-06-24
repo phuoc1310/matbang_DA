@@ -138,9 +138,12 @@ function renderPage() {
     } else if (levelText === "Theo dõi" || levelText.includes("follow") || (item.score >= 0.4 && item.score < 0.7)) {
       levelText = "Theo dõi";
       levelClass = "bg-blue-500";
+    } else if (levelText === "Ưu tiên thấp" || levelText === "Hiệu quả thấp" || levelText.includes("low") || (item.score !== undefined && item.score < 0.4)) {
+      levelText = "Ưu tiên thấp";
+      levelClass = "bg-gray-500";
     } else {
-      levelText = "Hiệu quả thấp";
-      levelClass = "bg-gray-400";
+      levelText = "Tin phổ thông";
+      levelClass = "bg-emerald-500";
     }
 
     // Xử lý seller - đảm bảo là string trước khi gọi split
@@ -172,7 +175,7 @@ function renderPage() {
     listEl.innerHTML += `
   <a href="chitiet.html?id=${item.id || ''}" class="group relative bg-white dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 block h-full flex flex-col">
     <div class="relative h-56 overflow-hidden bg-gray-200">
-      <img src="${imageUrl}" alt="${title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" onerror="this.src='https://placehold.co/600x400/cccccc/666666?text=No+Image'">
+      <img src="${imageUrl}" alt="${title}" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" onerror="this.src='https://placehold.co/600x400/cccccc/666666?text=No+Image'">
       <div class="absolute top-2 right-2 ${levelClass} text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm z-10">
         ${levelText}
       </div>

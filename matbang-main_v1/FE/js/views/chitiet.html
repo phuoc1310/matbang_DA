@@ -191,7 +191,7 @@
           <a class="hover:text-primary transition-colors" href="#">Nhà đất cho thuê</a>
           <a class="hover:text-primary transition-colors" href="#">Tin tức</a> -->
         </nav>
-        <button
+        <button onclick="if(!sessionStorage.getItem('currentUser')){alert('Vui lòng đăng nhập để đăng tin');window.location.href='dangnhap.html'}else if(window.openListingForm)window.openListingForm();else window.location.href='quanly.html'"
           class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">Đăng
           tin</button>
       </div>
@@ -358,28 +358,9 @@
             <a id="btn-contact-seller" href="#" class="w-full bg-primary text-white py-3 rounded-lg font-bold flex justify-center items-center">
               Liên hệ ngay
             </a>
-            <button class="w-full border-2 border-primary text-primary py-3 rounded-lg font-bold">
-              Đặt lịch xem phòng
-            </button>
           </div>
 
-          <!-- ================= AI DIFY PLACEHOLDER ================= -->
-          <div class="mt-6 border-t pt-4">
-            <h4 class="font-bold text-sm mb-2 flex items-center gap-1">
-              <span class="material-symbols-outlined text-primary text-sm">smart_toy</span>
-              Tư vấn AI
-            </h4>
 
-            <button onclick="window.askAIAdvisor()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600
-                               text-white text-sm font-bold py-2.5 rounded-lg">
-              🤖 Hỏi AI: Mặt bằng này có phù hợp không?
-            </button>
-
-            <div id="ai-result" class="mt-3 text-sm text-gray-600 dark:text-gray-300 italic">
-              <!-- AI response -->
-            </div>
-          </div>
-          <!-- =============== END AI ================= -->
         </div>
 
       </div>
@@ -393,7 +374,7 @@
     © 2023 RentHub
   </footer>
 
-  <script type="module" src="../pages/chitiet.js?v=1.0.1"></script>
+  <script type="module" src="../pages/chitiet.js?v=1.0.2"></script>
 
   <!-- 
 <script>

@@ -258,11 +258,21 @@ function createModal() {
   const btnUploadImages = document.getElementById('btnUploadImages');
   const imageFilesInput = document.getElementById('imageFiles');
   
+  if (imageFilesInput) {
+    // Auto-upload when files are selected
+    imageFilesInput.addEventListener('change', async (e) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        await uploadImages(files);
+      }
+    });
+  }
+  
   if (btnUploadImages && imageFilesInput) {
     btnUploadImages.addEventListener('click', async () => {
       const files = imageFilesInput.files;
       if (files.length === 0) {
-        alert('Vui long chon it nhat mot hinh anh');
+        alert('Vui lòng chọn ít nhất một hình ảnh');
         return;
       }
       
@@ -333,12 +343,7 @@ async function uploadImages(files) {
       const text = await response.text();
       throw new Error('Server khong tra ve JSON. Response: ' + text.substring(0, 100));
     }
-    const urls = result.urls.map(url => {
-      if (url.startsWith('/')) {
-        return window.location.origin + url;
-      }
-      return url;
-    });
+    const urls = result.urls.map(url => url);
 
     uploadedImageUrls = [...uploadedImageUrls, ...urls];
 

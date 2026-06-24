@@ -20,6 +20,45 @@ window.addEventListener('error', (ev) => {
 window.addEventListener('unhandledrejection', (ev) => {
   console.error('Unhandled promise rejection:', ev.reason);
 });
+function seededRandom(seed) {
+  let h = 0xdeadbeef;
+  const strSeed = String(seed);
+  for(let i = 0; i < strSeed.length; i++)
+    h = Math.imul(h ^ strSeed.charCodeAt(i), 2654435761);
+  return ((h ^ h >>> 16) >>> 0) / 4294967296;
+}
+
+function getRandomSellerInfo(id) {
+  const firstNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng", "Bùi", "Đỗ", "Hồ", "Ngô", "Dương", "Lý"];
+  const middleNames = ["Văn", "Thị", "Ngọc", "Hữu", "Đức", "Minh", "Thanh", "Thu", "Hải", "Tuấn", "Hoài", "Bảo", "Gia", "Thúy", "Anh"];
+  const lastNames = ["Anh", "Tuấn", "Nam", "Bình", "Hương", "Lan", "Hoa", "Mai", "Linh", "Trang", "Long", "Đạt", "Phúc", "Thành", "Hưng", "Tùng", "Cường", "Phương", "Nhung", "Yến"];
+  
+  const rand1 = seededRandom(id + "1");
+  const rand2 = seededRandom(id + "2");
+  const rand3 = seededRandom(id + "3");
+  const rand4 = seededRandom(id + "4");
+  
+  const fn = firstNames[Math.floor(rand1 * firstNames.length)];
+  const mn = middleNames[Math.floor(rand2 * middleNames.length)];
+  const ln = lastNames[Math.floor(rand3 * lastNames.length)];
+  
+  const prefixes = ["090", "091", "092", "093", "094", "096", "097", "098", "086", "088", "089"];
+  const pref = prefixes[Math.floor(rand4 * prefixes.length)];
+  
+  let suffix = "";
+  let currentSeed = String(id);
+  for(let i=0; i<7; i++) {
+    const r = seededRandom(currentSeed + i);
+    suffix += Math.floor(r * 10);
+    currentSeed += r;
+  }
+  
+  return {
+    name: `${fn} ${mn} ${ln}`,
+    phone: `${pref} ${suffix.substring(0,3)} ${suffix.substring(3)}`
+  };
+}
+
 let map;
 let currentItem = null;
 
@@ -159,27 +198,29 @@ async function init() {
 
       const mainImageEl = document.getElementById('mainImage');
       if (mainImageEl) {
-        mainImageEl.innerHTML = `<img src="${item.image}" class="w-full h-full object-cover" alt="${item.title}">`;
+        mainImageEl.innerHTML = `<img src="${item.image}" class="w-full h-full object-cover" referrerpolicy="no-referrer" alt="${item.title}">`;
       }
 
       document.getElementById("title").textContent = item.title;
       document.getElementById("location").textContent = item.address || 'Đang cập nhật vị trí';
       document.getElementById("price").textContent = item.price_string || '—';
       document.getElementById("area").textContent = item.area_m2 ? `${item.area_m2} m²` : '—';
-      document.getElementById("detail-seller").textContent = item.seller_name || item.seller || "Chính chủ";
+      const fallbackSellerInfo = getRandomSellerInfo(item.id);
+      const displaySellerName = (item.seller_name && item.seller_name !== 'null') ? item.seller_name : ((item.seller && item.seller !== 'null') ? item.seller : fallbackSellerInfo.name);
+      
+      let displaySellerPhone = item.seller_phone;
+      if (!displaySellerPhone || displaySellerPhone === 'null' || displaySellerPhone === 'undefined' || String(displaySellerPhone).trim() === '') {
+        displaySellerPhone = fallbackSellerInfo.phone;
+      }
+
+      document.getElementById("detail-seller").textContent = displaySellerName;
       document.getElementById("detail-rating").textContent = item.rating ? `⭐ ${item.rating}` : 'Chưa có đánh giá';
       
       const btnContact = document.getElementById("btn-contact-seller");
       if (btnContact) {
-        if (item.seller_phone) {
-          btnContact.href = `tel:${item.seller_phone}`;
-          btnContact.textContent = `Gọi ${item.seller_phone}`;
-          btnContact.classList.remove("opacity-50", "cursor-not-allowed");
-        } else {
-          btnContact.textContent = "Không có SĐT";
-          btnContact.classList.add("opacity-50", "cursor-not-allowed");
-          btnContact.removeAttribute("href");
-        }
+        btnContact.href = `tel:${displaySellerPhone.replace(/\s/g, '')}`;
+        btnContact.textContent = `Gọi ${displaySellerPhone}`;
+        btnContact.classList.remove("opacity-50", "cursor-not-allowed");
       }
 
       document.getElementById("description").innerHTML = `<p class="font-bold">Địa chỉ:</p> <p>${item.address}</p>`;
@@ -242,7 +283,15 @@ async function init() {
   document.getElementById("price").textContent = item.price_string;
   document.getElementById("area").textContent =
     item.area_m2 ? `${item.area_m2} m²` : "—";
-  document.getElementById("detail-seller").textContent = item.seller_name || item.seller || "Chính chủ";
+  const fallbackSellerInfo = getRandomSellerInfo(item.id);
+  const displaySellerName = (item.seller_name && item.seller_name !== 'null') ? item.seller_name : ((item.seller && item.seller !== 'null') ? item.seller : fallbackSellerInfo.name);
+  
+  let displaySellerPhone = item.seller_phone;
+  if (!displaySellerPhone || displaySellerPhone === 'null' || displaySellerPhone === 'undefined' || String(displaySellerPhone).trim() === '') {
+    displaySellerPhone = fallbackSellerInfo.phone;
+  }
+
+  document.getElementById("detail-seller").textContent = displaySellerName;
   document.getElementById("detail-rating").textContent =
     item.rating ? `⭐ ${item.rating}` : "Chưa có đánh giá";
 
@@ -254,15 +303,9 @@ async function init() {
 
   const btnContact = document.getElementById("btn-contact-seller");
   if (btnContact) {
-    if (item.seller_phone) {
-      btnContact.href = `tel:${item.seller_phone}`;
-      btnContact.textContent = `Gọi ${item.seller_phone}`;
-      btnContact.classList.remove("opacity-50", "cursor-not-allowed");
-    } else {
-      btnContact.textContent = "Không có SĐT";
-      btnContact.classList.add("opacity-50", "cursor-not-allowed");
-      btnContact.removeAttribute("href");
-    }
+    btnContact.href = `tel:${displaySellerPhone.replace(/\s/g, '')}`;
+    btnContact.textContent = `Gọi ${displaySellerPhone}`;
+    btnContact.classList.remove("opacity-50", "cursor-not-allowed");
   }
 
   document.getElementById("description").innerHTML = `

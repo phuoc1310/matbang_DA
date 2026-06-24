@@ -57,7 +57,7 @@ export function runBIAnalysis(rawData = [], searchContext = {}) {
         const level =
           score >= 0.7 ? "Ưu tiên cao" :
           score >= 0.4 ? "Theo dõi" :
-                         "Hiệu quả thấp";
+                         "Ưu tiên thấp";
         
         return {
           ...item,

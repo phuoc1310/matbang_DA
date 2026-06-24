@@ -66,11 +66,22 @@
       });
 
       const data = await res.json();
-      const answer = data.answer || "(AI không trả lời)";
+      let answer = data.answer || "(AI không trả lời)";
+
+      // Phân tích cú pháp Markdown cơ bản sang HTML để hiển thị ảnh, in đậm, xuống dòng
+      let formattedAnswer = answer
+        // Render hình ảnh: ![alt](url)
+        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; border-radius: 8px; margin-top: 8px; margin-bottom: 8px; display: block;">')
+        // Render in đậm: **text**
+        .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+        // Render link: [text](url)
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color: #007bff; text-decoration: underline;">$1</a>')
+        // Render xuống dòng
+        .replace(/\n/g, '<br>');
 
       chatBody.innerHTML += `
         <div class="msg-ai">
-          <div class="bubble ai-bubble">${answer}</div>
+          <div class="bubble ai-bubble">${formattedAnswer}</div>
         </div>
       `;
       chatBody.scrollTop = chatBody.scrollHeight;

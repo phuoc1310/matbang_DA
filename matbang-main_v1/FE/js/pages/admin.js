@@ -1353,7 +1353,7 @@ function adminViewListing(id) {
     modalContent.innerHTML = `
         <div class="space-y-4">
             <div class="relative h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                <img src="${imgSrc}" alt="${listing.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                <img src="${imgSrc}" alt="${listing.title}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">

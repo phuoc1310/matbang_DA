@@ -239,7 +239,7 @@
                     rowImage.innerHTML += `
                         <td class="p-6 align-top w-[320px] min-w-[280px] border-l border-slate-100 dark:border-slate-800 relative group">
                             <div class="relative w-full h-48 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 shadow-sm">
-                                <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'">
+                                <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=No+Image'">
                                 <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 <button onclick="window.removeItem('${item.id}')" title="Xóa khỏi so sánh" class="absolute top-2 right-2 bg-white/90 hover:bg-red-50 text-red-500 p-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100">
                                     <span class="material-symbols-outlined text-[18px]">close</span>

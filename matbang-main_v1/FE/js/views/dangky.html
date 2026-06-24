@@ -74,7 +74,7 @@
                 <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors" href="#">Về chúng tôi</a>
                 <a class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors" href="lienhe.html">Liên hệ</a>
             </nav>
-            <button class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-primary-hover hover:shadow-primary/40 focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark">
+            <button onclick="if(!sessionStorage.getItem('currentUser')){alert('Vui lòng đăng nhập để đăng tin');window.location.href='dangnhap.html'}else if(window.openListingForm)window.openListingForm();else window.location.href='quanly.html'" class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-primary-hover hover:shadow-primary/40 focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark">
                 <span class="material-symbols-outlined text-[18px]">add_circle</span>
                 <span>Đăng tin cho thuê</span>
             </button>
