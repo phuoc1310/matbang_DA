@@ -1,9 +1,0 @@
-{
-  "name": "matbang-main",
-  "version": "1.0.0",
-  "description": "Root package script",
-  "scripts": {
-    "start": "cd BE && node server.js",
-    "dev": "cd BE && node server.js"
-  }
-}
