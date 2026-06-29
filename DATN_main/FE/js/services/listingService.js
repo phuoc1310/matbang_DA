@@ -1,8 +1,6 @@
 import { auth } from '../config/firebase.js';
 
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3033' 
-    : 'https://matbang-new.loca.lt';
+const API_BASE = (location.port && String(location.port) !== '3033') ? `http://${location.hostname}:3033` : '';
 async function getAuthHeaders() {
     const user = auth.currentUser;
     if (!user) throw new Error('Vui lòng đăng nhập để thực hiện tính năng này');

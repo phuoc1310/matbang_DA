@@ -8,9 +8,7 @@ import {
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3033' 
-    : 'https://matbang-new.loca.lt';
+const API_BASE = (location.port && String(location.port) !== '3033') ? `http://${location.hostname}:3033` : '';
 
 const googleProvider = new GoogleAuthProvider();
 

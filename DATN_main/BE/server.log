@@ -394,3 +394,23 @@
 2026-06-29T15:23:14.149Z ✔️ Region 12000 | Category 1020 → +1 tin mới
 2026-06-29T15:23:22.940Z ✔️ Region 12000 | Category 1040 → +1 tin mới
 2026-06-29T15:23:22.941Z 🎯 [Auto-Crawl] DONE — 44 tin mới — 54.3s
+2026-06-29T15:27:49.542Z 🚀 Server running http://localhost:3033
+2026-06-29T15:27:49.563Z 📅 [Cron] Đã lên lịch auto-crawl mỗi 30 phút
+2026-06-29T15:27:49.601Z ✅ PostgreSQL connected
+2026-06-29T15:27:59.548Z 🔄 [Cron] Chạy crawl lần đầu sau khi khởi động...
+2026-06-29T15:27:59.548Z 🔄 [Auto-Crawl] Bắt đầu cào dữ liệu...
+2026-06-29T15:28:08.711Z ✔️ Region 13000 | Category 1010 → +1 tin mới
+2026-06-29T15:28:17.773Z ✔️ Region 13000 | Category 1020 → +4 tin mới
+2026-06-29T15:28:26.714Z ✔️ Region 13000 | Category 1040 → +0 tin mới
+2026-06-29T15:28:35.563Z ✔️ Region 12000 | Category 1010 → +0 tin mới
+2026-06-29T15:28:44.378Z ✔️ Region 12000 | Category 1020 → +0 tin mới
+2026-06-29T15:28:53.182Z ✔️ Region 12000 | Category 1040 → +0 tin mới
+2026-06-29T15:28:53.182Z 🎯 [Auto-Crawl] DONE — 5 tin mới — 53.6s
+2026-06-29T15:29:36.820Z 🚀 Server running http://localhost:3033
+2026-06-29T15:29:36.841Z 📅 [Cron] Đã lên lịch auto-crawl mỗi 30 phút
+2026-06-29T15:29:36.878Z ✅ PostgreSQL connected
+2026-06-29T15:29:46.821Z 🔄 [Cron] Chạy crawl lần đầu sau khi khởi động...
+2026-06-29T15:29:46.822Z 🔄 [Auto-Crawl] Bắt đầu cào dữ liệu...
+2026-06-29T15:29:55.803Z ✔️ Region 13000 | Category 1010 → +0 tin mới
+2026-06-29T15:30:00.015Z ⏰ [Cron] 22:30:00 29/6/2026 — Bắt đầu auto-crawl...
+2026-06-29T15:30:00.016Z 🔄 [Auto-Crawl] Bắt đầu cào dữ liệu...
