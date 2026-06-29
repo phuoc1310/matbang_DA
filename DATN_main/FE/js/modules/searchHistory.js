@@ -230,13 +230,64 @@ export function initSearchHistory(inputId, onSelect) {
   });
 
   
+  let suggestTimeout;
   input.addEventListener('input', () => {
-    if (input.value.trim().length > 0) {
-      hideDropdown();
+    const q = input.value.trim();
+    if (q.length > 0) {
+      clearTimeout(suggestTimeout);
+      suggestTimeout = setTimeout(async () => {
+        try {
+          const API_BASE = (location.port && String(location.port) !== '3033') ? `http://${location.hostname}:3033` : '';
+          const res = await fetch(`${API_BASE}/api/listings/suggest?q=${encodeURIComponent(q)}`);
+          if (res.ok) {
+            const suggestions = await res.json();
+            renderSuggestions(suggestions, q);
+          }
+        } catch (e) { console.error(e); }
+      }, 300);
     } else {
+      clearTimeout(suggestTimeout);
       showDropdown();
     }
   });
+
+  function renderSuggestions(suggestions, keyword) {
+    if (suggestions.length === 0) {
+      hideDropdown();
+      return;
+    }
+    let html = `
+      <div class="sh-header">
+        <span>Gợi ý từ khóa</span>
+      </div>`;
+    
+    suggestions.forEach(s => {
+      html += `
+        <div class="sh-item" data-keyword="${s}">
+          <span class="material-symbols-outlined sh-icon">search</span>
+          <span class="sh-text">${s}</span>
+        </div>`;
+    });
+    
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+    
+    dropdown.querySelectorAll('.sh-item').forEach(el => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault(); 
+        const k = el.dataset.keyword;
+        input.value = k;
+        hideDropdown();
+        if (onSelect) {
+          onSelect({ keyword: k, city: '' });
+        } else {
+          const url = new URL(window.location);
+          url.searchParams.set("keyword", k);
+          window.location.href = url.toString();
+        }
+      });
+    });
+  }
 }
 
 

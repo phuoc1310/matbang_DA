@@ -70,11 +70,27 @@ function getQueryParam(key) {
 
 function getUserLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) reject("Trình duyệt không hỗ trợ GPS");
+    if (!navigator.geolocation) {
+      return reject({ code: 0, message: "Trình duyệt không hỗ trợ GPS" });
+    }
+
+    const optionsHigh = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+    const optionsLow = { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 };
+
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      (err) => reject(err),
-      { enableHighAccuracy: true }
+      (err) => {
+        if (err.code === 1) {
+          return reject(err); 
+        }
+        
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          (err2) => reject(err2),
+          optionsLow
+        );
+      },
+      optionsHigh
     );
   });
 }
@@ -229,7 +245,26 @@ async function init() {
       if (item.lat && item.lng && window.maplibregl) {
         map = new maplibregl.Map({
           container: "vietmap",
-          style: "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+          style: {
+            "version": 8,
+            "sources": {
+              "osm": {
+                "type": "raster",
+                "tiles": ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                "tileSize": 256,
+                "attribution": "&copy; OpenStreetMap contributors"
+              }
+            },
+            "layers": [
+              {
+                "id": "osm",
+                "type": "raster",
+                "source": "osm",
+                "minzoom": 0,
+                "maxzoom": 19
+              }
+            ]
+          },
           center: [item.lng, item.lat],
           zoom: 15
         });
@@ -325,7 +360,26 @@ async function init() {
   if (item.lat && item.lng && window.maplibregl) {
     map = new maplibregl.Map({
       container: "vietmap",
-      style: "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      style: {
+        "version": 8,
+        "sources": {
+          "osm": {
+            "type": "raster",
+            "tiles": ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            "tileSize": 256,
+            "attribution": "&copy; OpenStreetMap contributors"
+          }
+        },
+        "layers": [
+          {
+            "id": "osm",
+            "type": "raster",
+            "source": "osm",
+            "minzoom": 0,
+            "maxzoom": 19
+          }
+        ]
+      },
       center: [item.lng, item.lat],
       zoom: 15
     });
@@ -365,10 +419,35 @@ window.routeToListing = async function () {
 
     const pos = await getUserLocation();
 
-    new maplibregl.Marker({ color: "#16a34a" }) // User location
+    if (window.userMarker) {
+      window.userMarker.remove();
+    }
+
+    const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
+      "<div><b>Vị trí của bạn</b><br><small class='text-gray-500'>(Kéo thả để chỉnh sửa nếu sai)</small></div>"
+    );
+
+    window.userMarker = new maplibregl.Marker({ color: "#16a34a", draggable: true }) // User location
       .setLngLat([pos.lng, pos.lat])
-      .setPopup(new maplibregl.Popup().setHTML("Vị trí của bạn"))
+      .setPopup(popup)
       .addTo(map);
+
+    window.userMarker.on('dragend', async () => {
+      const newLngLat = window.userMarker.getLngLat();
+      btn.innerHTML = "⏳ Đang vẽ lại...";
+      btn.disabled = true;
+      try {
+        const geo = await getRoute(
+          { lat: newLngLat.lat, lng: newLngLat.lng },
+          { lat: currentItem.lat, lng: currentItem.lng }
+        );
+        drawRoute(geo);
+      } catch (err) {
+        console.error("Lỗi vẽ lại đường:", err);
+      }
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    });
 
     const geometry = await getRoute(
       { lat: pos.lat, lng: pos.lng },
@@ -385,10 +464,81 @@ window.routeToListing = async function () {
 
     btn.innerHTML = originalText;
     btn.disabled = false;
+    popup.addTo(map);
 
   } catch (e) {
-    alert("Lỗi: " + e.message);
+    document.getElementById("btnRoute").innerHTML = '<span class="material-symbols-outlined text-sm">directions</span> Chỉ đường';
     document.getElementById("btnRoute").disabled = false;
+    
+    let errorMsg = "Lỗi lấy vị trí: " + (e.message || e);
+    if (e.code === 1) { 
+      let httpWarning = !window.isSecureContext ? " (Do bạn đang dùng HTTP thay vì HTTPS nên trình duyệt chặn GPS)" : "";
+      errorMsg = "Trình duyệt hoặc Hệ điều hành đang chặn quyền vị trí" + httpWarning + ".\\n\\n1. Nếu bạn đang dùng điện thoại, hãy đảm bảo đã bật Dịch vụ Vị trí (Location Services).\\n2. Hãy cho phép trình duyệt truy cập vị trí và thử lại.";
+    } else if (e.code === 2) {
+      errorMsg = "Không thể xác định vị trí của bạn (POSITION_UNAVAILABLE). Vui lòng kiểm tra lại mạng hoặc GPS.";
+    } else if (e.code === 3) {
+      errorMsg = "Quá thời gian lấy vị trí (TIMEOUT). Có thể do bạn đang ở trong nhà nên mất sóng GPS.";
+    }
+
+    const confirmFallback = confirm(errorMsg + "\\n\\nBạn có muốn dùng toạ độ giả lập (rồi tự kéo thả ghim) để xem thử chức năng vẽ đường không?");
+    if (confirmFallback) {
+       try {
+         const btn = document.getElementById("btnRoute");
+         const originalText = btn.innerHTML;
+         btn.innerHTML = "⏳ Đang vẽ đường...";
+         btn.disabled = true;
+
+         const fallbackPos = { lat: 21.028511, lng: 105.804817 }; // Hanoi
+         
+         if (window.userMarker) window.userMarker.remove();
+
+         const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
+           "<div><b>Vị trí giả lập</b><br><small class='text-gray-500'>(Kéo thả để chọn vị trí thực tế của bạn)</small></div>"
+         );
+
+         window.userMarker = new maplibregl.Marker({ color: "#16a34a", draggable: true })
+          .setLngLat([fallbackPos.lng, fallbackPos.lat])
+          .setPopup(popup)
+          .addTo(map);
+
+         window.userMarker.on('dragend', async () => {
+           const newLngLat = window.userMarker.getLngLat();
+           btn.innerHTML = "⏳ Đang vẽ lại...";
+           btn.disabled = true;
+           try {
+             const geo = await getRoute(
+               { lat: newLngLat.lat, lng: newLngLat.lng },
+               { lat: currentItem.lat, lng: currentItem.lng }
+             );
+             drawRoute(geo);
+           } catch (err) {
+             console.error("Lỗi vẽ lại đường:", err);
+           }
+           btn.innerHTML = originalText;
+           btn.disabled = false;
+         });
+
+         const geometry = await getRoute(
+           { lat: fallbackPos.lat, lng: fallbackPos.lng },
+           { lat: currentItem.lat, lng: currentItem.lng }
+         );
+
+         drawRoute(geometry);
+
+         const bounds = new maplibregl.LngLatBounds();
+         bounds.extend([fallbackPos.lng, fallbackPos.lat]);
+         bounds.extend([currentItem.lng, currentItem.lat]);
+         map.fitBounds(bounds, { padding: 50 });
+
+         btn.innerHTML = originalText;
+         btn.disabled = false;
+         popup.addTo(map);
+       } catch (errFallback) {
+         alert("Lỗi khi vẽ đường: " + errFallback.message);
+         document.getElementById("btnRoute").innerHTML = '<span class="material-symbols-outlined text-sm">directions</span> Chỉ đường';
+         document.getElementById("btnRoute").disabled = false;
+       }
+    }
   }
 };
 
@@ -530,16 +680,16 @@ window.submitReview = async function() {
   let userId = null;
   let token = null;
   try {
+    const modAuth = await import("../modules/auth/auth.js?v=1.0.6");
+    token = await modAuth.getValidToken();
+
     const raw = sessionStorage.getItem('currentUser');
     if (raw) {
       const u = JSON.parse(raw);
       userId = u.id || u.postgres_id;
+    } else if (token && auth && auth.currentUser) {
+      userId = auth.currentUser.uid;
     }
-    
-    
-    const modAuth = await import("../modules/auth/auth.js?v=1.0.6");
-    token = await modAuth.getValidToken();
-    
   } catch (e) {
     console.error("Lỗi xác thực:", e);
   }

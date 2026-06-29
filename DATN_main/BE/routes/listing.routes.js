@@ -9,13 +9,15 @@ import {
   updateListingController,
   deleteListingController,
   updateListingStatusController,
-  toggleListingVisibilityController
+  toggleListingVisibilityController,
+  getSuggestController
 } from "../controllers/listing.controller.js";
 
 const router = express.Router();
 
 router.post("/", verifyToken, asyncHandler(createListingController));
 router.get("/", asyncHandler(getListingsController));
+router.get("/suggest", asyncHandler(getSuggestController));
 router.get("/compare", asyncHandler(compareListingsController));
 router.get("/:id", asyncHandler(getListingController));
 router.put("/:id", verifyToken, asyncHandler(updateListingController));

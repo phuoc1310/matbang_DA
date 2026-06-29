@@ -44,15 +44,15 @@ async function loadDashboardCharts() {
     }
 
     
-    const [listingStats, users, feedbacks] = await Promise.all([
+    const [listingStats, users, reviewsData] = await Promise.all([
         fetchJSON(`${BACKEND_URL}/api/admin/listings/stats`),
         fetchJSON(`${BACKEND_URL}/api/admin/users`),
-        fetchJSON(`${BACKEND_URL}/api/admin/feedbacks`)
+        fetchJSON(`${BACKEND_URL}/api/admin/reviews`)
     ]);
 
     renderListingStatusChart(listingStats);
     renderUserRolesChart(users);
-    renderFeedbackRatingsChart(feedbacks);
+    renderFeedbackRatingsChart(reviewsData);
 }
 
 async function fetchJSON(url) {
@@ -77,7 +77,11 @@ function renderListingStatusChart(data) {
     chartInstances.listingStatus = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Chờ duyệt', 'Đã duyệt', 'Từ chối'],
+            labels: [
+                `Chờ duyệt (${stats.pending})`, 
+                `Đã duyệt (${stats.approved})`, 
+                `Từ chối (${stats.rejected})`
+            ],
             datasets: [{
                 data: [stats.pending, stats.approved, stats.rejected],
                 backgroundColor: [
@@ -135,7 +139,10 @@ function renderUserRolesChart(data) {
     chartInstances.userRoles = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Admin', 'Người dùng'],
+            labels: [
+                `Admin (${adminCount})`, 
+                `Người dùng (${userCount})`
+            ],
             datasets: [{
                 label: 'Số lượng',
                 data: [adminCount, userCount],
@@ -184,63 +191,6 @@ function renderUserRolesChart(data) {
 }
 
 
-function renderContactStatusChart(data) {
-    const ctx = document.getElementById('chart-contact-status');
-    if (!ctx) return;
-    destroyChart('contactStatus');
-
-    const contacts = data?.contacts || [];
-    const pending = contacts.filter(c => c.status === 'pending' || !c.status).length;
-    const processed = contacts.filter(c => c.status === 'processed').length;
-    const resolved = contacts.filter(c => c.status === 'resolved').length;
-
-    chartInstances.contactStatus = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Chưa xử lý', 'Đã xử lý', 'Đã giải quyết'],
-            datasets: [{
-                data: [pending, processed, resolved],
-                backgroundColor: [
-                    'rgba(249, 115, 22, 0.85)',
-                    'rgba(59, 130, 246, 0.85)',
-                    'rgba(34, 197, 94, 0.85)'
-                ],
-                borderColor: [
-                    'rgba(249, 115, 22, 1)',
-                    'rgba(59, 130, 246, 1)',
-                    'rgba(34, 197, 94, 1)'
-                ],
-                borderWidth: 2,
-                hoverOffset: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 16,
-                        usePointStyle: true,
-                        pointStyleWidth: 12,
-                        font: { size: 13, family: 'Manrope', weight: '600' }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                            return ` ${context.label}: ${context.parsed} (${pct}%)`;
-                        }
-                    }
-                }
-            },
-            cutout: '55%'
-        }
-    });
-}
 
 
 function renderFeedbackRatingsChart(data) {
@@ -248,7 +198,7 @@ function renderFeedbackRatingsChart(data) {
     if (!ctx) return;
     destroyChart('feedbackRatings');
 
-    const feedbacks = data?.feedbacks || [];
+    const feedbacks = data?.reviews || data?.feedbacks || [];
     const ratingCounts = [0, 0, 0, 0, 0]; 
 
     feedbacks.forEach(f => {

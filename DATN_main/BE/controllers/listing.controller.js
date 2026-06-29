@@ -6,7 +6,8 @@ import {
   updateListing,
   deleteListing,
   updateListingStatus,
-  toggleListingVisibility
+  toggleListingVisibility,
+  getSearchSuggestions
 } from "../services/listing.service.js";
 import db from "../config/db.js";
 
@@ -24,8 +25,13 @@ export async function createListingController(req, res) {
 }
 
 export async function getListingsController(req, res) {
-  const data = await getListings(req.query);
-  res.json(data);
+  try {
+    const data = await getListings(req.query);
+    res.json(data);
+  } catch (error) {
+    console.error("Error in getListingsController:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
 }
 
 export async function getListingController(req, res) {
@@ -78,4 +84,11 @@ export async function toggleListingVisibilityController(req, res) {
   const data = await toggleListingVisibility(id, user_id);
   if (!data) return res.status(404).json({ error: 'Not found or unauthorized' });
   res.json(data);
+}
+
+export async function getSuggestController(req, res) {
+  const { q, limit } = req.query;
+  if (!q) return res.json([]);
+  const suggestions = await getSearchSuggestions(q, limit ? parseInt(limit) : 5);
+  res.json(suggestions);
 }

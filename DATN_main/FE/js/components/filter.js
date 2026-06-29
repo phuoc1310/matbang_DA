@@ -88,7 +88,7 @@ export async function applyFilter(refetch = false) {
     minArea: f.minArea,
     maxArea: f.maxArea,
     types: f.types,
-    areas: f.areas,
+    areas: f.areas
   };
 
   if (refetch && typeof window.apiFetchAllListings === 'function') {
@@ -116,6 +116,9 @@ export async function applyFilter(refetch = false) {
         maxPrice: f.maxPrice,
         minArea: f.minArea,
         maxArea: f.maxArea,
+        lat: f.lat,
+        lng: f.lng,
+        radius: f.radius,
         limit: 100,
         maxPages: 5
       });
@@ -279,6 +282,7 @@ function setupFilterEvents() {
       e?.preventDefault();
       applyFilter(true);
     });
+
 
   
   document.querySelectorAll("input[data-area]").forEach(cb => {

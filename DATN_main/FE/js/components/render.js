@@ -172,6 +172,8 @@ function renderPage() {
     
     const locationText = [item.district, item.region].filter(Boolean).join(", ") || "Đang cập nhật";
 
+    const distanceBadge = '';
+
     listEl.innerHTML += `
   <a href="chitiet.html?id=${item.id || ''}" class="group relative bg-white dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 block h-full flex flex-col">
     <div class="relative h-56 overflow-hidden bg-gray-200">
@@ -179,6 +181,7 @@ function renderPage() {
       <div class="absolute top-2 right-2 ${levelClass} text-white text-[10px] uppercase font-bold px-2 py-1 rounded shadow-sm z-10">
         ${levelText}
       </div>
+
       <button onclick="event.preventDefault(); if(window.toggleCompare) window.toggleCompare('${item.id}');" class="absolute top-2 left-2 bg-white/90 hover:bg-white text-gray-700 p-1.5 rounded-full shadow z-10 compare-btn-${item.id}" title="So sánh mặt bằng">
         <span class="material-symbols-outlined text-[16px]">compare_arrows</span>
       </button>

@@ -1,6 +1,8 @@
 import { auth } from '../config/firebase.js';
 
-
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:3033' 
+    : 'https://matbang-new.loca.lt';
 async function getAuthHeaders() {
     const user = auth.currentUser;
     if (!user) throw new Error('Vui lòng đăng nhập để thực hiện tính năng này');
@@ -14,7 +16,7 @@ async function getAuthHeaders() {
 
 export async function createListing(data) {
     const headers = await getAuthHeaders();
-    const res = await fetch('/api/listings', {
+    const res = await fetch(`${API_BASE}/api/listings`, {
         method: 'POST',
         headers,
         body: JSON.stringify(data)
@@ -30,7 +32,7 @@ export async function createListing(data) {
 
 export async function updateListing(id, data) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`/api/listings/${id}`, {
+    const res = await fetch(`${API_BASE}/api/listings/${id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(data)
@@ -46,7 +48,7 @@ export async function updateListing(id, data) {
 
 export async function getListings({ userId, limit = 100, page = 1 }) {
     
-    let url = `/api/listings?limit=${limit}&page=${page}`;
+    let url = `${API_BASE}/api/listings?limit=${limit}&page=${page}`;
     if (userId) {
         url += `&user_id=${userId}`;
     }
@@ -63,14 +65,14 @@ export async function getListings({ userId, limit = 100, page = 1 }) {
 }
 
 export async function getListingById(id) {
-    const res = await fetch(`/api/listings/${id}`);
+    const res = await fetch(`${API_BASE}/api/listings/${id}`);
     if (!res.ok) throw new Error('Không tìm thấy tin đăng');
     return res.json();
 }
 
 export async function deleteListing(id) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`/api/listings/${id}`, {
+    const res = await fetch(`${API_BASE}/api/listings/${id}`, {
         method: 'DELETE',
         headers
     });
@@ -92,7 +94,7 @@ export function normalizeListing(listing) {
 
 export async function toggleListingVisibility(id) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`/api/listings/${id}/visibility`, {
+    const res = await fetch(`${API_BASE}/api/listings/${id}/visibility`, {
         method: 'PATCH',
         headers
     });
@@ -105,7 +107,7 @@ export async function toggleListingVisibility(id) {
 
 export async function updateListingStatus(id, newStatus, reason) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`/api/listings/${id}/status`, {
+    const res = await fetch(`${API_BASE}/api/listings/${id}/status`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ status: newStatus, reason })

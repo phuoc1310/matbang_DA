@@ -187,23 +187,30 @@
       </a>
       <div class="flex items-center gap-6">
         <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-600">
-          
         </nav>
-        <button onclick="if(!sessionStorage.getItem('currentUser')){alert('Vui lòng đăng nhập để đăng tin');window.location.href='dangnhap.html'}else if(window.openListingForm)window.openListingForm();else window.location.href='quanly.html'"
-          class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">Đăng
-          tin</button>
-      </div>
-      <div id="user-actions" class="hidden flex items-center gap-3">
-        <span id="user-name" class="text-sm font-semibold"></span>
+        
+        <div id="guest-actions" class="flex gap-2">
+          <a href="dangnhap.html" class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">
+            Đăng nhập
+          </a>
+        </div>
 
-        <a href="taikhoan.html" class="h-9 px-4 rounded-lg bg-primary text-white font-bold flex items-center gap-2">
-          <span class="material-symbols-outlined text-[18px]">person</span>
-          Tài khoản
-        </a>
+        <div id="user-actions" class="hidden flex items-center gap-3">
+          <button onclick="if(window.openListingForm)window.openListingForm();else window.location.href='quanly.html'"
+            class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">Đăng
+            tin</button>
+            
+          <span id="user-name" class="text-sm font-semibold border-l pl-4 ml-1"></span>
 
-        <button id="btn-logout" class="h-9 px-4 rounded-lg border font-bold">
-          Đăng xuất
-        </button>
+          <a href="taikhoan.html" class="h-9 px-4 rounded-lg bg-blue-50 text-primary font-bold flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">person</span>
+            Tài khoản
+          </a>
+
+          <button id="btn-logout" class="h-9 px-4 rounded-lg border font-bold hover:bg-gray-50">
+            Đăng xuất
+          </button>
+        </div>
       </div>
     </div>
     

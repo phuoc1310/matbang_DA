@@ -16,6 +16,7 @@ function getBackendUrl() {
 let allUsers = [];
 let filteredUsers = [];
 let userToDelete = null;
+let allFeedbacks = [];
 
 // ================== INITIALIZE ==================
 document.addEventListener('DOMContentLoaded', () => {
@@ -198,7 +199,7 @@ function filterUsers() {
 
 
 function viewUserDetail(userId) {
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => String(u.id) === String(userId));
     if (!user) {
         showMessage('Không tìm thấy người dùng.', 'error');
         return;
@@ -209,7 +210,6 @@ function viewUserDetail(userId) {
         roleText = 'Quản trị viên';
     }
     const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleString('vi-VN') : 'N/A';
-    const vipExpiry = user.vipExpiry ? new Date(user.vipExpiry).toLocaleString('vi-VN') : 'N/A';
     
     const modalContent = document.getElementById('user-modal-content');
     modalContent.innerHTML = `
@@ -239,14 +239,7 @@ function viewUserDetail(userId) {
                     <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Vai trò</p>
                     <p class="text-sm font-medium text-slate-900 dark:text-white">${roleText}</p>
                 </div>
-                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Trạng thái VIP</p>
-                    <p class="text-sm font-medium text-slate-900 dark:text-white">${user.vipStatus ? 'Có VIP' : 'Không VIP'}</p>
-                </div>
-                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">VIP hết hạn</p>
-                    <p class="text-sm font-medium text-slate-900 dark:text-white">${vipExpiry}</p>
-                </div>
+
                 <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                     <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Xác thực</p>
                     <p class="text-sm font-medium text-slate-900 dark:text-white">${user.verified ? 'Đã xác thực' : 'Chưa xác thực'}</p>
@@ -283,7 +276,7 @@ function viewUserDetail(userId) {
 let editingUserId = null;
 
 function editUser(userId) {
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => String(u.id) === String(userId));
     if (!user) {
         showMessage('Không tìm thấy người dùng.', 'error');
         return;
@@ -374,7 +367,7 @@ async function saveEditedUser() {
 
 
 function confirmDeleteUser(userId) {
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => String(u.id) === String(userId));
     if (!user) {
         showMessage('Không tìm thấy người dùng.', 'error');
         return;
@@ -389,7 +382,7 @@ function confirmDeleteUser(userId) {
 
 async function deleteUser(userId) {
     try {
-        const user = allUsers.find(u => u.id === userId);
+        const user = allUsers.find(u => String(u.id) === String(userId));
         
         
         if (user && user.role === 'admin') {
@@ -426,7 +419,7 @@ let adminActionUserId = null;
 let adminActionType = null; 
 
 function confirmSetAdmin(userId) {
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => String(u.id) === String(userId));
     if (!user) {
         showMessage('Không tìm thấy người dùng.', 'error');
         return;
@@ -445,7 +438,7 @@ function confirmSetAdmin(userId) {
 
 
 function confirmRemoveAdmin(userId) {
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => String(u.id) === String(userId));
     if (!user) {
         showMessage('Không tìm thấy người dùng.', 'error');
         return;
@@ -740,6 +733,7 @@ async function loadFeedbacks() {
     }
     
     const feedbacks = await getFeedbacks();
+    allFeedbacks = feedbacks;
     const filterStatus = document.getElementById('filter-feedback-status')?.value || 'all';
     
     let filteredFeedbacks = feedbacks;
@@ -825,66 +819,63 @@ function renderFeedbacks(feedbacks) {
 }
 
 async function viewFeedback(id) {
-    if (typeof getFeedbackById !== 'function') return;
-    
-    const feedback = await getFeedbackById(id);
-    if (!feedback) {
-        showMessage('Không tìm thấy phản hồi', 'error');
-        return;
+    try {
+        const feedback = allFeedbacks.find(f => String(f.id) === String(id));
+        if (!feedback) {
+            showMessage('Không tìm thấy đánh giá', 'error');
+            return;
+        }
+        
+        const modalContent = document.getElementById('feedback-modal-content');
+        if (!modalContent) {
+            showMessage('Lỗi giao diện: Không tìm thấy feedback-modal-content', 'error');
+            return;
+        }
+        
+        const date = new Date(feedback.createdAt).toLocaleString('vi-VN');
+        const ratingNum = parseInt(feedback.rating) || 0;
+        const stars = '⭐'.repeat(ratingNum) + '☆'.repeat(5 - ratingNum);
+        
+        modalContent.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Đánh giá</label>
+                    <p class="text-slate-900 dark:text-white text-xl">${stars} (${feedback.rating}/5)</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Nhận xét</label>
+                    <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.comment || 'Không có nhận xét')}</p>
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Người dùng</label>
+                    <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.userName || 'Người dùng')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
+                    <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.email || 'Không có')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Mặt bằng</label>
+                    <p class="text-slate-900 dark:text-white font-medium">${escapeHtml(feedback.listingTitle || 'Mặt bằng đã xóa')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày gửi</label>
+                    <p class="text-slate-900 dark:text-white">${date}</p>
+                </div>
+            </div>
+        `;
+        
+        const modal = document.getElementById('feedback-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        } else {
+            showMessage('Lỗi giao diện: Không tìm thấy feedback-modal', 'error');
+        }
+    } catch (err) {
+        showMessage('Lỗi hiển thị: ' + err.message, 'error');
+        console.error(err);
     }
-    
-    const modalContent = document.getElementById('feedback-modal-content');
-    const date = new Date(feedback.createdAt).toLocaleString('vi-VN');
-    const stars = '⭐'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating);
-    
-    modalContent.innerHTML = `
-        <div class="space-y-4">
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Đánh giá</label>
-                <p class="text-slate-900 dark:text-white text-xl">${stars} (${feedback.rating}/5)</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Nhận xét</label>
-                <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.comment || 'Không có nhận xét')}</p>
-            </div>
-            
-            <!-- AI Sentiment Analysis -->
-            <div class="p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div class="flex items-center justify-between mb-3">
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-green-600">psychology</span>
-                        Phân tích AI (Sentiment)
-                    </label>
-                    <button onclick="analyzeFeedbackSentiment('${id}')" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">refresh</span>
-                        Phân tích
-                    </button>
-                </div>
-                <div id="sentiment-result-${id}" class="text-sm text-slate-600 dark:text-slate-400">
-                    Nhấn "Phân tích" để xem phân tích cảm xúc AI...
-                </div>
-            </div>
-            
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Người dùng</label>
-                <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.userName || 'Người dùng')}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
-                <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.email || 'Không có')}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Mặt bằng</label>
-                <p class="text-slate-900 dark:text-white font-medium">${escapeHtml(feedback.listingTitle || 'Mặt bằng đã xóa')}</p>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày gửi</label>
-                <p class="text-slate-900 dark:text-white">${date}</p>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('feedback-modal').classList.remove('hidden');
 }
 
 async function markFeedbackReviewed(id) {

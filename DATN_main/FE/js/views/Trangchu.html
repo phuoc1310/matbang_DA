@@ -139,12 +139,15 @@
                     </div>
 
                     
-                    <div class="flex-1 relative min-w-0" style="z-index:30; overflow:visible">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-text-sub-light">search</span>
+                    <div class="flex-1 relative min-w-0 flex items-center gap-2" style="z-index:30; overflow:visible">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-text-sub-light">search</span>
+                            </div>
+                            <input id="search" type="text" placeholder="Nhập quận, tên tòa nhà, hoặc địa chỉ..."
+                                class="block w-full pl-10 pr-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary" />
                         </div>
-                        <input id="search" type="text" placeholder="Nhập quận, tên tòa nhà, hoặc địa chỉ..."
-                            class="block w-full pl-10 pr-3 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary" />
+
                     </div>
 
                     
@@ -411,6 +414,16 @@
                     }
                 } catch (e) {
                     console.warn("Bỏ qua Firestore do chưa tạo Database. Chỉ dùng Auth.", e.message);
+                }
+
+                const existingUserStr = sessionStorage.getItem("currentUser");
+                if (existingUserStr) {
+                    try {
+                        const existingUser = JSON.parse(existingUserStr);
+                        if (existingUser && existingUser.role === 'admin') {
+                            userData = { ...userData, ...existingUser };
+                        }
+                    } catch(err) {}
                 }
 
                 sessionStorage.setItem("currentUser", JSON.stringify(userData));

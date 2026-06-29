@@ -8,6 +8,10 @@ import {
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:3033' 
+    : 'https://matbang-new.loca.lt';
+
 const googleProvider = new GoogleAuthProvider();
 
 
@@ -31,7 +35,7 @@ export async function getValidToken() {
       }
     });
     
-    setTimeout(() => resolve(null), 3000);
+    setTimeout(() => resolve(null), 8000);
   });
 }
 
@@ -87,7 +91,7 @@ async function register(userData) {
     
     let postgresUser = null;
     try {
-      const syncRes = await fetch("/api/users/auth/sync", {
+      const syncRes = await fetch(`${API_BASE}/api/users/auth/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +153,7 @@ async function login(email, password) {
 
     
     try {
-      const syncRes = await fetch("/api/users/auth/sync", {
+      const syncRes = await fetch(`${API_BASE}/api/users/auth/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -196,7 +200,7 @@ async function loginWithGoogle() {
 
     
     try {
-      const syncRes = await fetch("/api/users/auth/sync", {
+      const syncRes = await fetch(`${API_BASE}/api/users/auth/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -227,6 +231,9 @@ async function loginWithGoogle() {
     return { success: true, message: "Đăng nhập Google thành công!", user };
   } catch (err) {
     console.error("Lỗi đăng nhập Google:", err);
+    if (err.code === 'auth/unauthorized-domain') {
+      return { success: false, message: "Tên miền này chưa được cấp quyền đăng nhập Google. Chủ hệ thống cần thêm tên miền vào Firebase Console > Authentication > Settings > Authorized domains." };
+    }
     return { success: false, message: "Đăng nhập Google thất bại hoặc bị hủy." };
   }
 }
@@ -267,7 +274,7 @@ async function updateCurrentUser(updatedData) {
       return { success: false, message: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." };
     }
 
-    const res = await fetch("/api/users/profile", {
+    const res = await fetch(`${API_BASE}/api/users/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -319,7 +326,7 @@ async function syncUserProfile() {
     const token = await getValidToken();
     if (!token) return currentUser;
 
-    const res = await fetch("/api/users/profile", {
+    const res = await fetch(`${API_BASE}/api/users/profile`, {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -363,7 +370,7 @@ async function changePassword(oldPassword, newPassword) {
 
 async function setUserAsAdmin(userId) {
   try {
-    const res = await fetch(`/api/admin/users/${userId}/role`, {
+    const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: "admin" })
@@ -378,7 +385,7 @@ async function setUserAsAdmin(userId) {
 
 async function removeAdminRole(userId) {
   try {
-    const res = await fetch(`/api/admin/users/${userId}/role`, {
+    const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: "user" })

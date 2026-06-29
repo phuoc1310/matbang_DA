@@ -62,6 +62,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadCategoryCount("Căn hộ", "count-can-ho");
   loadCategoryCount("Đất", "count-dat");
   loadCategoryCount("Mặt bằng", "count-mat-bang");
+
+  // Logic chuyển trang cho form tìm kiếm Trang chủ
+  const btnSearch = document.getElementById("btnSearch");
+  if (btnSearch) {
+    btnSearch.addEventListener("click", () => {
+      const keyword = document.getElementById("search")?.value || "";
+      const city = document.getElementById("citySelect")?.value || "";
+      const type = document.getElementById("type")?.value || "";
+      const price = document.getElementById("price")?.value || "";
+      const area = document.getElementById("area")?.value || "";
+      
+      const url = new URL("/js/views/timkiem.html", window.location.origin);
+      if (keyword) url.searchParams.set("keyword", keyword);
+      if (city) url.searchParams.set("city", city);
+      if (type) url.searchParams.set("type", type);
+      
+      if (price) {
+        const [min, max] = price.split("-");
+        if (min) url.searchParams.set("minPrice", min);
+        if (max) url.searchParams.set("maxPrice", max);
+      }
+      if (area) {
+        const [min, max] = area.split("-");
+        if (min) url.searchParams.set("minArea", min);
+        if (max) url.searchParams.set("maxArea", max);
+      }
+      
+      window.location.href = url.toString();
+    });
+  }
+
+
 });
 
 

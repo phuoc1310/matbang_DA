@@ -4,7 +4,9 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import cron from "node-cron";
 import db from "./config/db.js";
+import { runCrawl } from "./config/crawl.js";
 
 import userRoutes from "./routes/user.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
@@ -77,6 +79,21 @@ app.use((err, req, res, next) => {
 function startServer(port, maxRetries = 10) {
   const server = app.listen(port, () => {
     console.log(`🚀 Server running http://localhost:${port}`);
+
+    // ==================== AUTO-CRAWL SCHEDULER ====================
+    // Crawl 1 lần ngay sau khi server khởi động (chờ 10s để DB sẵn sàng)
+    setTimeout(() => {
+      console.log("🔄 [Cron] Chạy crawl lần đầu sau khi khởi động...");
+      runCrawl(db).catch(err => console.error("❌ Crawl lần đầu lỗi:", err.message));
+    }, 10000);
+
+    // Lên lịch tự động crawl mỗi 30 phút
+    cron.schedule("*/30 * * * *", () => {
+      console.log(`⏰ [Cron] ${new Date().toLocaleString("vi-VN")} — Bắt đầu auto-crawl...`);
+      runCrawl(db).catch(err => console.error("❌ Auto-crawl lỗi:", err.message));
+    });
+
+    console.log("📅 [Cron] Đã lên lịch auto-crawl mỗi 30 phút");
   });
 
   server.on('error', (err) => {

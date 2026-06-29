@@ -306,7 +306,10 @@ async function uploadImages(files) {
     }
 
     console.log('Uploading images...', files.length, 'files');
-    const response = await fetch('/api/upload', {
+    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://localhost:3033' 
+      : 'https://matbang-new.loca.lt';
+    const response = await fetch(`${API_BASE}/api/upload`, {
       method: 'POST',
       body: formData,
     });

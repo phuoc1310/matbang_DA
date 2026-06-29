@@ -248,7 +248,7 @@ export async function getListings(rawFilters) {
     
     
     clauses.push(`(
-      search_vector @@ plainto_tsquery('simple', f_unaccent($${idx}))
+      search_vector @@ websearch_to_tsquery('simple', f_unaccent($${idx}))
       OR f_unaccent(COALESCE(title, '')) % f_unaccent($${idx})
       OR f_unaccent(COALESCE(district, '')) % f_unaccent($${idx})
       OR f_unaccent(COALESCE(ward, '')) % f_unaccent($${idx})
@@ -306,6 +306,8 @@ export async function getListings(rawFilters) {
     clauses.push(`status = 'approved'`);
   }
 
+
+
   
   clauses.push(`price < 100000000000`);
 
@@ -342,18 +344,19 @@ export async function getListings(rawFilters) {
   let selectFields = '*';
   let orderBy = 'created_at DESC';
 
+
+
   if (hasKeywordSearch && keywordParamIdx !== null) {
-    
-    
-    selectFields = `*,
+    selectFields += `,
       (
-        COALESCE(ts_rank_cd(search_vector, plainto_tsquery('simple', f_unaccent($${keywordParamIdx}))), 0) * 0.6
+        COALESCE(ts_rank_cd(search_vector, websearch_to_tsquery('simple', f_unaccent($${keywordParamIdx}))), 0) * 0.6
         + GREATEST(
             COALESCE(similarity(f_unaccent(COALESCE(title, '')), f_unaccent($${keywordParamIdx})), 0),
             COALESCE(similarity(f_unaccent(COALESCE(district, '')), f_unaccent($${keywordParamIdx})), 0),
             COALESCE(word_similarity(f_unaccent($${keywordParamIdx}), f_unaccent(COALESCE(title, ''))), 0)
           ) * 0.4
       ) AS relevance`;
+    
     orderBy = 'relevance DESC, created_at DESC';
   }
 
@@ -426,6 +429,43 @@ export async function updateListing(id, data, user_id) {
     [title, Number(price), Number(area), address, city, district, ward, type, description, image, Number(id), user_id]
   );
   return result.rows[0];
+}
+
+export async function getListingTypeDistribution() {
+  const query = `
+    SELECT type, COUNT(*) as count 
+    FROM listings 
+    WHERE is_visible = true AND status = 'approved' AND type IS NOT NULL
+    GROUP BY type
+    ORDER BY count DESC
+  `;
+  const result = await db.query(query);
+  return result.rows;
+}
+
+// ================= SEARCH SUGGESTIONS =================
+export async function getSearchSuggestions(keyword, limit = 5) {
+  if (!keyword || keyword.trim().length === 0) return [];
+
+  const query = `
+    SELECT DISTINCT unaccent_val AS suggestion, MAX(score) as max_score
+    FROM (
+      SELECT title AS unaccent_val, similarity(f_unaccent(title), f_unaccent($1)) AS score
+      FROM listings
+      WHERE is_visible = true AND status = 'approved' AND (f_unaccent(title) % f_unaccent($1) OR f_unaccent(title) ILIKE '%' || f_unaccent($1) || '%')
+      
+      UNION ALL
+      
+      SELECT district AS unaccent_val, similarity(f_unaccent(district), f_unaccent($1)) AS score
+      FROM listings
+      WHERE is_visible = true AND status = 'approved' AND district IS NOT NULL AND (f_unaccent(district) % f_unaccent($1) OR f_unaccent(district) ILIKE '%' || f_unaccent($1) || '%')
+    ) subquery
+    GROUP BY unaccent_val
+    ORDER BY max_score DESC
+    LIMIT $2;
+  `;
+  const result = await db.query(query, [keyword.trim(), limit]);
+  return result.rows.map(r => r.suggestion);
 }
 
 export async function deleteListing(id, user_id) {
