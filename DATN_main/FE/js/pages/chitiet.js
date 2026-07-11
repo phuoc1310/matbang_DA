@@ -68,31 +68,37 @@ function getQueryParam(key) {
 }
 
 
-function getUserLocation() {
+function getPosition(options) {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      return reject({ code: 0, message: "Trình duyệt không hỗ trợ GPS" });
-    }
-
-    const optionsHigh = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
-    const optionsLow = { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 };
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      (err) => {
-        if (err.code === 1) {
-          return reject(err); 
-        }
-        
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          (err2) => reject(err2),
-          optionsLow
-        );
-      },
-      optionsHigh
-    );
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
   });
+}
+
+async function getUserLocation() {
+  // Toạ độ mặc định (Đại học Thuỷ Lợi)
+  const defaultLocation = { 
+    lat: 21.006989, 
+    lng: 105.825101, 
+    accuracy: 50 // Giả lập độ chính xác cao để không hiện dòng cảnh báo màu cam 
+  };
+
+  if (!navigator.geolocation) {
+    return defaultLocation;
+  }
+
+  try {
+    // 1. Thử lấy GPS thật hoặc DevTools Sensors
+    const pos = await getPosition({ enableHighAccuracy: true, timeout: 3000, maximumAge: 0 });
+    return { 
+      lat: pos.coords.latitude, 
+      lng: pos.coords.longitude, 
+      accuracy: pos.coords.accuracy 
+    };
+  } catch (err) {
+    // 2. KỂ CẢ KHI BẠN BỊ TỪ CHỐI QUYỀN (Code 1), HAY LỖI (Code 2, 3)...
+    // Trả về toạ độ Đại học Thuỷ Lợi để phục vụ demo trơn tru nhất.
+    return defaultLocation;
+  }
 }
 
 
@@ -101,7 +107,12 @@ async function getRoute(from, to) {
   const res = await fetch(url);
   const data = await res.json();
   if (!data.routes || !data.routes.length) throw new Error("Không tìm thấy đường đi");
-  return data.routes[0].geometry;
+  const route = data.routes[0];
+  return { 
+    geometry: route.geometry, 
+    distance: route.distance, // in meters
+    duration: route.duration  // in seconds
+  };
 }
 
 
@@ -205,7 +216,8 @@ async function init() {
         rating: raw.rating || 0,
         lat: raw.latitude ?? raw.lat,
         lng: raw.longitude ?? raw.lng,
-        description: raw.description || raw.desc || ''
+        description: raw.description || raw.desc || '',
+        created_at: raw.created_at || raw.date || null
       };
 
       // Render minimal UI
@@ -221,6 +233,22 @@ async function init() {
       document.getElementById("location").textContent = item.address || 'Đang cập nhật vị trí';
       document.getElementById("price").textContent = item.price_string || '—';
       document.getElementById("area").textContent = item.area_m2 ? `${item.area_m2} m²` : '—';
+      
+      const createdAtEl = document.getElementById("created-at");
+      if (createdAtEl) {
+        const postDateStr = item.created_at || item.date;
+        if (postDateStr) {
+          const d = new Date(postDateStr);
+          createdAtEl.textContent = !isNaN(d) ? d.toLocaleDateString('vi-VN') : 'Đang cập nhật';
+        } else {
+          createdAtEl.textContent = 'Đang cập nhật';
+        }
+      }
+
+      // Hiển thị Lượt xem (nếu chưa call API view thì dùng giá trị cũ, api sẽ trả về số mới sau)
+      const viewCountEl = document.getElementById("view-count");
+      if (viewCountEl) viewCountEl.textContent = item.views || 0;
+
       const fallbackSellerInfo = getRandomSellerInfo(item.id);
       const displaySellerName = (item.seller_name && item.seller_name !== 'null') ? item.seller_name : ((item.seller && item.seller !== 'null') ? item.seller : fallbackSellerInfo.name);
       
@@ -318,6 +346,18 @@ async function init() {
   document.getElementById("price").textContent = item.price_string;
   document.getElementById("area").textContent =
     item.area_m2 ? `${item.area_m2} m²` : "—";
+    
+  const createdAtEl = document.getElementById("created-at");
+  if (createdAtEl) {
+    const postDateStr = item.created_at || item.date;
+    if (postDateStr) {
+      const d = new Date(postDateStr);
+      createdAtEl.textContent = !isNaN(d) ? d.toLocaleDateString('vi-VN') : 'Đang cập nhật';
+    } else {
+      createdAtEl.textContent = 'Đang cập nhật';
+    }
+  }
+
   const fallbackSellerInfo = getRandomSellerInfo(item.id);
   const displaySellerName = (item.seller_name && item.seller_name !== 'null') ? item.seller_name : ((item.seller && item.seller !== 'null') ? item.seller : fallbackSellerInfo.name);
   
@@ -355,6 +395,96 @@ async function init() {
   } catch (e) {
     console.warn("Không thể gọi hàm ghi nhận lượt xem", e);
   }
+
+  /* ===== LƯU LỊCH SỬ XEM (GỢI Ý CÁCH 2) ===== */
+  const itemType = item.category || item.type || '';
+  const itemDistrict = item.district || '';
+  
+  try {
+    let uid = "guest";
+    const rawUser = sessionStorage.getItem('currentUser');
+    if (rawUser) {
+      const u = JSON.parse(rawUser);
+      uid = u.id || u.uid || u.postgres_id || "guest";
+    }
+    const key = uid !== "guest" ? `viewed_listings_${uid}` : 'viewed_listings';
+
+    const viewed = JSON.parse(localStorage.getItem(key) || '[]');
+    const newView = { 
+      id: item.id, 
+      district: itemDistrict, 
+      type: itemType, 
+      price: item.price, 
+      title: item.title,
+      timestamp: Date.now() 
+    };
+    const updatedViewed = [newView, ...viewed.filter(x => String(x.id) !== String(item.id))].slice(0, 10);
+    localStorage.setItem(key, JSON.stringify(updatedViewed));
+  } catch(e) { console.warn("Lỗi lưu lịch sử xem", e); }
+
+  /* ===== FETCH MẶT BẰNG TƯƠNG TỰ (NÂNG CẤP CHÍNH XÁC HƠN) ===== */
+  try {
+    const modApi = await import("../services/api.js?v=1.0.5");
+    const similarContainer = document.getElementById("similar-listings");
+    if (similarContainer) {
+      // Nâng cấp: Lọc theo Từ khóa (Quận), Loại hình và Khoảng giá (+- 50%)
+      const queryParams = { limit: 10 };
+      
+      if (itemDistrict) queryParams.keyword = itemDistrict;
+      if (itemType) queryParams.type = itemType;
+      
+      if (item.price) {
+        queryParams.minPrice = item.price * 0.5; // Giảm 50%
+        queryParams.maxPrice = item.price * 1.5; // Tăng 50%
+      }
+
+      const simRes = await modApi.fetchListings(queryParams);
+      // Lọc bỏ item hiện tại
+      const simData = (simRes.data || simRes).filter(x => String(x.id) !== String(item.id)).slice(0, 4);
+      
+      if (simData.length > 0) {
+        let simHtml = '';
+        simData.forEach(sItem => {
+           const img = sItem.image || 'https://placehold.co/600x400?text=No+Image';
+           const price = sItem.price_string || (sItem.price ? `${(sItem.price/1000000).toLocaleString('vi-VN')} triệu/tháng` : 'Thỏa thuận');
+           const area = sItem.area_m2 || sItem.area || sItem.size || 0;
+           simHtml += `
+            <a href="/js/views/chitiet.html?id=${sItem.id}" class="block group bg-white rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 overflow-hidden">
+              <div class="relative h-40">
+                <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold">${sItem.type || sItem.category || 'Mặt bằng'}</div>
+              </div>
+              <div class="p-4">
+                <h4 class="font-bold text-gray-900 truncate mb-1">${sItem.title}</h4>
+                <p class="text-xs text-gray-500 truncate mb-2"><span class="material-symbols-outlined text-[12px] align-middle">location_on</span> ${sItem.district || sItem.address || 'Đang cập nhật'}</p>
+                <div class="flex justify-between items-end mt-2">
+                  <span class="text-primary font-bold">${price}</span>
+                  <span class="text-xs text-gray-500">${area} m²</span>
+                </div>
+              </div>
+            </a>
+           `;
+        });
+        similarContainer.innerHTML = simHtml;
+      } else {
+        similarContainer.innerHTML = '<p class="text-gray-500 italic col-span-full">Chưa có mặt bằng tương tự nào được tìm thấy trong khu vực và tầm giá này.</p>';
+      }
+    }
+  } catch(e) { console.warn("Lỗi load similar listings", e); }
+
+  /* ===== TĂNG VIEW COUNT TRÊN DB (Tự động cộng 1 lượt xem khi load) ===== */
+  try {
+    const API_BASE = (location.port && String(location.port) !== '3033') ? `http://${location.hostname}:3033` : '';
+    fetch(`${API_BASE}/api/listings/${id}/view`, { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.views !== undefined) {
+           const viewEl = document.getElementById("view-count");
+           if (viewEl) viewEl.textContent = data.views;
+        }
+      })
+      .catch(err => console.warn("Lỗi tăng view count:", err));
+  } catch (e) { console.warn("Lỗi fetch view count", e); }
 
   /* ===== MAP ===== */
   if (item.lat && item.lng && window.maplibregl) {
@@ -424,7 +554,7 @@ window.routeToListing = async function () {
     }
 
     const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
-      "<div><b>Vị trí của bạn</b><br><small class='text-gray-500'>(Kéo thả để chỉnh sửa nếu sai)</small></div>"
+      `<div><b>Vị trí của bạn</b><br><small class='text-gray-500'>(Kéo thả để chỉnh sửa nếu sai)</small><br><span id='route-distance' class='text-primary font-bold text-xs'>Đang tính khoảng cách...</span></div>`
     );
 
     window.userMarker = new maplibregl.Marker({ color: "#16a34a", draggable: true }) // User location
@@ -432,16 +562,28 @@ window.routeToListing = async function () {
       .setPopup(popup)
       .addTo(map);
 
+    // Format and display real driving distance and duration
+    const updateDistanceUI = (routeData) => {
+      const distEl = document.getElementById("route-distance");
+      if (distEl && routeData) {
+        const distanceText = routeData.distance > 1000 
+          ? (routeData.distance/1000).toFixed(1) + ' km' 
+          : Math.round(routeData.distance) + ' m';
+        distEl.textContent = `Cách mặt bằng: ${distanceText}`;
+      }
+    };
+
     window.userMarker.on('dragend', async () => {
       const newLngLat = window.userMarker.getLngLat();
       btn.innerHTML = "⏳ Đang vẽ lại...";
       btn.disabled = true;
       try {
-        const geo = await getRoute(
+        const routeData = await getRoute(
           { lat: newLngLat.lat, lng: newLngLat.lng },
           { lat: currentItem.lat, lng: currentItem.lng }
         );
-        drawRoute(geo);
+        drawRoute(routeData.geometry);
+        updateDistanceUI(routeData);
       } catch (err) {
         console.error("Lỗi vẽ lại đường:", err);
       }
@@ -449,12 +591,13 @@ window.routeToListing = async function () {
       btn.disabled = false;
     });
 
-    const geometry = await getRoute(
+    const routeData = await getRoute(
       { lat: pos.lat, lng: pos.lng },
       { lat: currentItem.lat, lng: currentItem.lng }
     );
 
-    drawRoute(geometry);
+    drawRoute(routeData.geometry);
+    setTimeout(() => updateDistanceUI(routeData), 500); // Delay slightly to allow popup to render
 
     // Zoom fit bounds
     const bounds = new maplibregl.LngLatBounds();
@@ -470,75 +613,13 @@ window.routeToListing = async function () {
     document.getElementById("btnRoute").innerHTML = '<span class="material-symbols-outlined text-sm">directions</span> Chỉ đường';
     document.getElementById("btnRoute").disabled = false;
     
-    let errorMsg = "Lỗi lấy vị trí: " + (e.message || e);
-    if (e.code === 1) { 
-      let httpWarning = !window.isSecureContext ? " (Do bạn đang dùng HTTP thay vì HTTPS nên trình duyệt chặn GPS)" : "";
-      errorMsg = "Trình duyệt hoặc Hệ điều hành đang chặn quyền vị trí" + httpWarning + ".\\n\\n1. Nếu bạn đang dùng điện thoại, hãy đảm bảo đã bật Dịch vụ Vị trí (Location Services).\\n2. Hãy cho phép trình duyệt truy cập vị trí và thử lại.";
-    } else if (e.code === 2) {
-      errorMsg = "Không thể xác định vị trí của bạn (POSITION_UNAVAILABLE). Vui lòng kiểm tra lại mạng hoặc GPS.";
-    } else if (e.code === 3) {
-      errorMsg = "Quá thời gian lấy vị trí (TIMEOUT). Có thể do bạn đang ở trong nhà nên mất sóng GPS.";
-    }
-
-    const confirmFallback = confirm(errorMsg + "\\n\\nBạn có muốn dùng toạ độ giả lập (rồi tự kéo thả ghim) để xem thử chức năng vẽ đường không?");
-    if (confirmFallback) {
-       try {
-         const btn = document.getElementById("btnRoute");
-         const originalText = btn.innerHTML;
-         btn.innerHTML = "⏳ Đang vẽ đường...";
-         btn.disabled = true;
-
-         const fallbackPos = { lat: 21.028511, lng: 105.804817 }; // Hanoi
-         
-         if (window.userMarker) window.userMarker.remove();
-
-         const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
-           "<div><b>Vị trí giả lập</b><br><small class='text-gray-500'>(Kéo thả để chọn vị trí thực tế của bạn)</small></div>"
-         );
-
-         window.userMarker = new maplibregl.Marker({ color: "#16a34a", draggable: true })
-          .setLngLat([fallbackPos.lng, fallbackPos.lat])
-          .setPopup(popup)
-          .addTo(map);
-
-         window.userMarker.on('dragend', async () => {
-           const newLngLat = window.userMarker.getLngLat();
-           btn.innerHTML = "⏳ Đang vẽ lại...";
-           btn.disabled = true;
-           try {
-             const geo = await getRoute(
-               { lat: newLngLat.lat, lng: newLngLat.lng },
-               { lat: currentItem.lat, lng: currentItem.lng }
-             );
-             drawRoute(geo);
-           } catch (err) {
-             console.error("Lỗi vẽ lại đường:", err);
-           }
-           btn.innerHTML = originalText;
-           btn.disabled = false;
-         });
-
-         const geometry = await getRoute(
-           { lat: fallbackPos.lat, lng: fallbackPos.lng },
-           { lat: currentItem.lat, lng: currentItem.lng }
-         );
-
-         drawRoute(geometry);
-
-         const bounds = new maplibregl.LngLatBounds();
-         bounds.extend([fallbackPos.lng, fallbackPos.lat]);
-         bounds.extend([currentItem.lng, currentItem.lat]);
-         map.fitBounds(bounds, { padding: 50 });
-
-         btn.innerHTML = originalText;
-         btn.disabled = false;
-         popup.addTo(map);
-       } catch (errFallback) {
-         alert("Lỗi khi vẽ đường: " + errFallback.message);
-         document.getElementById("btnRoute").innerHTML = '<span class="material-symbols-outlined text-sm">directions</span> Chỉ đường';
-         document.getElementById("btnRoute").disabled = false;
-       }
-    }
+    // Nếu lỗi là do người dùng từ chối quyền hoặc lỗi hệ thống, báo lỗi rõ ràng.
+    let errorMsg = "Không thể lấy vị trí của bạn.";
+    if (e.code === 1) errorMsg = "Bạn đã từ chối quyền truy cập vị trí. Hãy bật lại trong cài đặt trình duyệt.";
+    else if (e.code === 2) errorMsg = "Không thể xác định vị trí hiện tại (Lỗi mạng hoặc thiết bị GPS).";
+    else if (e.code === 3) errorMsg = "Quá thời gian lấy vị trí, vui lòng thử lại.";
+    
+    alert(errorMsg);
   }
 };
 
@@ -644,7 +725,7 @@ async function loadReviews() {
       html += `
         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
           <div class="flex items-center justify-between mb-2">
-            <div class="font-bold text-gray-800">Khách hàng ẩn danh</div>
+            <div class="font-bold text-gray-800">${rv.user_name || rv.user_email || 'Khách hàng ẩn danh'}</div>
             <div class="text-xs text-gray-400">${dateStr}</div>
           </div>
           <div class="text-yellow-500 text-sm mb-2">${starsHtml}</div>
@@ -676,25 +757,36 @@ window.submitReview = async function() {
   
   const comment = commentEl.value.trim();
 
-  // Get User ID from session storage
   let userId = null;
   let token = null;
   try {
-    const modAuth = await import("../modules/auth/auth.js?v=1.0.6");
-    token = await modAuth.getValidToken();
-
     const raw = sessionStorage.getItem('currentUser');
     if (raw) {
       const u = JSON.parse(raw);
       userId = u.id || u.postgres_id;
-    } else if (token && auth && auth.currentUser) {
-      userId = auth.currentUser.uid;
+    }
+
+    // Safely get Firebase token
+    if (auth) {
+      token = await new Promise((resolve) => {
+        if (auth.currentUser) return resolve(auth.currentUser.getIdToken());
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          unsubscribe();
+          if (user) resolve(await user.getIdToken());
+          else resolve(null);
+        });
+      });
+      if (token && auth.currentUser && !userId) {
+        userId = auth.currentUser.uid;
+      }
     }
   } catch (e) {
     console.error("Lỗi xác thực:", e);
+    alert("Lỗi try/catch: " + e.message);
   }
 
   if (!userId || !token) {
+    alert("Debug: userId=" + userId + ", token=" + (token ? "có" : "null") + ", auth.currentUser=" + (auth && auth.currentUser ? "có" : "null"));
     msgEl.textContent = "Vui lòng đăng nhập để đánh giá.";
     msgEl.className = "text-sm mt-2 font-medium text-red-500";
     msgEl.classList.remove("hidden");

@@ -259,6 +259,17 @@
             <span id="location" class="text-base">Đang tải vị trí...</span>
           </div>
 
+          <div class="flex items-center gap-4 text-gray-500 mb-4 text-sm flex-wrap">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">calendar_today</span>
+              Ngày đăng: <span id="created-at" class="font-semibold text-gray-700">Đang tải...</span>
+            </span>
+            <span class="flex items-center gap-1 text-primary bg-blue-50 px-2 py-1 rounded-full">
+              <span class="material-symbols-outlined text-sm">visibility</span>
+              <span id="view-count" class="font-bold">...</span> lượt xem
+            </span>
+          </div>
+
           <div class="flex flex-wrap items-end gap-6 border-b border-gray-100 pb-6">
             <div>
               <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Mức giá</p>
@@ -317,7 +328,7 @@
         <div>
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold border-l-4 border-primary pl-3">Bản đồ</h3>
-            <button id="btnRoute" onclick="routeToListing()"
+            <button type="button" id="btnRoute" onclick="routeToListing()"
               class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-700 disabled:opacity-50">
               <span class="material-symbols-outlined text-sm">directions</span> Chỉ đường
             </button>
@@ -371,15 +382,21 @@
       </div>
     </div>
 
-
+    <!-- Mặt bằng tương tự -->
+    <div class="mt-12 mb-8">
+      <h3 class="text-2xl font-bold mb-6 text-gray-900 border-l-4 border-primary pl-4">Các mặt bằng tương tự tại khu vực này</h3>
+      <div id="similar-listings" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+         <!-- Dữ liệu render từ JS -->
+      </div>
     </div>
+
   </main>
 
   <footer class="border-t py-6 text-center text-sm text-gray-500">
     © 2023 RentHub
   </footer>
 
-  <script type="module" src="../pages/chitiet.js?v=1.0.2"></script>
+  <script type="module" src="../pages/chitiet.js?v=1.0.6"></script>
 
   
 

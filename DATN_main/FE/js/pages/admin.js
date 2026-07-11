@@ -91,21 +91,34 @@ function updateStatistics() {
 }
 
 
+let currentUserPage = 1;
+const usersPerPage = 50;
+
 function renderUsers() {
     const tbody = document.getElementById('users-table-body');
     const noResults = document.getElementById('no-results');
+    const pagination = document.getElementById('users-pagination');
     
     if (filteredUsers.length === 0) {
         tbody.innerHTML = '';
         noResults.classList.remove('hidden');
+        if (pagination) pagination.innerHTML = '';
         return;
     }
     
     noResults.classList.add('hidden');
     
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (currentUserPage > totalPages) currentUserPage = totalPages;
+    if (currentUserPage < 1) currentUserPage = 1;
+    
+    const startIndex = (currentUserPage - 1) * usersPerPage;
+    const endIndex = startIndex + usersPerPage;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    
     const currentUser = getCurrentUser();
     
-    tbody.innerHTML = filteredUsers.map(user => {
+    tbody.innerHTML = paginatedUsers.map(user => {
         
         let roleBadge = '';
         if (user.role === 'admin') {
@@ -173,7 +186,45 @@ function renderUsers() {
             </tr>
         `;
     }).join('');
+
+    renderUserPagination(totalPages);
 }
+
+function renderUserPagination(totalPages) {
+    const pagination = document.getElementById('users-pagination');
+    if (!pagination) return;
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    if (currentUserPage > 1) {
+        html += `<button onclick="goToUserPage(${currentUserPage - 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Trước</button>`;
+    }
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentUserPage - 2 && i <= currentUserPage + 2)) {
+            const activeClass = i === currentUserPage ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-600 dark:hover:bg-slate-800 dark:text-slate-300';
+            html += `<button onclick="goToUserPage(${i})" class="px-3 py-1 border rounded ${activeClass}">${i}</button>`;
+        } else if (i === currentUserPage - 3 || i === currentUserPage + 3) {
+            html += `<span class="px-3 py-1 text-slate-500">...</span>`;
+        }
+    }
+    
+    if (currentUserPage < totalPages) {
+        html += `<button onclick="goToUserPage(${currentUserPage + 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Sau</button>`;
+    }
+    
+    pagination.innerHTML = html;
+}
+
+window.goToUserPage = function(page) {
+    currentUserPage = page;
+    renderUsers();
+};
 
 // ================== FILTER USERS ==================
 function filterUsers() {
@@ -194,6 +245,7 @@ function filterUsers() {
         return matchesSearch && matchesRole;
     });
     
+    currentUserPage = 1;
     renderUsers();
 }
 
@@ -725,6 +777,9 @@ function switchTab(tabName) {
 
 
 
+let currentFeedbackPage = 1;
+const feedbacksPerPage = 50;
+
 // ================== FEEDBACKS MANAGEMENT ==================
 async function loadFeedbacks() {
     if (typeof getFeedbacks !== 'function') {
@@ -744,11 +799,13 @@ async function loadFeedbacks() {
     
     filteredFeedbacks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
+    currentFeedbackPage = 1;
     renderFeedbacks(filteredFeedbacks);
 }
 
 function renderFeedbacks(feedbacks) {
     const tbody = document.getElementById('feedbacks-table-body');
+    const pagination = document.getElementById('feedbacks-pagination');
     if (!tbody) return;
     
     if (feedbacks.length === 0) {
@@ -760,10 +817,19 @@ function renderFeedbacks(feedbacks) {
                 </td>
             </tr>
         `;
+        if (pagination) pagination.innerHTML = '';
         return;
     }
     
-    tbody.innerHTML = feedbacks.map(feedback => {
+    const totalPages = Math.ceil(feedbacks.length / feedbacksPerPage);
+    if (currentFeedbackPage > totalPages) currentFeedbackPage = totalPages;
+    if (currentFeedbackPage < 1) currentFeedbackPage = 1;
+    
+    const startIndex = (currentFeedbackPage - 1) * feedbacksPerPage;
+    const endIndex = startIndex + feedbacksPerPage;
+    const paginatedFeedbacks = feedbacks.slice(startIndex, endIndex);
+    
+    tbody.innerHTML = paginatedFeedbacks.map(feedback => {
         const date = new Date(feedback.createdAt).toLocaleDateString('vi-VN', {
             year: 'numeric',
             month: '2-digit',
@@ -816,6 +882,110 @@ function renderFeedbacks(feedbacks) {
             </tr>
         `;
     }).join('');
+
+    renderFeedbackPagination(feedbacks, totalPages);
+}
+
+function renderFeedbackPagination(feedbacks, totalPages) {
+    const pagination = document.getElementById('feedbacks-pagination');
+    if (!pagination) return;
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    if (currentFeedbackPage > 1) {
+        html += `<button onclick="goToFeedbackPage(${currentFeedbackPage - 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Trước</button>`;
+    }
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentFeedbackPage - 2 && i <= currentFeedbackPage + 2)) {
+            const activeClass = i === currentFeedbackPage ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-600 dark:hover:bg-slate-800 dark:text-slate-300';
+            html += `<button onclick="goToFeedbackPage(${i})" class="px-3 py-1 border rounded ${activeClass}">${i}</button>`;
+        } else if (i === currentFeedbackPage - 3 || i === currentFeedbackPage + 3) {
+            html += `<span class="px-3 py-1 text-slate-500">...</span>`;
+        }
+    }
+    
+    if (currentFeedbackPage < totalPages) {
+        html += `<button onclick="goToFeedbackPage(${currentFeedbackPage + 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Sau</button>`;
+    }
+    
+    pagination.innerHTML = html;
+}
+
+window.goToFeedbackPage = function(page) {
+    currentFeedbackPage = page;
+    const filterStatus = document.getElementById('filter-feedback-status')?.value || 'all';
+    let filteredFeedbacks = allFeedbacks;
+    if (filterStatus !== 'all') {
+        filteredFeedbacks = allFeedbacks.filter(f => f.status === filterStatus);
+    }
+    filteredFeedbacks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    renderFeedbacks(filteredFeedbacks);
+};
+
+window.viewFeedbackDetails = function(id) {
+    try {
+        const feedback = allFeedbacks.find(f => String(f.id) === String(id));
+        if (!feedback) {
+            showMessage('Không tìm thấy đánh giá', 'error');
+            return;
+        }
+        
+        const modalContent = document.getElementById('feedback-modal-content');
+        if (!modalContent) {
+            showMessage('Lỗi giao diện: Không tìm thấy feedback-modal-content', 'error');
+            return;
+        }
+        
+        const date = new Date(feedback.createdAt).toLocaleString('vi-VN');
+        const ratingNum = parseInt(feedback.rating) || 0;
+        const stars = '⭐'.repeat(ratingNum) + '☆'.repeat(5 - ratingNum);
+        
+        modalContent.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Đánh giá</label>
+                    <p class="text-slate-900 dark:text-white text-xl">${stars} (${feedback.rating}/5)</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Nhận xét</label>
+                    <p class="text-slate-900 dark:text-white whitespace-pre-wrap">${escapeHtml(feedback.comment || 'Không có nhận xét')}</p>
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Người dùng</label>
+                    <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.userName || 'Người dùng')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Email</label>
+                    <p class="text-slate-900 dark:text-white">${escapeHtml(feedback.email || 'Không có')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Mặt bằng</label>
+                    <p class="text-slate-900 dark:text-white font-medium">${escapeHtml(feedback.listingTitle || 'Mặt bằng đã xóa')}</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-600 dark:text-slate-400">Ngày gửi</label>
+                    <p class="text-slate-900 dark:text-white">${date}</p>
+                </div>
+            </div>
+        `;
+        
+        const modal = document.getElementById('feedback-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        } else {
+            showMessage('Lỗi giao diện: Không tìm thấy feedback-modal', 'error');
+        }
+    } catch (err) {
+        showMessage('Lỗi hiển thị: ' + err.message, 'error');
+        console.error(err);
+    }
 }
 
 async function viewFeedback(id) {
@@ -1127,25 +1297,12 @@ async function loadAdminListings(resetPage = false) {
         const result = await response.json();
 
         if (result.success && result.listings) {
-            if (resetPage) {
-                adminListings = result.listings;
-            } else {
-                adminListings = [...adminListings, ...result.listings];
-            }
-            renderAdminListings(adminListings);
+            adminListings = result.listings;
+            renderAdminListings(adminListings, result.totalPages);
             fetchAndRenderListingStats();
 
             const label = document.getElementById('listing-count-label');
-            if (label) label.textContent = `Hiển thị ${adminListings.length} / ${result.total} tin`;
-
-            const loadMoreBtn = document.getElementById('load-more-listings');
-            if (loadMoreBtn) {
-                if (adminListingsPage < result.totalPages) {
-                    loadMoreBtn.classList.remove('hidden');
-                } else {
-                    loadMoreBtn.classList.add('hidden');
-                }
-            }
+            if (label) label.textContent = `Hiển thị trang ${adminListingsPage} / ${result.totalPages} (${result.total} tin)`;
         } else {
             throw new Error(result.error || 'Không nhận được dữ liệu');
         }
@@ -1176,7 +1333,7 @@ async function fetchAndRenderListingStats() {
     }
 }
 
-function renderAdminListings(listings) {
+function renderAdminListings(listings, totalPages) {
     const tbody = document.getElementById('listings-table-body');
     const noResults = document.getElementById('listings-no-results');
     if (!tbody) return;
@@ -1260,7 +1417,45 @@ function renderAdminListings(listings) {
             </tr>
         `;
     }).join('');
+
+    renderListingPagination(totalPages);
 }
+
+function renderListingPagination(totalPages) {
+    const pagination = document.getElementById('listings-pagination');
+    if (!pagination) return;
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    if (adminListingsPage > 1) {
+        html += `<button onclick="goToListingPage(${adminListingsPage - 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Trước</button>`;
+    }
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= adminListingsPage - 2 && i <= adminListingsPage + 2)) {
+            const activeClass = i === adminListingsPage ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-600 dark:hover:bg-slate-800 dark:text-slate-300';
+            html += `<button onclick="goToListingPage(${i})" class="px-3 py-1 border rounded ${activeClass}">${i}</button>`;
+        } else if (i === adminListingsPage - 3 || i === adminListingsPage + 3) {
+            html += `<span class="px-3 py-1 text-slate-500">...</span>`;
+        }
+    }
+    
+    if (adminListingsPage < totalPages) {
+        html += `<button onclick="goToListingPage(${adminListingsPage + 1})" class="px-3 py-1 border border-slate-300 rounded hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Sau</button>`;
+    }
+    
+    pagination.innerHTML = html;
+}
+
+window.goToListingPage = function(page) {
+    adminListingsPage = page;
+    loadAdminListings(false);
+};
 
 async function adminApproveListing(id) {
     if (!confirm('Bạn có chắc chắn muốn DUYỆT tin đăng này?')) return;

@@ -1,7 +1,7 @@
 
 
 
-import { createListing, updateListing } from '../../services/listingService.js';
+import { createListing, updateListing } from '../../services/listingService.js?v=6';
 import { auth } from '../../config/firebase.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 

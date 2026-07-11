@@ -30,7 +30,8 @@ export async function fetchDetail(id) {
         lng: item.longitude ?? item.lng,
         date: item.created_at || item.date,
         category: item.type || item.category,
-        description: item.description || item.desc || ''
+        description: item.description || item.desc || '',
+        views: item.views || 0
       };
     }
     return null;
@@ -55,6 +56,7 @@ export async function fetchListings(opts = {}) {
     if (opts.maxArea !== undefined) params.set("maxArea", String(opts.maxArea));
     if (opts.page) params.set("page", String(opts.page));
     if (opts.limit) params.set("limit", String(opts.limit));
+    if (opts.sort) params.set("sort", String(opts.sort));
 
     const url = `${API_BASE}/api/listings?${params.toString()}`;
     const res = await fetch(url);

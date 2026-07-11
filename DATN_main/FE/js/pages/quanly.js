@@ -8,7 +8,7 @@ import {
   normalizeListing,
   toggleListingVisibility,
   getListingHistory
-} from '../services/listingService.js';
+} from '../services/listingService.js?v=6';
 import { openListingForm } from '../modules/listing/listingForm.js';
 
 let currentUser = null;
@@ -186,6 +186,9 @@ const emptyState = document.getElementById('emptyState');
 const listingsContainer = document.getElementById('listingsContainer');
 const filterTabs = document.querySelectorAll('.filter-tab');
 
+listingsContainer.classList.remove('hidden');
+listingsContainer.innerHTML = '<div class="col-span-full text-center py-10">Đang kiểm tra đăng nhập...</div>';
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     alert('Vui lòng đăng nhập để quản lý tin đăng');
@@ -223,6 +226,8 @@ async function loadListings() {
   } catch (error) {
     console.error('Error loading listings:', error);
     alert('Lỗi tải danh sách tin đăng: ' + error.message);
+    listingsContainer.classList.remove('hidden');
+    listingsContainer.innerHTML = `<div class="col-span-full text-center text-red-500 font-bold text-xl">ERROR: ${error.stack || error.message}</div>`;
   } finally {
     loadingState.classList.add('hidden');
   }
@@ -247,7 +252,7 @@ function renderListings() {
     return `
       <div class="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl overflow-hidden hover:shadow-lg transition-all">
         <div class="relative h-48 bg-gray-200 dark:bg-gray-700">
-          <img src="${listing.image || 'https:
+          <img src="${listing.image || 'https://placehold.co/600x400?text=No+Image'}" 
                alt="${listing.title}" 
                referrerpolicy="no-referrer"
                class="w-full h-full object-cover"

@@ -7,7 +7,9 @@ import {
   deleteListing,
   updateListingStatus,
   toggleListingVisibility,
-  getSearchSuggestions
+  getSearchSuggestions,
+  incrementListingView,
+  getPersonalizedRecommendations
 } from "../services/listing.service.js";
 import db from "../config/db.js";
 
@@ -39,6 +41,14 @@ export async function getListingController(req, res) {
   if (!id) return res.status(400).json({ error: 'Missing id' });
 
   const data = await getListingById(id);
+  if (!data) return res.status(404).json({ error: 'Not found' });
+  res.json(data);
+}
+
+export async function incrementListingViewController(req, res) {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+  const data = await incrementListingView(id);
   if (!data) return res.status(404).json({ error: 'Not found' });
   res.json(data);
 }
@@ -91,4 +101,22 @@ export async function getSuggestController(req, res) {
   if (!q) return res.json([]);
   const suggestions = await getSearchSuggestions(q, limit ? parseInt(limit) : 5);
   res.json(suggestions);
+}
+
+// ===== GỢI Ý CÁ NHÂN HÓA (Weighted Scoring) =====
+export async function getRecommendationsController(req, res) {
+  try {
+    const { districts, types, avgPrice, excludeIds, limit } = req.body;
+    const data = await getPersonalizedRecommendations({
+      districts: districts || {},
+      types: types || {},
+      avgPrice: Number(avgPrice) || 0,
+      excludeIds: excludeIds || [],
+      limit: Number(limit) || 8
+    });
+    res.json({ success: true, data, weights: { location: '50%', price: '30%', type: '20%' } });
+  } catch (error) {
+    console.error("Error in getRecommendationsController:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
 }

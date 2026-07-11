@@ -16,7 +16,11 @@ export async function createReview(data) {
 
 export async function getReviewsByListing(listing_id) {
   const result = await db.query(
-    `SELECT * FROM reviews WHERE listing_id = $1 ORDER BY created_at DESC`,
+    `SELECT r.*, u.name as user_name, u.email as user_email
+     FROM reviews r
+     LEFT JOIN users u ON r.user_id = u.id
+     WHERE r.listing_id = $1 
+     ORDER BY r.created_at DESC`,
     [listing_id]
   );
 

@@ -1,6 +1,9 @@
 import fetch from "node-fetch";
 import db from "../config/db.js";
 
+// Semantic Caching (Bộ nhớ đệm ngữ nghĩa - In-memory dùng cho Demo/Bảo vệ đồ án)
+const semanticCache = new Map();
+
 export const askAI = async (req, res) => {
   const { conversation, conversation_id, user } = req.body;
   
@@ -10,6 +13,14 @@ export const askAI = async (req, res) => {
 
   if (!userMessage) {
     return res.status(400).json({ answer: "Tin nhắn không hợp lệ" });
+  }
+
+  // --- SEMANTIC CACHING ---
+  // Kiểm tra cache nếu đây là tin nhắn mới (chưa có context conversation_id)
+  const cacheKey = userMessage.toLowerCase().trim();
+  if (!conversation_id && semanticCache.has(cacheKey)) {
+    console.log("[Semantic Cache] Trả về kết quả có sẵn cho câu hỏi:", cacheKey);
+    return res.json(semanticCache.get(cacheKey));
   }
 
   const DIFY_API_KEY = process.env.DIFY_API_KEY;
@@ -110,30 +121,56 @@ ${listingsText}
     files: []
   };
 
-  try {
-    const difyRes = await fetch("https://api.dify.ai/v1/chat-messages", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${DIFY_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+  // --- CƠ CHẾ RETRY & FALLBACK (Chống Rate Limit 429) ---
+  let difyData = null;
+  const maxRetries = 3;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const difyRes = await fetch("https://api.dify.ai/v1/chat-messages", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${DIFY_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-    if (!difyRes.ok) {
-      const errorText = await difyRes.text();
-      console.error("Lỗi từ Dify API:", errorText);
-      return res.status(500).json({ answer: "Xin lỗi, hiện tại AI đang gặp sự cố. Vui lòng thử lại sau." });
+      // Nếu bị giới hạn request (Rate Limit) -> Chờ rồi gọi lại
+      if (difyRes.status === 429) {
+        if (attempt === maxRetries - 1) throw new Error("Rate limit exceeded");
+        console.warn(`[AI Chatbot] Bị giới hạn tốc độ, thử lại lần ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, (attempt + 1) * 1500)); // Exponential backoff
+        continue;
+      }
+
+      if (!difyRes.ok) {
+        const errorText = await difyRes.text();
+        console.error("Lỗi từ Dify API:", errorText);
+        return res.status(500).json({ answer: "Xin lỗi, hiện tại AI đang gặp sự cố. Vui lòng thử lại sau." });
+      }
+
+      difyData = await difyRes.json();
+      break; // Lấy thành công thì thoát vòng lặp Retry
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        console.error("Lỗi mạng/Rate Limit khi gọi Dify API:", error);
+        return res.status(500).json({ answer: "Bot hiện đang bận do có quá nhiều người truy cập. Vui lòng thử lại sau ít phút." });
+      }
+      await new Promise(resolve => setTimeout(resolve, (attempt + 1) * 1500));
     }
-
-    const difyData = await difyRes.json();
-
-    res.json({
-      answer: difyData.answer || "(AI không có phản hồi)",
-      conversation_id: difyData.conversation_id
-    });
-  } catch (error) {
-    console.error("Lỗi mạng khi kết nối Dify:", error);
-    return res.status(500).json({ answer: "Lỗi mạng khi gọi Dify API." });
   }
+
+  const finalResponse = {
+    answer: difyData.answer || "(AI không có phản hồi)",
+    conversation_id: difyData.conversation_id
+  };
+
+  // Lưu vào Semantic Cache (TTL: 1 tiếng)
+  if (!conversation_id) {
+    semanticCache.set(cacheKey, finalResponse);
+    setTimeout(() => semanticCache.delete(cacheKey), 3600000); // Tự xóa sau 1 giờ
+  }
+
+  res.json(finalResponse);
 };

@@ -77,7 +77,7 @@
                     </a>
                 </div>
                 <div id="user-actions" class="hidden flex items-center gap-3">
-                    <a href="quanly.html"
+                    <a href="quanly.html?v=3"
                         class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-bold transition-colors shadow-sm">
                         <span class="material-symbols-outlined text-[18px]">description</span>
                         <span class="hidden sm:inline">Quản lý tin đăng</span>
@@ -253,9 +253,8 @@
         <section class="py-4 md:pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold text-text-main-light dark:text-text-main-dark">Mặt bằng nổi bật</h2>
-                    <p class="text-text-sub-light dark:text-text-sub-dark mt-1">Được đánh giá cao bởi cộng đồng người
-                        thuê</p>
+                    <h2 class="text-2xl font-bold text-text-main-light dark:text-text-main-dark">Mặt bằng được quan tâm nhiều nhất</h2>
+                    <p class="text-text-sub-light dark:text-text-sub-dark mt-2 hidden sm:block">Khám phá các mặt bằng có lượt xem cao nhất</p>
                 </div>
                 <a class="text-primary hover:text-primary-dark font-bold text-sm flex items-center gap-1"
                     href="/js/views/timkiem.html">
@@ -268,8 +267,23 @@
                     <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
                 </div>
             </div>
+        </section>
+
+        <!-- Section: Gợi ý dựa trên lịch sử xem (Cách 2) -->
+        <section id="sec-history-suggest" class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hidden mt-4 mb-8 bg-blue-50/50 rounded-2xl border border-blue-100">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary flex items-center gap-2">
+                      <span class="material-symbols-outlined">auto_awesome</span> Dành riêng cho bạn
+                    </h2>
+                    <p class="text-text-sub-light dark:text-text-sub-dark mt-1" id="history-suggest-subtitle">Dựa trên sở thích của bạn</p>
+                </div>
+            </div>
+            <div id="history-listing" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Dữ liệu render từ JS -->
             </div>
         </section>
+
         <section class="py-16 bg-slate-100 dark:bg-slate-900 mt-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-3 gap-8 text-center">
